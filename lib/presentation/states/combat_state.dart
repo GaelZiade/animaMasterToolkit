@@ -53,6 +53,7 @@ class ScreenCombatState {
       modifier: attack.attack,
       surpriseType: surpriseType,
       modifiers: attack.modifiers,
+      characterStateModifiers: attack.character?.state.modifiers.getAllModifiersForType(ModifiersType.attack) ?? 0,
     );
   }
 
@@ -66,6 +67,7 @@ class ScreenCombatState {
       defenseType: defense.defenseType.toModifierType(),
       defensesNumber: defense.character?.state.defenseNumber,
       defender: defense.character,
+      characterStateModifiers: defense.character?.state.modifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
     );
   }
 
