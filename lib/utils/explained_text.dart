@@ -1,3 +1,19 @@
+/// Un sumando dentro del cálculo de un resultado.
+///
+/// Permite mostrar la operación como una lista de términos alineados en vez de
+/// una única línea de texto corrido, que es difícil de leer de un vistazo.
+class ExplainedTerm {
+  const ExplainedTerm(this.label, this.value, {this.isTotal = false});
+
+  /// Nombre del sumando, tal como aparece en las reglas.
+  final String label;
+
+  final int value;
+
+  /// Marca la fila del total, que se muestra separada del resto.
+  final bool isTotal;
+}
+
 class ExplainedText {
   ExplainedText({
     required this.title,
@@ -9,6 +25,7 @@ class ExplainedText {
   }) {
     explanations = [];
     references = [];
+    terms = [];
 
     if (reference != null) {
       references.add(reference);
@@ -22,6 +39,17 @@ class ExplainedText {
   int? result;
   late List<ExplainedText> explanations;
   late List<BookReference> references;
+
+  /// Desglose de la operación, si el cálculo se puede expresar como una suma.
+  late List<ExplainedTerm> terms;
+
+  /// Carga el desglose y deja el total como última fila.
+  void setTerms(List<ExplainedTerm> newTerms, {required String totalLabel, required int total}) {
+    terms = [
+      ...newTerms.where((term) => term.value != 0),
+      ExplainedTerm(totalLabel, total, isTotal: true),
+    ];
+  }
 
   void addExplanation(String newExplanation) {
     explanation = '$explanation\n$newExplanation';

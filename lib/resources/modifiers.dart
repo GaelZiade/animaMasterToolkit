@@ -563,11 +563,11 @@ class Modifiers {
     {
         "name": "Espacio reducido",
         "attack": -40,
-        "parry": 0,
+        "parry": -40,
         "dodge": -40,
         "turn": 0,
         "type": 2,
-        "physicalAction": -40
+        "physicalAction": -20
     },
     {
         "name": "Escasa visibilidad",

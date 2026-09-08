@@ -38,6 +38,10 @@ class CombatRules {
     required String? modifier,
     required SurpriseType? surpriseType,
     required ModifiersState? modifiers,
+    // Los estados del personaje (ceguera, dolor, cansancio...) ya vienen
+    // sumados dentro de [baseAttack]. Se reciben aparte sólo para poder
+    // mostrarlos como una línea propia del desglose.
+    int characterStateModifiers = 0,
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final attackBaseNumber = baseAttack?.safeInterpret ?? 0;
@@ -50,10 +54,19 @@ class CombatRules {
     return ExplainedText(
       title: 'Ataque final',
       text: 'Resultado en ataque: $total',
-      explanation:
-          'Base: $attackBaseNumber + Modificador: $modifierNumber + Tirada: $rollNumber + Modificadores: $modifiersNumber + Sorpresa: $surpriseNumber',
       result: total,
-    );
+    )..setTerms(
+        [
+          ExplainedTerm('Habilidad de ataque', attackBaseNumber - characterStateModifiers),
+          ExplainedTerm('Estados del personaje', characterStateModifiers),
+          ExplainedTerm('Modificador', modifierNumber),
+          ExplainedTerm('Tirada', rollNumber),
+          ExplainedTerm('Modificadores de estado', modifiersNumber),
+          ExplainedTerm('Sorpresa', surpriseNumber),
+        ],
+        totalLabel: 'Ataque final',
+        total: total,
+      );
   }
 
   static ExplainedText finalDefenseValue({
@@ -65,6 +78,8 @@ class CombatRules {
     required ModifiersType? defenseType,
     required int? defensesNumber,
     required Character? defender,
+    // Igual que en el ataque: ya están dentro de [baseDefense].
+    int characterStateModifiers = 0,
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final baseDefenseNumber = baseDefense?.safeInterpret ?? 0;
@@ -89,15 +104,37 @@ class CombatRules {
     final modifiersNumber = modifiers?.getAllModifiersForType(defenseType ?? ModifiersType.dodge) ?? 0;
     final numberOfDefensesModifier = CombatRules.numberOfDefensesModifier(defensesNumber, damageAccumulation: damageAccumulation);
 
-    final total = modifiersNumber + rollNumber + baseDefenseNumber + numberOfDefensesModifier + modifierNumber + surpriseNumber;
+    final rawTotal = modifiersNumber + rollNumber + baseDefenseNumber + numberOfDefensesModifier + modifierNumber + surpriseNumber;
 
-    return ExplainedText(
+    // La defensa final nunca puede ser negativa: los modificadores pueden sumar
+    // un total negativo, pero el resultado se limita a 0.
+    final total = max(0, rawTotal);
+
+    final result = ExplainedText(
       title: 'Defensa final',
       text: 'Resultado en defensa: $total',
-      explanation:
-          'Base: $baseDefenseNumber + Modificador: $modifierNumber + "Tirada: $rollNumber + Modificadores: $modifiersNumber + Sorpresa: $surpriseNumber + Penalizador por defensas: $numberOfDefensesModifier',
       result: total,
-    );
+    )..setTerms(
+        [
+          ExplainedTerm('Habilidad de defensa', baseDefenseNumber - characterStateModifiers),
+          ExplainedTerm('Estados del personaje', characterStateModifiers),
+          ExplainedTerm('Modificador', modifierNumber),
+          ExplainedTerm('Tirada', rollNumber),
+          ExplainedTerm('Modificadores de estado', modifiersNumber),
+          ExplainedTerm('Sorpresa', surpriseNumber),
+          ExplainedTerm('Penalizador por defensas', numberOfDefensesModifier),
+        ],
+        totalLabel: 'Defensa final',
+        total: total,
+      );
+
+    if (rawTotal < 0) {
+      result.add(
+        explanation: 'Resultado sin limitar: $rawTotal, limitado a 0 (la defensa final no puede ser negativa)',
+      );
+    }
+
+    return result;
   }
 
   static ExplainedText? calculateDamage({
@@ -436,10 +473,20 @@ class CombatRules {
       title: 'Resultado Critico',
       text: 'Resultado: $result',
       result: result,
-      explanation: 'Daño realizado ($damageDoneInt) + Tirada ($criticalRollInt) - RF ($physicalResistanceBaseInt) '
-          '- Tirada RF ($physicalResistanceRollInt) ${result > 200 ? "(exceso recortado)" : ""} '
-          '${damageAccumulation ? "(reducido por acumulación de daño)" : ""}= Resultado ($result)',
-    );
+    )..setTerms(
+        [
+          ExplainedTerm('Daño realizado', damageDoneInt),
+          ExplainedTerm('Tirada de crítico', criticalRollInt),
+          ExplainedTerm('Resistencia física', -physicalResistanceBaseInt),
+          ExplainedTerm('Tirada de RF', -physicalResistanceRollInt),
+        ],
+        totalLabel: damageAccumulation
+            ? 'Nivel de crítico (mitad por acumulación)'
+            : result > 200
+                ? 'Nivel de crítico (exceso sobre 200 reducido)'
+                : 'Nivel de crítico',
+        total: result,
+      );
 
     if (damageAccumulation) {
       info.add(
