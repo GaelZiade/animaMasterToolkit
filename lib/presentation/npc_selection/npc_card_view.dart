@@ -49,8 +49,8 @@ class CharacterNPCCard extends StatelessWidget {
           ) {
             return BarTooltipItem(
               rod.toY.round().toString(),
-              const TextStyle(
-                color: Colors.black,
+              TextStyle(
+                color: theme.colorScheme.onInverseSurface,
                 fontWeight: FontWeight.bold,
               ),
             );
@@ -194,7 +194,7 @@ class CharacterNPCCard extends StatelessWidget {
                         textStyle: theme.textTheme.bodySmall!,
                         pressEnabled: false,
                         index: index,
-                        activeColor: Colors.black54,
+                        activeColor: theme.colorScheme.surfaceContainerHighest,
                         alignment: MainAxisAlignment.spaceBetween,
                         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
                         borderRadius: BorderRadius.circular(8),
@@ -240,7 +240,7 @@ class CharacterNPCCard extends StatelessWidget {
 
   Widget _pill(String text) {
     return Card(
-      color: theme.primaryColor,
+      color: theme.colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
         child: Text(

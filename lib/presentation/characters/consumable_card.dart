@@ -30,10 +30,10 @@ class ConsumableCard extends StatelessWidget {
         children: [
           if (consumable.type == ConsumableType.other)
             InkWell(
-              child: const Icon(
+              child: Icon(
                 Icons.delete,
                 size: 14,
-                color: Colors.grey,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               onTap: () {
                 showDialog<void>(

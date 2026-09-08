@@ -37,11 +37,11 @@ class Assets {
     semanticsLabel: 'knife icon',
   );
 
-  static final Widget github = SvgPicture.asset(
-    'assets/github.svg',
-    semanticsLabel: 'github icon',
-    colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-  );
+  static Widget github(Color color) => SvgPicture.asset(
+        'assets/github.svg',
+        semanticsLabel: 'github icon',
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      );
 
   static final Widget uprising = SvgPicture.asset(
     'assets/uprising.svg',
@@ -53,10 +53,10 @@ class Assets {
     semanticsLabel: 'face-to-face icon',
   );
 
-  static final Widget excelConvert = Image.asset(
-    'assets/convert.png',
-    color: Colors.black,
-  );
+  static Widget excelConvert(Color color) => Image.asset(
+        'assets/convert.png',
+        color: color,
+      );
 
   static Image surprised(Color color) => Image.asset(
         'assets/surprised.png',

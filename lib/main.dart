@@ -10,7 +10,9 @@ import 'package:amt/presentation/components/amt_text.dart';
 import 'package:amt/presentation/login/login_screen.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/utils/assets.dart';
+import 'package:amt/utils/app_theme.dart';
 import 'package:amt/utils/cloud_firestore_sync.dart';
+import 'package:amt/utils/theme_state.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_saver/file_saver.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -82,21 +84,22 @@ class MyAppState extends State {
       providers: [
         ChangeNotifierProvider(create: (context) => CharactersPageState()),
         ChangeNotifierProvider(create: (context) => NonPlayerCharactersState()),
+        ChangeNotifierProvider(create: (context) => ThemeState()),
       ],
-      child: MaterialApp(
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          FirebaseUILocalizations.withDefaultOverrides(const EsLocalizations()),
-          S.delegate,
-        ],
-        title: 'Anima Master Toolkit v3',
-        theme: ThemeData(
-          useMaterial3: true,
-          fontFamily: 'NotoSans',
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent),
+      child: Consumer<ThemeState>(
+        builder: (context, themeState, _) => MaterialApp(
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            FirebaseUILocalizations.withDefaultOverrides(const EsLocalizations()),
+            S.delegate,
+          ],
+          title: 'Anima Master Toolkit v3',
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeState.themeMode,
+          home: const MainPage(),
         ),
-        home: const MainPage(),
       ),
     );
   }
@@ -213,7 +216,6 @@ class _MainPageState extends State<MainPage> {
                     title: user == null ? AmtText(S.of(context).logIn) : AmtText(S.of(context).logOut),
                     leading: const Icon(
                       Icons.login,
-                      color: Colors.black,
                     ),
                     onTap: () async {
                       Navigator.pop(context);
@@ -231,7 +233,6 @@ class _MainPageState extends State<MainPage> {
                       title: AmtText(S.of(context).saveState),
                       leading: const Icon(
                         Icons.cloud_upload,
-                        color: Colors.black,
                       ),
                       onTap: () async {
                         Navigator.pop(context);
@@ -243,7 +244,6 @@ class _MainPageState extends State<MainPage> {
                       title: AmtText(S.of(context).loadState),
                       leading: const Icon(
                         Icons.cloud_download,
-                        color: Colors.black,
                       ),
                       onTap: () async {
                         Navigator.pop(context);
@@ -256,7 +256,7 @@ class _MainPageState extends State<MainPage> {
                     leading: SizedBox(
                       width: 24,
                       height: 24,
-                      child: Assets.github,
+                      child: Assets.github(theme.colorScheme.onSurface),
                     ),
                     onTap: () {
                       launchUrl(repository, webOnlyWindowName: '_blank');
@@ -268,7 +268,7 @@ class _MainPageState extends State<MainPage> {
                     leading: SizedBox(
                       width: 24,
                       height: 24,
-                      child: Assets.excelConvert,
+                      child: Assets.excelConvert(theme.colorScheme.onSurface),
                     ),
                     onTap: () {
                       launchUrl(excelToJsonRelease, webOnlyWindowName: '_blank');
@@ -279,7 +279,6 @@ class _MainPageState extends State<MainPage> {
                     title: AmtText(S.of(context).addNPC),
                     leading: const Icon(
                       Icons.group,
-                      color: Colors.black,
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -308,7 +307,6 @@ class _MainPageState extends State<MainPage> {
                       ),
                       leading: const Icon(
                         Icons.groups,
-                        color: Colors.black,
                       ),
                       onTap: () async {
                         Navigator.pop(context);
@@ -327,7 +325,6 @@ class _MainPageState extends State<MainPage> {
                       ),
                       leading: const Icon(
                         Icons.groups,
-                        color: Colors.black,
                       ),
                       onTap: () async {
                         Navigator.pop(context);
@@ -342,7 +339,6 @@ class _MainPageState extends State<MainPage> {
                     ),
                     leading: const Icon(
                       Icons.upload,
-                      color: Colors.black,
                     ),
                     onTap: () async {
                       Navigator.pop(context);
@@ -399,7 +395,6 @@ class _MainPageState extends State<MainPage> {
                     ),
                     leading: const Icon(
                       Icons.download,
-                      color: Colors.black,
                     ),
                     onTap: () async {
                       final name = appState.campaignName ?? 'anima_master_toolkit';
@@ -433,7 +428,7 @@ class _MainPageState extends State<MainPage> {
                   children: [
                     CircularProgressIndicator(
                       value: appState.sheetsLoadingPercentage,
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                     ),
                     Center(
                       child: AmtText('${(appState.sheetsLoadingPercentage * 100).toInt()}', style: AmtTextStyles.title),
@@ -498,9 +493,23 @@ class _MainPageState extends State<MainPage> {
               ),
           ],
         ),
-        backgroundColor: theme.primaryColor,
+        backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
-        actions: const [],
+        actions: [
+          Builder(
+            builder: (context) {
+              final themeState = context.watch<ThemeState>();
+              final isDark = themeState.isDark(context);
+
+              return IconButton(
+                tooltip: isDark ? 'Modo claro' : 'Modo oscuro',
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+                onPressed: () => themeState.toggle(context),
+              );
+            },
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: Stack(
         children: [
@@ -524,13 +533,13 @@ class _MainPageState extends State<MainPage> {
           if (showWelcomeMessage)
             Stack(
               children: [
-                const SizedBox.expand(child: ColoredBox(color: Colors.black26)),
+                SizedBox.expand(child: ColoredBox(color: Colors.black.withValues(alpha: 0.45))),
                 Center(
                   child: SizedBox(
                     width: max(screenSize.width / 3, 300),
                     height: max(screenSize.width / 4, 300),
                     child: Container(
-                      decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(16)), color: Colors.white),
+                      decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(16)), color: theme.colorScheme.surface),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(children: [
@@ -647,13 +656,13 @@ class _MainPageState extends State<MainPage> {
             if (loading)
               Stack(
                 children: [
-                  const SizedBox.expand(child: ColoredBox(color: Colors.black26)),
+                  SizedBox.expand(child: ColoredBox(color: Colors.black.withValues(alpha: 0.45))),
                   Center(
                     child: SizedBox(
                       width: max(screenSize.width / 3, 300),
                       height: max(screenSize.width / 4, 300),
                       child: Container(
-                        decoration: const BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(16)), color: Colors.white),
+                        decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(16)), color: theme.colorScheme.surface),
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(

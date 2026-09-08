@@ -1,7 +1,7 @@
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomCombatCard extends StatelessWidget {
-
   const CustomCombatCard({required this.title, required this.children, super.key, this.actionTitle, this.padding = 16});
   final String title;
   final List<Widget> children;
@@ -22,19 +22,20 @@ class CustomCombatCard extends StatelessWidget {
           SizedBox(
             width: 10000,
             child: ColoredBox(
-                color: theme.primaryColor,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const SizedBox(width: 8),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.onPrimary),
-                    ),
-                    actionTitle ?? const SizedBox(width: 8),
-                  ],
-                ),),
+              color: theme.colorScheme.header,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium!.copyWith(color: theme.colorScheme.onHeader),
+                  ),
+                  actionTitle ?? const SizedBox(width: 8),
+                ],
+              ),
+            ),
           ),
           const SizedBox(
             height: 8,

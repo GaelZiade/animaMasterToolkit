@@ -4,6 +4,7 @@ import 'package:amt/models/models.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/utils/assets.dart';
 import 'package:amt/utils/int_extension.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -186,7 +187,7 @@ class CharactersTable extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              _surpriseDesc(appState.characters, character, appState),
+                              _surpriseDesc(appState.characters, character, appState, theme),
                             ],
                           ),
                         ),
@@ -322,9 +323,9 @@ class CharactersTable extends StatelessWidget {
 
   ShapeBorder? _characterShape(Character character, CharactersPageState appState, ThemeData theme) {
     if (character.state.isSurprised > 0) {
-      return _border(Colors.orange.shade700, width: 2);
+      return _border(theme.colorScheme.danger, width: 2);
     } else if (character.state.isSurprised < 0) {
-      return _border(Colors.green.shade700, width: 2);
+      return _border(theme.colorScheme.advantage, width: 2);
     }
 
     return appState.combatState.attack.character?.uuid == character.uuid
@@ -334,7 +335,7 @@ class CharactersTable extends StatelessWidget {
             : _border(Colors.transparent);
   }
 
-  Widget _surpriseDesc(List<Character> characters, Character character, CharactersPageState appState) {
+  Widget _surpriseDesc(List<Character> characters, Character character, CharactersPageState appState, ThemeData theme) {
     final surprisesTo = <Character>[];
     final getsSurprisedFrom = <Character>[];
 
@@ -354,11 +355,11 @@ class CharactersTable extends StatelessWidget {
     var background = Colors.transparent;
 
     if (surprisesTo.isNotEmpty && getsSurprisedFrom.isNotEmpty) {
-      background = Colors.grey.shade100;
+      background = theme.colorScheme.neutralContainer;
     } else if (surprisesTo.isNotEmpty) {
-      background = Colors.green.shade100;
+      background = theme.colorScheme.advantageContainer;
     } else if (getsSurprisedFrom.isNotEmpty) {
-      background = Colors.orange.shade100;
+      background = theme.colorScheme.dangerContainer;
     }
 
     final surprisesToMessage = surprisesTo.isNotEmpty
@@ -415,14 +416,16 @@ class CharactersTable extends StatelessWidget {
             shape: BoxShape.circle,
             color: background,
             border: Border.all(
-              color: character.profile.uroboros ?? false ? Colors.red : Colors.grey.shade300,
+              color: character.profile.uroboros ?? false ? theme.colorScheme.uroboros : theme.colorScheme.outlineVariant,
               width: character.profile.uroboros ?? false ? 1 : 0,
             ),
           ),
           child: SizedBox(
             width: 24,
             height: 24,
-            child: Assets.surprised(surprisesTo.isEmpty && getsSurprisedFrom.isEmpty ? Colors.black12 : Colors.black),
+            child: Assets.surprised(
+              surprisesTo.isEmpty && getsSurprisedFrom.isEmpty ? theme.colorScheme.outlineVariant : theme.colorScheme.onSurface,
+            ),
           ),
         ),
       ),

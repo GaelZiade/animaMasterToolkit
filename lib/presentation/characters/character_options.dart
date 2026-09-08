@@ -284,14 +284,14 @@ class ShowCharacterOptions {
                                   },
                                 );
                               },
-                              child: const Column(
+                              child: Column(
                                 children: [
                                   Icon(
                                     Icons.delete,
-                                    color: Colors.red,
+                                    color: Theme.of(context).colorScheme.error,
                                     size: 36,
                                   ),
-                                  Text('Borrar personaje'),
+                                  const Text('Borrar personaje'),
                                 ],
                               ),
                             ),
