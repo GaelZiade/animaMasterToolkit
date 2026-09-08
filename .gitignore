@@ -50,3 +50,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Localizaciones generadas por flutter gen-l10n (el proyecto usa lib/generated/l10n.dart)
+lib/l10n/app_localizations*.dart
