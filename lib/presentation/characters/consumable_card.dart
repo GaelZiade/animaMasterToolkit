@@ -16,6 +16,23 @@ class ConsumableCard extends StatelessWidget {
   final void Function(String) onChangedActual;
   final void Function(ConsumableState) onDelete;
 
+  /// Los contadores van sin relleno ni recuadro.
+  ///
+  /// `border: InputBorder.none` no alcanza: mientras el campo esta habilitado
+  /// manda `enabledBorder`, que viene del tema con esquinas redondeadas, y a la
+  /// altura de estos campos eso los dibuja como burbujas.
+  static const _counterDecoration = InputDecoration(
+    isDense: true,
+    filled: false,
+    border: InputBorder.none,
+    enabledBorder: InputBorder.none,
+    focusedBorder: InputBorder.none,
+    disabledBorder: InputBorder.none,
+    errorBorder: InputBorder.none,
+    focusedErrorBorder: InputBorder.none,
+    contentPadding: EdgeInsets.symmetric(vertical: 4),
+  );
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -114,25 +131,17 @@ class ConsumableCard extends StatelessWidget {
               Expanded(
                 child: AMTTextFormField(
                   align: TextAlign.center,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(4),
-                  ),
+                  decoration: _counterDecoration,
                   style: consumable.actualValue > 999 ? styleS : styleM,
                   text: consumable.actualValue.toString(),
                   onChanged: onChangedActual,
                 ),
               ),
-              const Text('/'),
+              Text('/', style: styleM.copyWith(color: theme.colorScheme.onSurfaceVariant)),
               Expanded(
                 child: AMTTextFormField(
                   align: TextAlign.center,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(4),
-                  ),
+                  decoration: _counterDecoration,
                   style: consumable.maxValue > 999 ? styleS : styleM,
                   text: consumable.maxValue.toString(),
                   onChanged: onChangedMax,

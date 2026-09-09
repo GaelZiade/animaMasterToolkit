@@ -12,6 +12,12 @@ abstract class AppTheme {
   /// Radio de esquina de diálogos y campos.
   static const radius = 12.0;
 
+  /// Radio de los campos de texto.
+  ///
+  /// Mas chico que [radius] por el mismo motivo que [cardRadius]: muchos campos
+  /// de la ficha son bajos y con 12 px se redondean del todo.
+  static const inputRadius = 8.0;
+
   /// Radio de las tarjetas.
   ///
   /// Mas chico que [radius] a proposito: muchas tarjetas de la aplicacion miden
@@ -89,15 +95,15 @@ abstract class AppTheme {
         fillColor: scheme.surfaceContainerHighest.withValues(alpha: isDark ? 0.4 : 0.6),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
+          borderRadius: BorderRadius.circular(inputRadius),
           borderSide: BorderSide(color: scheme.outlineVariant),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
+          borderRadius: BorderRadius.circular(inputRadius),
           borderSide: BorderSide(color: scheme.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radius),
+          borderRadius: BorderRadius.circular(inputRadius),
           borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
       ),
