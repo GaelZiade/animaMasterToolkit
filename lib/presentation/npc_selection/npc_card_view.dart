@@ -6,6 +6,7 @@ import 'package:amt/models/character_profile.dart';
 import 'package:amt/utils/int_extension.dart';
 import 'package:amt/utils/key_value.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags_x/flutter_tags_x.dart';
 
@@ -240,12 +241,12 @@ class CharacterNPCCard extends StatelessWidget {
 
   Widget _pill(String text) {
     return Card(
-      color: theme.colorScheme.primary,
+      color: theme.colorScheme.header,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
         child: Text(
           text,
-          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onPrimary),
+          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onHeader),
         ),
       ),
     );

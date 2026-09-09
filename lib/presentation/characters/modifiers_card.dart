@@ -1,5 +1,6 @@
 import 'package:amt/models/character_model/status_modifier.dart';
 import 'package:amt/utils/string_extension.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tags_x/flutter_tags_x.dart';
 
@@ -17,7 +18,7 @@ class ModifiersCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     final style = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onPrimary,
+      color: theme.colorScheme.onHeader,
     );
 
     return Card(
@@ -42,13 +43,13 @@ class ModifiersCard extends StatelessWidget {
                   removeButton: ItemTagsRemoveButton(
                     icon: Icons.delete,
                     backgroundColor: theme.colorScheme.surface,
-                    color: theme.colorScheme.primary,
+                    color: theme.colorScheme.header,
                     onRemoved: () {
                       onSelected?.call(modifiers[index]);
                       return true;
                     },
                   ),
-                  activeColor: theme.colorScheme.primary,
+                  activeColor: theme.colorScheme.header,
                   alignment: MainAxisAlignment.spaceBetween,
                   padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                   borderRadius: BorderRadius.circular(8),

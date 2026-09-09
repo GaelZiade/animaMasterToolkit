@@ -1,9 +1,10 @@
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 
 class AMTTextCard extends StatelessWidget {
-
   const AMTTextCard(
-    this.text, {super.key, 
+    this.text, {
+    super.key,
     this.padding = 8,
     this.background,
     this.foreground,
@@ -22,14 +23,14 @@ class AMTTextCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      color: background ?? theme.colorScheme.primary,
+      color: background ?? theme.colorScheme.header,
       child: Padding(
         padding: EdgeInsets.all(padding),
         child: Text(
           text ?? '',
           style: style ??
               theme.textTheme.bodySmall!.copyWith(
-                color: foreground ?? theme.colorScheme.onPrimary,
+                color: foreground ?? theme.colorScheme.onHeader,
               ),
           overflow: TextOverflow.ellipsis,
           maxLines: maxLines ?? 1,

@@ -200,10 +200,10 @@ class CharactersTable extends StatelessWidget {
                                 child: Tooltip(
                                   message: character.state.currentTurn.description,
                                   child: Card(
-                                    color: theme.colorScheme.primary,
+                                    color: theme.colorScheme.header,
                                     child: Text(
                                       character.state.currentTurn.roll.toString(),
-                                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onPrimary),
+                                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onHeader),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
@@ -257,7 +257,7 @@ class CharactersTable extends StatelessWidget {
                                     icon: SizedBox(
                                       width: 24,
                                       height: 24,
-                                      child: Assets.knife,
+                                      child: Assets.knife(theme.colorScheme.onSurfaceVariant),
                                     ),
                                     onPressed: () {
                                       final surprise = SurpriseType.calculate(
@@ -282,7 +282,7 @@ class CharactersTable extends StatelessWidget {
                                     icon: SizedBox(
                                       width: 24,
                                       height: 24,
-                                      child: Assets.shield,
+                                      child: Assets.shield(theme.colorScheme.onSurfaceVariant),
                                     ),
                                     onPressed: () {
                                       _updateDefense(
@@ -299,7 +299,7 @@ class CharactersTable extends StatelessWidget {
                                     icon: SizedBox(
                                       width: 24,
                                       height: 24,
-                                      child: Assets.dodging,
+                                      child: Assets.dodging(theme.colorScheme.onSurfaceVariant),
                                     ),
                                     iconSize: 12,
                                     onPressed: () {

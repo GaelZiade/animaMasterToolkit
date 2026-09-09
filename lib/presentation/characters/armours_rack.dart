@@ -3,6 +3,7 @@ import 'package:amt/models/armour.dart';
 import 'package:amt/models/armour_data.dart';
 import 'package:amt/presentation/components/components.dart';
 import 'package:amt/resources/armours.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 
@@ -16,7 +17,7 @@ class ArmoursRack extends StatelessWidget {
     final theme = Theme.of(context);
 
     final style = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onPrimary,
+      color: theme.colorScheme.onHeader,
     );
 
     final armour = armourBase;
@@ -197,7 +198,7 @@ class ArmoursRack extends StatelessWidget {
         textAlign: TextAlign.start,
         message: armour.armours.map((e) => e.name).join(', '),
         child: Card(
-          color: theme.colorScheme.primary,
+          color: theme.colorScheme.header,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -212,7 +213,7 @@ class ArmoursRack extends StatelessWidget {
                 ),
                 Icon(
                   Icons.edit,
-                  color: theme.colorScheme.onPrimary,
+                  color: theme.colorScheme.onHeader,
                   size: 18,
                 ),
               ],

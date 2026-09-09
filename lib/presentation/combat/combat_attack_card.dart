@@ -7,6 +7,7 @@ import 'package:amt/presentation/components/components.dart';
 import 'package:amt/presentation/states/characters_page_state.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/assets.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +30,7 @@ class CombatAttackCard extends StatelessWidget {
           : IconButton(
               icon: Icon(
                 Icons.close,
-                color: theme.colorScheme.onPrimary,
+                color: theme.colorScheme.onHeader,
               ),
               onPressed: appState.removeAttacker,
             ),
@@ -50,7 +51,7 @@ class CombatAttackCard extends StatelessWidget {
                     },
                     icon: SizedBox.square(
                       dimension: 24,
-                      child: Assets.diceRoll,
+                      child: Assets.diceRoll(theme.colorScheme.onSurfaceVariant),
                     ),
                   ),
                 ),

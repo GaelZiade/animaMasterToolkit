@@ -14,6 +14,7 @@ class CombatCriticalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<CharactersPageState>();
+    final theme = Theme.of(context);
     final combatState = appState.combatState;
     final criticalResult = combatState.criticalResult();
 
@@ -52,7 +53,7 @@ class CombatCriticalCard extends StatelessWidget {
                         },
                         icon: SizedBox.square(
                           dimension: 24,
-                          child: Assets.diceRoll,
+                          child: Assets.diceRoll(theme.colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -78,7 +79,7 @@ class CombatCriticalCard extends StatelessWidget {
                         },
                         icon: SizedBox.square(
                           dimension: 24,
-                          child: Assets.diceRoll,
+                          child: Assets.diceRoll(theme.colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -116,7 +117,7 @@ class CombatCriticalCard extends StatelessWidget {
                         },
                         icon: SizedBox.square(
                           dimension: 24,
-                          child: Assets.diceRoll,
+                          child: Assets.diceRoll(theme.colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),

@@ -229,7 +229,7 @@ class ShowCharacterOptions {
                                   SizedBox(
                                     width: 36,
                                     height: 36,
-                                    child: Assets.uprising,
+                                    child: Assets.uprising(Theme.of(context).colorScheme.onSurfaceVariant),
                                   ),
                                   const Text('Crear masa de enemigos'),
                                 ],
@@ -247,7 +247,7 @@ class ShowCharacterOptions {
                                   SizedBox(
                                     width: 36,
                                     height: 36,
-                                    child: Assets.faceToFace,
+                                    child: Assets.faceToFace(Theme.of(context).colorScheme.onSurfaceVariant),
                                   ),
                                   const Text('Duplicar personaje'),
                                 ],

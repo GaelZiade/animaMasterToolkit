@@ -36,4 +36,10 @@ extension StatusColors on ColorScheme {
 
   /// Color del texto y los iconos sobre [header].
   Color get onHeader => _isDark ? const Color(0xFFF7DCD4) : onPrimary;
+
+  /// Variante del encabezado para distinguir al defensor del atacante.
+  Color get headerAlt => _isDark ? const Color(0xFF3B2A46) : secondary;
+
+  /// Color del texto y los iconos sobre [headerAlt].
+  Color get onHeaderAlt => _isDark ? const Color(0xFFEBDCF2) : onSecondary;
 }

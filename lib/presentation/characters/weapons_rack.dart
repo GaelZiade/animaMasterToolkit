@@ -1,6 +1,7 @@
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/weapon.dart';
 import 'package:amt/presentation/components/components.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 
@@ -24,12 +25,12 @@ class WeaponsRack extends StatelessWidget {
     final theme = Theme.of(context);
 
     final style = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onPrimary,
+      color: theme.colorScheme.onHeader,
     );
 
     final subtitleButton = theme.textTheme.bodySmall;
     final subtitleButtonOnPrimary = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onPrimary,
+      color: theme.colorScheme.onHeader,
     );
 
     return GestureDetector(
@@ -64,8 +65,8 @@ class WeaponsRack extends StatelessWidget {
                     for (final weapon in weapons)
                       TextButton(
                         style: TextButton.styleFrom(
-                          backgroundColor: weapon == selectedWeapon ? theme.colorScheme.primary : null,
-                          foregroundColor: weapon == selectedWeapon ? theme.colorScheme.onPrimary : null,
+                          backgroundColor: weapon == selectedWeapon ? theme.colorScheme.header : null,
+                          foregroundColor: weapon == selectedWeapon ? theme.colorScheme.onHeader : null,
                         ),
                         onPressed: () => {
                           onSelect(weapon),
@@ -122,7 +123,7 @@ class WeaponsRack extends StatelessWidget {
         textAlign: TextAlign.start,
         message: selectedWeapon.description(lineBreak: true),
         child: Card(
-          color: theme.colorScheme.primary,
+          color: theme.colorScheme.header,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Row(
@@ -137,7 +138,7 @@ class WeaponsRack extends StatelessWidget {
                 ),
                 Icon(
                   Icons.edit,
-                  color: theme.colorScheme.onPrimary,
+                  color: theme.colorScheme.onHeader,
                   size: 18,
                 ),
               ],

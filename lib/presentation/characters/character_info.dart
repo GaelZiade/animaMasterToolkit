@@ -2,6 +2,7 @@ import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/presentation/components/components.dart';
 import 'package:amt/utils/key_value.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 
@@ -148,7 +149,7 @@ class ShowCharacterInfo {
   }) {
     return Card(
       color: title
-          ? theme.colorScheme.primary
+          ? theme.colorScheme.header
           : odd
               ? theme.colorScheme.secondaryContainer
               : theme.colorScheme.surface,
@@ -172,8 +173,8 @@ class ShowCharacterInfo {
                         value.text,
                         textAlign: TextAlign.center,
                         style: value.flex == 1
-                            ? theme.textTheme.bodySmall!.copyWith(color: title ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface)
-                            : theme.textTheme.bodyLarge!.copyWith(color: title ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface),
+                            ? theme.textTheme.bodySmall!.copyWith(color: title ? theme.colorScheme.onHeader : theme.colorScheme.onSurface)
+                            : theme.textTheme.bodyLarge!.copyWith(color: title ? theme.colorScheme.onHeader : theme.colorScheme.onSurface),
                       ),
               ),
           ],

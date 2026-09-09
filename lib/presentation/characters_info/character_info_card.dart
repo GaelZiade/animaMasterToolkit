@@ -2,6 +2,7 @@ import 'package:amt/models/character_model/character.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/string_extension.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:function_tree/function_tree.dart';
 import 'package:logger/web.dart';
@@ -30,12 +31,12 @@ class CharacterInfoCard extends StatelessWidget {
                   width: 10000,
                   height: 30,
                   child: ColoredBox(
-                    color: attacking ? theme.colorScheme.primary : theme.colorScheme.secondary,
+                    color: attacking ? theme.colorScheme.header : theme.colorScheme.headerAlt,
                     child: Text(
                       character.profile.name,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleMedium!.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: attacking ? theme.colorScheme.onHeader : theme.colorScheme.onHeaderAlt,
                       ),
                     ),
                   ),
