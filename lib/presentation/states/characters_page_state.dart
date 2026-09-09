@@ -7,7 +7,7 @@ import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/presentation/states/combat_state.dart';
-import 'package:amt/utils/cloud_excel_parser.dart';
+import 'package:amt/utils/xlsx/xlsx_character_parser.dart';
 import 'package:amt/utils/string_extension.dart';
 import 'package:enough_convert/windows.dart';
 import 'package:file_picker/file_picker.dart';
@@ -328,6 +328,8 @@ class CharactersPageState extends ChangeNotifier {
   Future<void> parseCharacters(FilePickerResult? filesPicked, void Function(double) onUpdated) async {
     print(e);
 
+    final failures = <String>[];
+
     try {
       if (filesPicked != null) {
         var counter = 0;
@@ -338,15 +340,20 @@ class CharactersPageState extends ChangeNotifier {
           for (final element in filesPicked.files) {
             onUpdated(counter / total);
 
-            if (element.extension == 'json') {
-              final jsonFile = const Windows1252Codec().decode(element.bytes!.toList());
-              final character = Character.fromJson(jsonFile.jsonMap);
-              if (character != null) addCharacter(character);
-            } else {
-              final character = CloudExcelParser.fromBytes(element.bytes!.toList());
-              final characterDecoded = await character.parse();
+            // Un archivo que falla no debe cortar la carga de los demas.
+            try {
+              if (element.extension == 'json') {
+                final jsonFile = const Windows1252Codec().decode(element.bytes!.toList());
+                final character = Character.fromJson(jsonFile.jsonMap);
+                if (character != null) addCharacter(character);
+              } else {
+                final parser = XlsxCharacterParser.fromBytes(element.bytes!.toList());
+                final characterDecoded = await parser.parse();
 
-              if (characterDecoded != null) addCharacter(characterDecoded);
+                if (characterDecoded != null) addCharacter(characterDecoded);
+              }
+            } catch (error) {
+              failures.add('${element.name}: $error');
             }
 
             counter = counter + 1;
@@ -359,27 +366,34 @@ class CharactersPageState extends ChangeNotifier {
             onUpdated(counter / total);
             print('Progress: $counter / $total');
 
-            final extension = file.path.split('.').last;
-            if (extension == 'json') {
-              final json = await file.readAsString(encoding: const Windows1252Codec());
-              final character = Character.fromJson(json.jsonMap);
-              if (character != null) addCharacter(character);
-            } else {
-              final character = CloudExcelParser.fromFile(file);
-              final characterDecoded = await character.parse();
+            try {
+              final extension = file.path.split('.').last;
+              if (extension == 'json') {
+                final json = await file.readAsString(encoding: const Windows1252Codec());
+                final character = Character.fromJson(json.jsonMap);
+                if (character != null) addCharacter(character);
+              } else {
+                final parser = XlsxCharacterParser.fromFile(file);
+                final characterDecoded = await parser.parse();
 
-              if (characterDecoded != null) addCharacter(characterDecoded);
+                if (characterDecoded != null) addCharacter(characterDecoded);
+              }
+            } catch (error) {
+              failures.add('${file.path.split(RegExp(r'[\/]')).last}: $error');
             }
             counter = counter + 1;
           }
         }
       } else {
-        errorMessage = '$errorMessage Error leyendo archivos';
+        failures.add('No se pudo leer ningun archivo');
       }
     } catch (e) {
       print(e);
-      errorMessage = '$errorMessage $e';
+      failures.add(e.toString());
     }
+
+    errorMessage = failures.isEmpty ? null : failures.join('\n');
+
     onUpdated(-1);
   }
 

@@ -49,6 +49,28 @@ class CharactersTable extends StatelessWidget {
                         final timer = Timer.periodic(Duration(milliseconds: 250 * (files?.count ?? 1)), (timer) => appState.stepSheetLoading());
                         await appState.parseCharacters(files, appState.updateSheetLoading);
                         timer.cancel();
+
+                        // Hasta ahora un fallo de importacion no se veia: el
+                        // mensaje se guardaba en el estado y nadie lo mostraba.
+                        final error = appState.errorMessage;
+
+                        if (error != null && error.trim().isNotEmpty && context.mounted) {
+                          appState.errorMessage = null;
+
+                          await showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('No se pudieron cargar todas las fichas'),
+                              content: SingleChildScrollView(child: Text(error)),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cerrar'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
                       }
                     : null,
                 icon: const Icon(Icons.upload_file),
