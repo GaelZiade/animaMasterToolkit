@@ -63,6 +63,8 @@ class CharacterInfoCard extends StatelessWidget {
                                   onSelect: (element) => {
                                     character.state.selectedWeaponIndex = character.combat.weapons.indexOf(element),
                                     appState.updateCharacter(character),
+                                    // Cambiar de arma cambia el critico principal.
+                                    if (attacking) appState.syncDamageTypeWithWeapon(),
                                   },
                                 ),
                               ),

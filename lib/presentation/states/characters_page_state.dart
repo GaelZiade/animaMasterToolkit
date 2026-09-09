@@ -257,6 +257,13 @@ class CharactersPageState extends ChangeNotifier {
     combatState.attack.damageType = damageType ?? combatState.attack.damageType;
 
     combatState.attack.character = attacking ?? combatState.attack.character;
+
+    // Al elegir atacante se preselecciona el critico principal de su arma, que
+    // es el que se usa salvo que se decida lo contrario. Un damageType explicito
+    // manda: es el usuario cambiando el tipo a mano.
+    if (attacking != null && damageType == null) {
+      syncDamageTypeWithWeapon();
+    }
     combatState.defense.character = defendant ?? combatState.defense.character;
 
     combatState.attack.modifiers = attackingModifiers ?? combatState.attack.modifiers;
@@ -264,6 +271,16 @@ class CharactersPageState extends ChangeNotifier {
 
     combatState.surpriseType = surprise ?? combatState.surpriseType;
 
+    notifyListeners();
+  }
+
+  /// Ajusta el tipo de dano al critico principal del arma seleccionada.
+  void syncDamageTypeWithWeapon() {
+    final principal = combatState.attack.character?.selectedWeapon().principalDamage;
+
+    if (principal == null) return;
+
+    combatState.attack.damageType = principal;
     notifyListeners();
   }
 
