@@ -1,0 +1,48 @@
+name: Publicar en Firebase Hosting
+
+# Publica la version web en https://anima-master-toolkit-fork.web.app en cada
+# push a main.
+#
+# Necesita el secreto FIREBASE_SERVICE_ACCOUNT con el JSON de una cuenta de
+# servicio del proyecto. Sin el, el paso de publicacion se salta y el flujo
+# termina bien, para no ensuciar el historial con fallos.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - run: flutter build web --release
+
+      - name: Comprobar credenciales
+        id: credenciales
+        env:
+          CUENTA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$CUENTA" ]; then
+            echo "disponibles=false" >> "$GITHUB_OUTPUT"
+            echo "Falta el secreto FIREBASE_SERVICE_ACCOUNT; no se publica." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "disponibles=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publicar
+        if: steps.credenciales.outputs.disponibles == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: anima-master-toolkit-fork

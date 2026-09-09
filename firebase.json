@@ -1,34 +1,30 @@
 {
   "hosting": {
-    "source": ".",
+    "public": "build/web",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-    "frameworksBackend": { "region": "us-east1" }
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   },
   "flutter": {
     "platforms": {
       "android": {
         "default": {
-          "projectId": "amt-v3",
-          "appId": "1:932283109096:android:4fca1ca76dc6e1f362035d",
+          "projectId": "anima-master-toolkit-fork",
+          "appId": "1:468315049178:android:7982f2559df54963ac69e3",
           "fileOutput": "android/app/google-services.json"
-        }
-      },
-      "macos": {
-        "default": {
-          "projectId": "amt-v3",
-          "appId": "1:932283109096:ios:5b64508c6399f71f62035d",
-          "uploadDebugSymbols": false,
-          "fileOutput": "macos/Runner/GoogleService-Info.plist"
         }
       },
       "dart": {
         "lib/firebase_options.dart": {
-          "projectId": "amt-v3",
+          "projectId": "anima-master-toolkit-fork",
           "configurations": {
-            "android": "1:932283109096:android:4fca1ca76dc6e1f362035d",
-            "macos": "1:932283109096:ios:5b64508c6399f71f62035d",
-            "web": "1:932283109096:web:88e6abe95100fb3462035d",
-            "windows": "1:932283109096:web:86e3bc98f701a60e62035d"
+            "android": "1:468315049178:android:7982f2559df54963ac69e3",
+            "web": "1:468315049178:web:2d60cde5d9a5c280ac69e3",
+            "windows": "1:468315049178:web:da42338a64580a79ac69e3"
           }
         }
       }

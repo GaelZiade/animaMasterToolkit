@@ -28,7 +28,10 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         return windows;
       case TargetPlatform.linux:
@@ -44,41 +47,28 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCRcPUg6idHPLE_fwKviMTulOP5guMU_hw',
-    appId: '1:932283109096:web:88e6abe95100fb3462035d',
-    messagingSenderId: '932283109096',
-    projectId: 'amt-v3',
-    authDomain: 'amt-v3.firebaseapp.com',
-    storageBucket: 'amt-v3.appspot.com',
-    measurementId: 'G-V9H95MBJG1',
+    apiKey: 'AIzaSyB26uD33oSqF-Do-r4YPF1O5NnnUObH0rc',
+    appId: '1:468315049178:web:2d60cde5d9a5c280ac69e3',
+    messagingSenderId: '468315049178',
+    projectId: 'anima-master-toolkit-fork',
+    authDomain: 'anima-master-toolkit-fork.firebaseapp.com',
+    storageBucket: 'anima-master-toolkit-fork.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyABsj1fcbWRQ1gDYvkJA_e8EJkRv7nD7eM',
-    appId: '1:932283109096:android:4fca1ca76dc6e1f362035d',
-    messagingSenderId: '932283109096',
-    projectId: 'amt-v3',
-    storageBucket: 'amt-v3.appspot.com',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCGGU1Pm-fPUnYDfgQNtMoOnprMfFhNhXE',
-    appId: '1:932283109096:ios:5b64508c6399f71f62035d',
-    messagingSenderId: '932283109096',
-    projectId: 'amt-v3',
-    storageBucket: 'amt-v3.appspot.com',
-    iosClientId: '932283109096-kji5qt9b891u2nojpf69jn0633439f7g.apps.googleusercontent.com',
-    iosBundleId: 'pink.renard.amt',
+    apiKey: 'AIzaSyDUeINTfrmiCoKE4SrzoFBSN7JJ5oNBznw',
+    appId: '1:468315049178:android:7982f2559df54963ac69e3',
+    messagingSenderId: '468315049178',
+    projectId: 'anima-master-toolkit-fork',
+    storageBucket: 'anima-master-toolkit-fork.firebasestorage.app',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBkN8n1IoXbdkPA0qHJVAuFoXJQInBXzNQ',
-    appId: '1:932283109096:web:86e3bc98f701a60e62035d',
-    messagingSenderId: '932283109096',
-    projectId: 'amt-v3',
-    authDomain: 'amt-v3.firebaseapp.com',
-    storageBucket: 'amt-v3.appspot.com',
-    measurementId: 'G-Q2C156G7P9',
+    apiKey: 'AIzaSyB26uD33oSqF-Do-r4YPF1O5NnnUObH0rc',
+    appId: '1:468315049178:web:da42338a64580a79ac69e3',
+    messagingSenderId: '468315049178',
+    projectId: 'anima-master-toolkit-fork',
+    authDomain: 'anima-master-toolkit-fork.firebaseapp.com',
+    storageBucket: 'anima-master-toolkit-fork.firebasestorage.app',
   );
-
 }
