@@ -1,0 +1,129 @@
+# Changelog
+
+Versión alternativa de [Anima Master Toolkit](https://github.com/aoalejo/animaMasterToolkit)
+mantenida en [GaelZiade/animaMasterToolkit](https://github.com/GaelZiade/animaMasterToolkit).
+
+Todos los cambios parten de `9116a97`, el último commit del proyecto original.
+Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
+
+## Reglas de combate
+
+### Corregido
+
+- **La defensa final ya no puede quedar negativa.** Los modificadores pueden
+  sumar un total negativo, pero el resultado se limita a 0. El desglose muestra
+  el valor sin limitar para que se vea por qué. (Cierra
+  [#50](https://github.com/aoalejo/animaMasterToolkit/issues/50))
+- **Espacio reducido** no coincidía con la Tabla 43: la Parada estaba en 0 en
+  vez de −40 y la Acción Física en −40 en vez de −20.
+- Erratas en los textos que se muestran en pantalla: «Absorición»,
+  «coontraataque», «Critico» sin tilde.
+
+### Añadido
+
+- **Reglas de acumulación de daño que faltaban** (avanza
+  [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47)). La aplicación
+  ya resolvía la defensa, la absorción con sorpresa, la mitad del nivel de
+  crítico y la ausencia de contraataque, pero enunciaba sin aplicar otras dos:
+  - **Ataque en área.** Si cubre al menos la mitad del cuerpo de una criatura
+    con acumulación, el daño se dobla (p. 99). Se activa con una casilla que
+    solo aparece cuando el defensor acumula daño.
+  - **Crítico superior a 50.** El ser no puede actuar en ese asalto.
+- **Los estados del personaje se ven en el desglose.** La ceguera, el dolor o el
+  cansancio ya se aplicaban, pero iban sumados dentro de la habilidad base y no
+  había forma de saber que estaban actuando. Ahora son una línea propia.
+- **Reserva de Ki unificada** como regla fija (Dominus Exxet, reglas
+  opcionales). Un personaje con Ki repartido dejaba cinco o seis consumibles
+  (`Ki/AGI`, `Ki/VOL`…) de los que la tabla mostraba uno solo.
+
+## Importación de fichas
+
+### Corregido
+
+- **La importación de planillas de Excel funciona sin servidor.** Dependía de un
+  conversor externo que solo acepta peticiones desde el dominio publicado, así
+  que fallaba al ejecutar la aplicación en local por CORS, y fallaba en
+  silencio.
+
+  El intento anterior de leerlas en local está comentado en
+  `lib/utils/local_excel_parser.dart` por dos motivos que resultaron ser
+  limitaciones del paquete `excel`, no del formato: tardaba «hasta 15 minutos» y
+  no leía el resultado de las fórmulas. Excel guarda el valor calculado junto a
+  cada fórmula en el mismo XML, y solo hacen falta una veintena de rangos fijos.
+  El lector propio tarda unos 200 ms por ficha.
+
+  `lib/utils/xlsx/sheet_to_json.dart` es la traducción de `ExportJson.bas`, la
+  macro que la propia planilla usa para exportarse, así que produce el mismo
+  JSON. Verificado contra cinco fichas reales: guerrero, tecnicista, maestro en
+  armas, hechicero y mentalista en planilla Akuma Exxet.
+- **La acumulación de daño nunca sobrevivía a la importación**, por dos motivos
+  encadenados: la planilla exporta el campo como `acumDanio` y la aplicación lo
+  guardaba como `acumulacionDeDanio`, y el valor de la celda es «Sí» o «No»,
+  mientras que la conversión a booleano solo entendía `true` y `false`. Afectaba
+  también a `uruboros`.
+- **Los CVs libres y los conjuros libres no se importaban.** Los CVs no los
+  exportaba ni la macro original, así que el consumible de CV no se creaba nunca.
+- **Los errores de importación se muestran.** Antes se guardaban en un campo que
+  no leía nadie, y un archivo con problemas cortaba la carga del resto.
+- **El Ki ya no arranca en 1.** Se creaba con valor actual 1 mientras el Zeon y
+  los CVs se creaban llenos.
+- **La proyección mágica y la psíquica solo se añaden como arma si el personaje
+  invirtió PD en ellas.** La planilla muestra un valor de proyección para
+  cualquiera, salido solo de sus características, así que antes todos recibían
+  dos armas inútiles. La fila se localiza por etiqueta y no por número, porque
+  variantes como la Akuma Exxet corren las filas de la hoja de PDs.
+
+## Interfaz
+
+### Añadido
+
+- **Modo oscuro** con preferencia persistente y conmutador en la barra superior.
+  Arranca siguiendo el tema del sistema. Ni blanco ni negro puros.
+- **Panel de modificadores buscable y agrupado.** Mostraba unos cuatro
+  modificadores a la vez y obligaba a desplazarse por más de cincuenta
+  interruptores. Ahora crece hasta el 85 % de la pantalla, tiene buscador y
+  reparte en columnas.
+
+  Los modificadores que se excluyen entre sí van en un desplegable de selección
+  única: las 16 zonas apuntadas, los grados de ceguera, parálisis y dolor, el
+  cansancio, la actitud de combate y diez grupos más. Ya no se pueden declarar
+  combinaciones imposibles como apuntar a dos zonas a la vez.
+- **El desglose de resultados es una tabla**, no una línea de texto corrido con
+  paréntesis anidados. Un sumando por fila, los términos en cero ocultos, signo
+  y color según sume o reste, y cifras tabulares.
+- **Estado vacío** en la tabla de personajes.
+- **El recurso que sigue la tabla se elige solo y se puede cambiar a mano.**
+  Antes era siempre el Ki. Ahora es CV si el personaje tiene psiquismo, Zeon si
+  tiene proyección mágica, y Ki en el resto de los casos; el indicador es un
+  menú para cambiarlo.
+- **El tipo de crítico se preselecciona** según el arma empuñada. Arrancaba
+  siempre en Energía, así que la absorción se calculaba contra la TA equivocada
+  salvo que se tocara el selector.
+
+### Corregido
+
+- **Contraste del modo oscuro.** Los nueve iconos SVG se dibujaban con su
+  relleno original en negro. Los chips y cabeceras usaban `colorScheme.primary`
+  como relleno, que en Material 3 oscuro es un tono claro pensado para texto.
+- **Formas de pastilla y números recortados.** El radio de tarjeta convertía en
+  óvalo a cualquier tarjeta baja, que son casi todas. Los contadores de
+  consumibles se dibujaban como burbujas y perdían dígitos.
+- **El indicador circular de vida deformaba la cifra.** Pasa a ser una barra.
+- **El cartel de bienvenida cortaba el texto a media línea**: sacaba su alto del
+  ancho de la pantalla. También se reescribió, porque describía una migración
+  del guardado local a la nube que ya no le dice nada a nadie.
+- **Auditoría de Web Interface Guidelines**: `web/index.html` era un shell de 69
+  bytes sin `<head>`; 21 botones de icono no tenían nombre accesible; la tabla
+  de personajes construía todas las filas sin virtualizar; no se respetaba
+  `prefers-reduced-motion`.
+- **Fuera el progreso simulado de la importación**, un temporizador de 250 ms por
+  archivo que no reflejaba avance real y no dejaba terminar antes.
+
+## Mantenimiento
+
+- **El proyecto vuelve a compilar con un Flutter actual.** `flutter_localizations`
+  exige `intl ^0.20.3` y el `pubspec` fijaba `^0.19.0`, así que las dependencias
+  no resolvían.
+- Los globs de exclusión de `analysis_options.yaml` estaban bajo `linter.rules`,
+  donde `exclude` no es una regla válida.
+- Se ignoran las localizaciones que genera `flutter gen-l10n` y no usa nadie.
