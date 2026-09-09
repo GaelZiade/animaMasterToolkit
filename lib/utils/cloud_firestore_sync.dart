@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/web.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,10 @@ abstract class CloudSync {
   bool snapshotNeedsToBeUploaded(Map<String, dynamic> snapshot);
 
   DateTime? get lastUpdatedTime;
+
+  /// Ultimo error de sincronizacion, para poder mostrarlo.
+  String? lastError;
+
   bool snapshotIsUploaded(Map<String, dynamic> snapshot);
   String getCampaignName(String id);
 }
@@ -29,6 +34,9 @@ class CloudFirestoreSync implements CloudSync {
       sharedPreferences = value;
     });
   }
+
+  @override
+  String? lastError;
 
   Map<String, dynamic> lastSnapshotUploaded = {};
   Map<String, dynamic> lastSnapshot = {};
@@ -124,21 +132,26 @@ class CloudFirestoreSync implements CloudSync {
       return null;
     }
 
-    final snapshots = await db.collection(collectionName).where('__name__', whereIn: [
-      '${user.uid}_1',
-      '${user.uid}_2',
-      '${user.uid}_3',
-      '${user.uid}_4',
-    ]).get();
+    // Sin este try la excepcion escapa hasta quien llama, que muestra el cartel
+    // de carga antes de esperar y lo oculta despues: si la consulta falla, el
+    // cartel se queda para siempre y no dice por que.
+    try {
+      final snapshots = await db.collection(collectionName).where('__name__', whereIn: [
+        '${user.uid}_1',
+        '${user.uid}_2',
+        '${user.uid}_3',
+        '${user.uid}_4',
+      ]).get();
 
-    print(snapshots.docs.length);
-    print(snapshots.docs);
+      campaigns.clear();
 
-    campaigns.clear();
-
-    snapshots.docs.forEach((element) {
-      campaigns[element.id.split('_').last] = element.data();
-    });
+      for (final element in snapshots.docs) {
+        campaigns[element.id.split('_').last] = element.data();
+      }
+    } catch (error) {
+      Logger().e('No se pudieron obtener las partidas de la nube', error: error);
+      lastError = 'No se pudieron leer las partidas guardadas: $error';
+    }
 
     return null;
   }

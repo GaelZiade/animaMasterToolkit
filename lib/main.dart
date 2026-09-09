@@ -148,27 +148,63 @@ class _MainPageState extends State<MainPage> {
     final snapshot = appState.getJsonSnapshot();
 
     appState.showLoading(message: S.of(context).savingWithBody);
-    final index = appState.campaignIndex;
-    await database.saveSnapshot(snapshot, index.toString());
-    appState.hideLoading();
+
+    try {
+      final index = appState.campaignIndex;
+      await database.saveSnapshot(snapshot, index.toString());
+    } catch (error) {
+      appState.errorMessage = 'No se pudo guardar la partida en la nube: $error';
+    } finally {
+      appState.hideLoading();
+    }
+
+    _showSyncError(appState);
   }
 
   Future<void> loadState() async {
     final appState = Provider.of<CharactersPageState>(context, listen: false);
     appState.showLoading(message: S.of(context).loadingWithBody);
 
-    await database.obtainSnapshots();
-    final index = appState.campaignIndex;
+    // El cartel de carga se oculta pase lo que pase: si la sincronizacion
+    // falla, antes quedaba tapando la aplicacion sin decir por que.
+    try {
+      await database.obtainSnapshots();
+      final index = appState.campaignIndex;
 
-    final snapshot = await database.getSnapshot(index.toString());
+      final snapshot = await database.getSnapshot(index.toString());
 
-    if (snapshot != null) {
-      appState.loadJsonSnapshot(snapshot);
-    } else {
-      appState.loadJsonSnapshot(<String, dynamic>{'characters': <Map<String, dynamic>>[]});
+      if (snapshot != null) {
+        appState.loadJsonSnapshot(snapshot);
+      } else {
+        appState.loadJsonSnapshot(<String, dynamic>{'characters': <Map<String, dynamic>>[]});
+      }
+    } catch (error) {
+      appState.errorMessage = 'No se pudo cargar la partida de la nube: $error';
+    } finally {
+      appState.hideLoading();
     }
 
-    appState.hideLoading();
+    _showSyncError(appState);
+  }
+
+  /// Muestra el ultimo problema de sincronizacion, si lo hubo.
+  void _showSyncError(CharactersPageState appState) {
+    final error = appState.errorMessage ?? database.lastError;
+
+    if (error == null || error.trim().isEmpty || !mounted) return;
+
+    appState
+      ..errorMessage = null
+      ..hideLoading();
+    database.lastError = null;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error),
+        duration: const Duration(seconds: 8),
+        action: SnackBarAction(label: 'Cerrar', onPressed: () {}),
+      ),
+    );
   }
 
   Future<void> changeCampaign(int id) async {

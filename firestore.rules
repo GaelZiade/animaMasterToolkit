@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Las partidas se guardan en documentos llamados "<uid>_<numero de campaña>",
+// asi que cada usuario solo puede leer y escribir los que empiezan con su
+// propio identificador.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /campaigns/{campaignId} {
+      allow read, write: if request.auth != null
+        && campaignId.matches('^' + request.auth.uid + '_.*$');
+    }
+
+    // Todo lo demas queda cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
