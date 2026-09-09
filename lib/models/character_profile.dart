@@ -39,7 +39,10 @@ class CharacterProfile {
       fumbleLevel: JsonUtils.integer(json['nivelDePifia'], 3),
       nature: JsonUtils.integer(json['natura'], 5),
       uroboros: JsonUtils.boolean(json['uruboros'], placeholder: false),
-      damageAccumulation: JsonUtils.boolean(json['acumulacionDeDanio'], placeholder: false),
+      // La planilla lo exporta como 'acumDanio' y la aplicacion lo guarda como
+      // 'acumulacionDeDanio'; hay que aceptar los dos nombres o el dato se
+      // pierde en cada importacion.
+      damageAccumulation: JsonUtils.boolean(json['acumulacionDeDanio'] ?? json['acumDanio'], placeholder: false),
       critLevel: JsonUtils.integer(json['nivelDeCritico'], 90),
     );
   }

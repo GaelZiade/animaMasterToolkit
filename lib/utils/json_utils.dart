@@ -130,7 +130,20 @@ class JsonUtils {
 
   static bool boolean(dynamic base, {bool placeholder = true}) {
     try {
-      return bool.tryParse(base.toString()) ?? placeholder;
+      if (base is bool) return base;
+
+      // `bool.tryParse` solo acepta "true" y "false", pero la planilla escribe
+      // estos campos como "Si" o "No", asi que cualquiera de esos valores
+      // terminaba cayendo en el valor por defecto.
+      final text = base.toString().trim().toLowerCase();
+
+      const positives = ['true', 'si', 'sí', 's', '1', 'yes'];
+      const negatives = ['false', 'no', 'n', '0'];
+
+      if (positives.contains(text)) return true;
+      if (negatives.contains(text)) return false;
+
+      return placeholder;
     } catch (e) {
       return placeholder;
     }
