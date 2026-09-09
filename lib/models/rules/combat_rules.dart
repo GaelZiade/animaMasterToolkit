@@ -220,8 +220,8 @@ class CombatRules {
 
     if (difference < 0 && (defender?.profile.damageAccumulation ?? false)) {
       info.add(
-        text: 'Sin coontrataque posible',
-        explanation: 'El defensor podría lograr un coontraataque, pero al ser un ser con acumulación de daño no se permite',
+        text: 'Sin contraataque posible',
+        explanation: 'El defensor podría lograr un contraataque, pero al ser un ser con acumulación de daño no se permite',
         reference: BookReference(page: 97, book: Books.coreExxet),
       );
       return info;
@@ -275,7 +275,7 @@ class CombatRules {
           result: result,
         )
         ..add(
-          text: 'Absorición total: $result',
+          text: 'Absorción total: $result',
           explanation: 'Todos los seres tienen una absorción base de 20 que se suma a la anterior',
           reference: BookReference(page: 86, book: Books.coreExxet),
         );
@@ -283,7 +283,7 @@ class CombatRules {
       info
         ..result = armourAbsorption + baseAbsorption
         ..add(
-          text: 'Absorición total: ${info.result}',
+          text: 'Absorción total: ${info.result}',
           explanation: 'Todos los seres tienen una absorción base de 20 que se suma a la anterior',
           reference: BookReference(page: 86, book: Books.coreExxet),
         );
@@ -483,7 +483,7 @@ class CombatRules {
     }
 
     final info = ExplainedText(
-      title: 'Resultado Critico',
+      title: 'Resultado Crítico',
       text: 'Resultado: $result',
       result: result,
     )..setTerms(
