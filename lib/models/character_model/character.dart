@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:amt/models/models.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/json_utils.dart';
@@ -55,32 +57,27 @@ class Character extends HiveObject {
     final ki = CharacterKi.fromJson(json.getMap('Ki'));
 
     if (ki != null) {
-      if (ki.maximumPerAttribute.hasAValueWithMoreThanZero()) {
-        final names = AttributesList.names();
-        final max = ki.maximumPerAttribute.orderedList();
-        final accumulation = ki.accumulationsPerAttribute.orderedList();
+      // Reserva de Ki unificada (Dominus Exxet, regla opcional): se suman los
+      // puntos de todas las Caracteristicas en una sola bolsa, en lugar de
+      // llevar una cuenta por cada una. Las Acumulaciones siguen siendo por
+      // Caracteristica, asi que el paso es solo el valor con el que se mueven
+      // los botones.
+      final perAttributeMaximum = ki.maximumPerAttribute.orderedList().fold(0, (total, value) => total + max(value, 0));
+      final perAttributeAccumulation = ki.accumulationsPerAttribute.orderedList().fold(0, (total, value) => total + max(value, 0));
 
-        for (var i = 0; i < max.length; i++) {
-          if (max[i] > 0) {
-            consumables.add(
-              // Arranca lleno, como el resto de las reservas: es una bolsa que
-              // se gasta, no un contador que se acumula desde cero.
-              ConsumableState(name: 'Ki/${names[i]}', maxValue: max[i], actualValue: max[i], step: accumulation[i], description: ''),
-            );
-          }
-        }
-      } else {
-        if (ki.maximumAccumulation != 0) {
-          consumables.add(
-            ConsumableState(
-              name: 'Ki',
-              maxValue: ki.maximumAccumulation,
-              actualValue: ki.maximumAccumulation,
-              step: ki.genericAccumulation,
-              description: 'Usando ki unificado',
-            ),
-          );
-        }
+      final maximumKi = perAttributeMaximum > 0 ? perAttributeMaximum : ki.maximumAccumulation;
+      final step = perAttributeAccumulation > 0 ? perAttributeAccumulation : ki.genericAccumulation;
+
+      if (maximumKi > 0) {
+        consumables.add(
+          ConsumableState(
+            name: 'Ki',
+            maxValue: maximumKi,
+            actualValue: maximumKi,
+            step: max(step, 1),
+            description: 'Reserva de Ki unificada: suma de los puntos de todas las Características',
+          ),
+        );
       }
     }
 

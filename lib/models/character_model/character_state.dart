@@ -56,7 +56,7 @@ class CharacterState {
   static CharacterState? fromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
 
-    final consumables = json.getList('consumables').map(ConsumableState.fromJson).nonNulls.toList();
+    final consumables = _unifyKi(json.getList('consumables').map(ConsumableState.fromJson).nonNulls.toList());
 
     return CharacterState(
       currentTurn: Roll.fromJson(json.getMap('currentTurn')) ?? Roll(description: '', roll: 0, rolls: []),
@@ -69,6 +69,33 @@ class CharacterState {
       turnModifier: JsonUtils.string(json['turnModifier'], ''),
       isSurprised: JsonUtils.integer(json['isSurprised'], 0),
     );
+  }
+
+  /// Une en una sola reserva los Ki repartidos por Caracteristica.
+  ///
+  /// Las partidas guardadas antes de adoptar la Reserva de Ki unificada traen
+  /// un consumible por Caracteristica ("Ki/AGI", "Ki/VOL"...). Se suman al
+  /// abrirlas para no tener que reimportar las fichas.
+  static List<ConsumableState> _unifyKi(List<ConsumableState> consumables) {
+    final perAttribute = consumables.where((element) => element.name.startsWith('Ki/')).toList();
+
+    if (perAttribute.isEmpty) return consumables;
+
+    final unified = ConsumableState(
+      name: 'Ki',
+      maxValue: perAttribute.fold(0, (total, element) => total + element.maxValue),
+      actualValue: perAttribute.fold(0, (total, element) => total + element.actualValue),
+      step: perAttribute.fold(0, (total, element) => total + element.step),
+      description: 'Reserva de Ki unificada: suma de los puntos de todas las Características',
+    );
+
+    final result = consumables.where((element) => !element.name.startsWith('Ki/')).toList()
+      ..insert(
+        consumables.indexOf(perAttribute.first).clamp(0, consumables.length - perAttribute.length),
+        unified,
+      );
+
+    return result;
   }
 
   ConsumableState? getConsumable(ConsumableType type) {
