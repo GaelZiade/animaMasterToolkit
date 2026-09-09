@@ -2,6 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <!-- Lo reemplaza `flutter build web --base-href` al construir. Hace falta
+       para publicar el sitio en una subcarpeta y no en la raiz del dominio. -->
+  <base href="$FLUTTER_BASE_HREF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Herramienta de mesa para dirigir combates de Ánima Beyond Fantasy.">
   <!-- Acompanan al tema de la aplicacion: sin esto las barras de scroll y los
