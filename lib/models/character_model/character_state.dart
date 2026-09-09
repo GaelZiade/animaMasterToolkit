@@ -122,7 +122,7 @@ class CharacterState {
   }
 
   int getOtherConsumablePercentage() {
-    final other = consumables.where((element) => element.type == ConsumableType.other).firstOrNull ?? getConsumable(ConsumableType.fatigue);
+    final other = getFirstOtherConsumable();
 
     if (other == null) return 100;
 
@@ -134,13 +134,14 @@ class CharacterState {
   }
 
   /// Consumibles entre los que se puede elegir el que sigue la tabla.
+  ///
+  /// Todo menos la vida, que tiene su propia columna.
   List<ConsumableState> trackableConsumables() {
-    final others = consumables.where((element) => element.type == ConsumableType.other).toList();
-    final fatigue = getConsumable(ConsumableType.fatigue);
+    return consumables.where(_isTrackable).toList();
+  }
 
-    if (fatigue != null && fatigue.name.isNotEmpty) others.add(fatigue);
-
-    return others;
+  static bool _isTrackable(ConsumableState consumable) {
+    return consumable.type != ConsumableType.hitPoints && consumable.name.isNotEmpty;
   }
 
   /// Elige el consumible que se muestra en la tabla.
@@ -150,18 +151,21 @@ class CharacterState {
   void trackConsumable(ConsumableState consumable) {
     final index = consumables.indexWhere((element) => element.name == consumable.name);
 
-    if (index <= 0) return;
+    if (index < 0) return;
 
     final tracked = consumables.removeAt(index);
-    final firstOther = consumables.indexWhere((element) => element.type == ConsumableType.other);
+    final first = consumables.indexWhere(_isTrackable);
 
-    consumables.insert(firstOther == -1 ? consumables.length : firstOther, tracked);
+    consumables.insert(first == -1 ? consumables.length : first, tracked);
   }
 
+  /// Consumible que se muestra en la tabla: el primero que no sea la vida.
+  ///
+  /// Antes se filtraba por tipo "other" y solo se caia al Cansancio cuando no
+  /// habia ninguno, asi que elegir el Cansancio a mano no tenia ningun efecto
+  /// mientras el personaje tuviera Ki o Zeon.
   ConsumableState? getFirstOtherConsumable() {
-    final other = consumables.where((element) => element.type == ConsumableType.other).firstOrNull ?? getConsumable(ConsumableType.fatigue);
-
-    return other;
+    return consumables.where(_isTrackable).firstOrNull ?? getConsumable(ConsumableType.fatigue);
   }
 
   CharacterState copy() {

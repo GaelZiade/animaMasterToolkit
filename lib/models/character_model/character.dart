@@ -197,12 +197,14 @@ class Character extends HiveObject {
 
     final index = consumables.indexWhere((consumable) => consumable.name == wanted);
 
-    if (index <= 0) return;
+    if (index < 0) return;
 
     final tracked = consumables.removeAt(index);
-    final firstOther = consumables.indexWhere((consumable) => consumable.type == ConsumableType.other);
+    // Se adelanta al primer consumible que no sea la vida, que es el que lee la
+    // tabla; incluye al Cansancio, no solo a las reservas.
+    final first = consumables.indexWhere((consumable) => consumable.type != ConsumableType.hitPoints);
 
-    consumables.insert(firstOther == -1 ? consumables.length : firstOther, tracked);
+    consumables.insert(first == -1 ? consumables.length : first, tracked);
   }
 
   Map<String, dynamic> toJson() {
