@@ -3,6 +3,7 @@ import 'package:amt/models/models.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/utils/assets.dart';
 import 'package:amt/utils/int_extension.dart';
+import 'package:amt/utils/app_theme.dart';
 import 'package:amt/utils/status_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -109,32 +110,33 @@ class CharactersTable extends StatelessWidget {
           ],
         ),
         spacer,
-        // Header
-        Padding(
-          padding: const EdgeInsets.all(4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _header(1, ''),
-              _header(2, 'Nombre'),
-              _header(1, 'HP'),
-              _header(2, 'Turno'),
-              Expanded(
-                flex: 1,
-                child: Tooltip(
-                  message: 'Aqui se visualiza el primer consumible que tenga el personaje sin ser la vida, puede ser Zeon, Ki o Fatiga por ejemplo',
-                  child: Card(
-                    child: Text(
-                      '?',
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+        // Cabecera de la tabla.
+        //
+        // Cada titulo era una tarjeta propia, y a esa altura el radio de
+        // esquina las convertia en pastillas. Ahora es una franja con una linea
+        // debajo, que es como se lee una cabecera de tabla.
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            border: Border(bottom: BorderSide(color: theme.colorScheme.outlineVariant)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: Row(
+              children: [
+                _header(theme, 1, ''),
+                _header(theme, 2, 'Nombre'),
+                _header(theme, 1, 'HP'),
+                _header(theme, 2, 'Turno'),
+                Expanded(
+                  child: Tooltip(
+                    message: 'Aqui se visualiza el primer consumible que tenga el personaje sin ser la vida, puede ser Zeon, Ki o Fatiga por ejemplo',
+                    child: _headerText(theme, '?'),
                   ),
                 ),
-              ),
-              _header(5, 'Acciones'),
-            ],
+                _header(theme, 5, 'Acciones'),
+              ],
+            ),
           ),
         ),
 
@@ -493,19 +495,27 @@ class CharactersTable extends StatelessWidget {
   }
 
   ShapeBorder _border(Color color, {double width = 1}) {
-    return StadiumBorder(side: BorderSide(color: color, width: width));
+    // Rectangulo redondeado y no StadiumBorder: la fila es baja y con el borde
+    // de estadio quedaba completamente ovalada.
+    return RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppTheme.cardRadius),
+      side: BorderSide(color: color, width: width),
+    );
   }
 
-  Widget _header(int size, String text) {
-    return Expanded(
-      flex: size,
-      child: Card(
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+  Widget _header(ThemeData theme, int size, String text) {
+    return Expanded(flex: size, child: _headerText(theme, text));
+  }
+
+  Widget _headerText(ThemeData theme, String text) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.labelMedium!.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.w600,
       ),
     );
   }

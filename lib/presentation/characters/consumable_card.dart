@@ -100,6 +100,11 @@ class ConsumableCard extends StatelessWidget {
           Row(
             children: [
               IconButton(
+                // Compactos: con el tamano por defecto se comian el ancho y
+                // los contadores quedaban recortados.
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 tooltip: 'Restar ${consumable.step} a ${consumable.name}',
                 onPressed: () {
                   onChangedActual((consumable.actualValue - consumable.step).toString());
@@ -134,6 +139,9 @@ class ConsumableCard extends StatelessWidget {
                 ),
               ),
               IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 tooltip: 'Sumar ${consumable.step} a ${consumable.name}',
                 onPressed: () {
                   onChangedActual((consumable.actualValue + consumable.step).toString());

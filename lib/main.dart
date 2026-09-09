@@ -11,6 +11,7 @@ import 'package:amt/presentation/login/login_screen.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/utils/assets.dart';
 import 'package:amt/utils/app_theme.dart';
+import 'package:amt/utils/status_colors.dart';
 import 'package:amt/utils/cloud_firestore_sync.dart';
 import 'package:amt/utils/theme_state.dart';
 import 'package:file_picker/file_picker.dart';
@@ -517,8 +518,8 @@ class _MainPageState extends State<MainPage> {
               ),
           ],
         ),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
+        backgroundColor: theme.colorScheme.header,
+        foregroundColor: theme.colorScheme.onHeader,
         actions: [
           Builder(
             builder: (context) {
@@ -559,19 +560,25 @@ class _MainPageState extends State<MainPage> {
               children: [
                 SizedBox.expand(child: ColoredBox(color: Colors.black.withValues(alpha: 0.45))),
                 Center(
-                  child: SizedBox(
-                    width: max(screenSize.width / 3, 300),
-                    height: max(screenSize.width / 4, 300),
+                  // El alto salia del ancho de la pantalla y el texto quedaba
+                  // cortado a media linea. Ahora la caja crece con su contenido
+                  // hasta un tope, y solo entonces se desplaza.
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxWidth: max(screenSize.width / 3, 300),
+                      maxHeight: screenSize.height * 0.8,
+                    ),
                     child: Container(
                       decoration: BoxDecoration(borderRadius: const BorderRadius.all(Radius.circular(16)), color: theme.colorScheme.surface),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Column(children: [
+                        child: Column(mainAxisSize: MainAxisSize.min, children: [
                           AmtText(S.of(context).welcomeTitle, textAlign: TextAlign.center, style: AmtTextStyles.title),
                           SizedBox(height: 16),
-                          Expanded(
+                          Flexible(
                             child: SingleChildScrollView(
                               child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   AmtText(
                                     S.of(context).welcomeSubtitle,

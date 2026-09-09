@@ -9,8 +9,15 @@ abstract class AppTheme {
   /// Color base del que se derivan ambos esquemas.
   static const seed = Color(0xFFB1442A);
 
-  /// Radio de esquina compartido por tarjetas, campos y diálogos.
+  /// Radio de esquina de diálogos y campos.
   static const radius = 12.0;
+
+  /// Radio de las tarjetas.
+  ///
+  /// Mas chico que [radius] a proposito: muchas tarjetas de la aplicacion miden
+  /// dos decenas de pixeles de alto, y con un radio grande se redondean por
+  /// completo y quedan con forma de pastilla.
+  static const cardRadius = 6.0;
 
   static ThemeData light({bool reduceMotion = false}) => _build(Brightness.light, reduceMotion: reduceMotion);
 
@@ -62,7 +69,7 @@ abstract class AppTheme {
         elevation: isDark ? 0 : 1,
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
+          borderRadius: BorderRadius.circular(cardRadius),
           side: BorderSide(color: scheme.outlineVariant),
         ),
       ),
