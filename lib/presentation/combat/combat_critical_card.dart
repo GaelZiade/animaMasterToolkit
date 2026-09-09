@@ -48,6 +48,7 @@ class CombatCriticalCard extends StatelessWidget {
                       label: 'Tirada de critico',
                       onChanged: (value) => {appState.updateCombatState(criticalRoll: value)},
                       suffixIcon: IconButton(
+                        tooltip: 'Tirar dados de critico',
                         onPressed: () {
                           appState.updateCombatState(criticalRoll: Roll.roll(canCrit: false, canFumble: false).getRollsAsString());
                         },
@@ -69,6 +70,7 @@ class CombatCriticalCard extends StatelessWidget {
                       label: 'Tirada de localización',
                       onChanged: (value) => {appState.updateCombatState(localizationRoll: value)},
                       suffixIcon: IconButton(
+                        tooltip: 'Tirar dados de localizacion',
                         onPressed: () {
                           appState.updateCombatState(
                             localizationRoll: Roll.roll(
@@ -112,6 +114,7 @@ class CombatCriticalCard extends StatelessWidget {
                       label: 'Tirada de RF',
                       onChanged: (value) => {appState.updateCombatState(physicalResistanceRoll: value)},
                       suffixIcon: IconButton(
+                        tooltip: 'Tirar dados de resistencia fisica',
                         onPressed: () {
                           appState.updateCombatState(physicalResistanceRoll: Roll.roll(canCrit: false, canFumble: false).getRollsAsString());
                         },

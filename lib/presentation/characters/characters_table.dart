@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:amt/models/models.dart';
 import 'package:amt/presentation/presentation.dart';
@@ -46,9 +45,11 @@ class CharactersTable extends StatelessWidget {
                         final files = await appState.getCharacters();
                         appState.hideLoading();
 
-                        final timer = Timer.periodic(Duration(milliseconds: 250 * (files?.count ?? 1)), (timer) => appState.stepSheetLoading());
+                        // El progreso lo reporta parseCharacters al terminar
+                        // cada archivo. Antes lo simulaba un temporizador de
+                        // 250 ms por archivo, que ni reflejaba el avance real
+                        // ni dejaba terminar antes.
                         await appState.parseCharacters(files, appState.updateSheetLoading);
-                        timer.cancel();
 
                         // Hasta ahora un fallo de importacion no se veia: el
                         // mensaje se guardaba en el estado y nadie lo mostraba.
@@ -138,11 +139,16 @@ class CharactersTable extends StatelessWidget {
         ),
 
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                for (final character in appState.characters)
-                  Card(
+          // ListView.builder solo construye las filas visibles; antes se
+          // construian todas las fichas de la partida en cada repintado.
+          child: appState.characters.isEmpty
+              ? _emptyState(theme)
+              : ListView.builder(
+                  itemCount: appState.characters.length,
+                  itemBuilder: (context, index) {
+                    final character = appState.characters[index];
+
+                    return Card(
                     shape: _characterShape(character, appState, theme),
                     child: Row(
                       children: [
@@ -203,7 +209,12 @@ class CharactersTable extends StatelessWidget {
                                     color: theme.colorScheme.header,
                                     child: Text(
                                       character.state.currentTurn.roll.toString(),
-                                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onHeader),
+                                      // Cifras tabulares: la columna no baila
+                                      // cuando cambian los digitos.
+                                      style: theme.textTheme.bodyMedium!.copyWith(
+                                        color: theme.colorScheme.onHeader,
+                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                      ),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
@@ -334,12 +345,39 @@ class CharactersTable extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-              ],
-            ),
-          ),
+                    );
+                  },
+                ),
         ),
       ],
+    );
+  }
+
+  /// Sin personajes la tabla quedaba en blanco, sin explicar que hacer.
+  Widget _emptyState(ThemeData theme) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.groups_outlined, size: 48, color: theme.colorScheme.outline),
+            const SizedBox(height: 12),
+            Text(
+              'Todavia no hay personajes en la partida',
+              style: theme.textTheme.titleSmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Usa "Cargar Personaje" para importar una planilla de Excel '
+              'o un .json, o "Crear Personaje" para armar uno a mano.',
+              style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
     );
   }
 

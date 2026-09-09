@@ -30,6 +30,7 @@ class CombatDefenseCard extends StatelessWidget {
       actionTitle: character == null
           ? null
           : IconButton(
+              tooltip: 'Quitar defensor',
               icon: Icon(
                 Icons.close,
                 color: theme.colorScheme.onHeader,
@@ -51,6 +52,7 @@ class CombatDefenseCard extends StatelessWidget {
                       label: 'Tirada de defensa',
                       onChanged: (value) => {appState.updateCombatState(defenseRoll: value)},
                       suffixIcon: IconButton(
+                        tooltip: 'Tirar dados de defensa',
                         onPressed: () {
                           appState.updateCombatState(defenseRoll: (character?.roll() ?? Roll.roll()).getRollsAsString());
                         },
@@ -136,6 +138,7 @@ class CombatDefenseCard extends StatelessWidget {
                             text: defense.armour,
                             label: character != null ? 'Modificador' : 'Armadura',
                             suffixIcon: IconButton(
+                              tooltip: 'Borrar modificador de armadura',
                               icon: const Icon(Icons.delete),
                               onPressed: () {
                                 appState.updateCombatState(armourModifier: '');

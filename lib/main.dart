@@ -72,10 +72,33 @@ class MyApp extends StatefulWidget {
   }
 }
 
-class MyAppState extends State {
+class MyAppState extends State with WidgetsBindingObserver {
+  /// Preferencia de accesibilidad del sistema para reducir el movimiento.
+  ///
+  /// Se lee del dispatcher y no de MediaQuery porque MediaQuery lo crea el
+  /// propio MaterialApp, que es lo que hay que configurar con este dato.
+  bool _reduceMotion = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _reduceMotion = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAccessibilityFeatures() {
+    final reduceMotion = WidgetsBinding.instance.platformDispatcher.accessibilityFeatures.disableAnimations;
+
+    if (reduceMotion != _reduceMotion) {
+      setState(() => _reduceMotion = reduceMotion);
+    }
   }
 
   @override
@@ -95,8 +118,8 @@ class MyAppState extends State {
             S.delegate,
           ],
           title: 'Anima Master Toolkit v3',
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
+          theme: AppTheme.light(reduceMotion: _reduceMotion),
+          darkTheme: AppTheme.dark(reduceMotion: _reduceMotion),
           themeMode: themeState.themeMode,
           home: const MainPage(),
         ),
@@ -445,6 +468,7 @@ class _MainPageState extends State<MainPage> {
               ),
             if (appState.sheetsLoadingPercentage == -1 && user != null)
               IconButton(
+                  tooltip: 'Cambiar nombre de la campana',
                   onPressed: () {
                     final name = appState.campaignName;
 

@@ -12,11 +12,11 @@ abstract class AppTheme {
   /// Radio de esquina compartido por tarjetas, campos y diálogos.
   static const radius = 12.0;
 
-  static ThemeData get light => _build(Brightness.light);
+  static ThemeData light({bool reduceMotion = false}) => _build(Brightness.light, reduceMotion: reduceMotion);
 
-  static ThemeData get dark => _build(Brightness.dark);
+  static ThemeData dark({bool reduceMotion = false}) => _build(Brightness.dark, reduceMotion: reduceMotion);
 
-  static ThemeData _build(Brightness brightness) {
+  static ThemeData _build(Brightness brightness, {required bool reduceMotion}) {
     final isDark = brightness == Brightness.dark;
 
     final colorScheme = ColorScheme.fromSeed(
@@ -39,6 +39,18 @@ abstract class AppTheme {
       brightness: brightness,
       colorScheme: scheme,
       scaffoldBackgroundColor: scaffold,
+      // Respeta la preferencia de reducir movimiento del sistema operativo.
+      pageTransitionsTheme: reduceMotion
+          ? const PageTransitionsTheme(
+              builders: {
+                TargetPlatform.android: _NoTransitionBuilder(),
+                TargetPlatform.iOS: _NoTransitionBuilder(),
+                TargetPlatform.linux: _NoTransitionBuilder(),
+                TargetPlatform.macOS: _NoTransitionBuilder(),
+                TargetPlatform.windows: _NoTransitionBuilder(),
+              },
+            )
+          : const PageTransitionsTheme(),
       canvasColor: scaffold,
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
@@ -119,5 +131,21 @@ abstract class AppTheme {
         style: TextButton.styleFrom(shape: shape),
       ),
     );
+  }
+}
+
+/// Transicion de pagina sin animacion, para `prefers-reduced-motion`.
+class _NoTransitionBuilder extends PageTransitionsBuilder {
+  const _NoTransitionBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T>? route,
+    BuildContext? context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    return child;
   }
 }

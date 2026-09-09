@@ -28,6 +28,7 @@ class CombatAttackCard extends StatelessWidget {
       actionTitle: character == null
           ? null
           : IconButton(
+              tooltip: 'Quitar atacante',
               icon: Icon(
                 Icons.close,
                 color: theme.colorScheme.onHeader,
@@ -46,6 +47,7 @@ class CombatAttackCard extends StatelessWidget {
                   label: 'Tirada de ataque',
                   onChanged: (value) => {appState.updateCombatState(attackRoll: value)},
                   suffixIcon: IconButton(
+                    tooltip: 'Tirar dados de ataque',
                     onPressed: () {
                       appState.updateCombatState(attackRoll: (character?.roll() ?? Roll.roll()).getRollsAsString());
                     },
@@ -83,6 +85,7 @@ class CombatAttackCard extends StatelessWidget {
                   text: attackState.damage,
                   label: isVariableDamage || character == null ? 'Daño' : 'Modificador',
                   suffixIcon: IconButton(
+                    tooltip: 'Borrar modificador de dano',
                     icon: const Icon(Icons.delete),
                     onPressed: () {
                       appState.updateCombatState(damageModifier: '');

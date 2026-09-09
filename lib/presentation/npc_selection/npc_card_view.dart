@@ -110,6 +110,7 @@ class CharacterNPCCard extends StatelessWidget {
             Row(
               children: [
                 IconButton(
+                  tooltip: 'Anadir a la partida',
                   onPressed: () => onSelected(character),
                   icon: const Icon(
                     Icons.add,
@@ -127,6 +128,7 @@ class CharacterNPCCard extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  tooltip: 'Quitar de la lista',
                   onPressed: () => onRemove(character),
                   icon: const Icon(
                     Icons.delete,

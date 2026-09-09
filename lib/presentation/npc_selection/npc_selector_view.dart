@@ -32,6 +32,7 @@ class NPCSelector {
                     ),
                   ),
                   IconButton(
+                    tooltip: 'Cargar NPC desde archivo',
                     onPressed: () {
                       Navigator.pop(context);
                       onAddNpc();
@@ -39,6 +40,7 @@ class NPCSelector {
                     icon: const Icon(Icons.upload_file),
                   ),
                   IconButton(
+                    tooltip: 'Borrar todos los NPC',
                     onPressed: () {
                       Navigator.pop(context);
                       showDialog<void>(

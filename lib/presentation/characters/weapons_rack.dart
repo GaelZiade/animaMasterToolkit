@@ -90,6 +90,7 @@ class WeaponsRack extends StatelessWidget {
                               Row(
                                 children: [
                                   IconButton(
+                                    tooltip: 'Duplicar arma',
                                     onPressed: () {
                                       final copy = weapon.copy();
                                       weapons.add(copy);
@@ -103,6 +104,7 @@ class WeaponsRack extends StatelessWidget {
                                     icon: const Icon(Icons.copy),
                                   ),
                                   IconButton(
+                                    tooltip: 'Editar arma',
                                     onPressed: () => {Navigator.pop(context), _showWeaponEditor(context, weapon: weapon, onEdit: onEdit)},
                                     icon: const Icon(Icons.edit),
                                   ),

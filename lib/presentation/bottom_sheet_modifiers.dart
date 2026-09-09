@@ -136,13 +136,16 @@ class BottomSheetModifiers {
                   const SizedBox(height: 8),
                   TextField(
                     controller: searchController,
-                    autofocus: true,
+                    // Solo en pantallas anchas: en movil el autofoco abre el
+                    // teclado y tapa la lista apenas se abre el panel.
+                    autofocus: MediaQuery.sizeOf(context).width >= 600,
                     decoration: InputDecoration(
                       hintText: 'Buscar penalizador…',
                       prefixIcon: const Icon(Icons.search, size: 20),
                       suffixIcon: query.isEmpty
                           ? null
                           : IconButton(
+                              tooltip: 'Limpiar busqueda',
                               icon: const Icon(Icons.clear, size: 20),
                               onPressed: () => setState(searchController.clear),
                             ),

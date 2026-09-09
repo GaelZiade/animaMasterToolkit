@@ -230,10 +230,10 @@ class S {
     );
   }
 
-  /// `Cargando planillas...`
+  /// `Cargando planillas…`
   String get loadingSheets {
     return Intl.message(
-      'Cargando planillas...',
+      'Cargando planillas…',
       name: 'loadingSheets',
       desc: '',
       args: [],
@@ -350,20 +350,20 @@ class S {
     );
   }
 
-  /// `Guardando...#Sincronizando partida en la nube`
+  /// `Guardando…#Sincronizando partida en la nube`
   String get savingWithBody {
     return Intl.message(
-      'Guardando...#Sincronizando partida en la nube',
+      'Guardando…#Sincronizando partida en la nube',
       name: 'savingWithBody',
       desc: '',
       args: [],
     );
   }
 
-  /// `Cargando...#Sincronizando partida en la nube`
+  /// `Cargando…#Sincronizando partida en la nube`
   String get loadingWithBody {
     return Intl.message(
-      'Cargando...#Sincronizando partida en la nube',
+      'Cargando…#Sincronizando partida en la nube',
       name: 'loadingWithBody',
       desc: '',
       args: [],

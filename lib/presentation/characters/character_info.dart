@@ -73,6 +73,7 @@ class ShowCharacterInfo {
                             children: [
                               Text(character.profile.name),
                               IconButton(
+                                tooltip: 'Cerrar',
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },

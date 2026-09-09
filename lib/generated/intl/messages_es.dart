@@ -49,9 +49,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "list": MessageLookupByLibrary.simpleMessage("Listado"),
         "loadState": MessageLookupByLibrary.simpleMessage("Cargar estado"),
         "loadingSheets":
-            MessageLookupByLibrary.simpleMessage("Cargando planillas..."),
+            MessageLookupByLibrary.simpleMessage("Cargando planillas…"),
         "loadingWithBody": MessageLookupByLibrary.simpleMessage(
-            "Cargando...#Sincronizando partida en la nube"),
+            "Cargando…#Sincronizando partida en la nube"),
         "logIn": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "logOut": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "modifyArmor":
@@ -70,7 +70,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Slot de guardado "),
         "saveState": MessageLookupByLibrary.simpleMessage("Guardar estado"),
         "savingWithBody": MessageLookupByLibrary.simpleMessage(
-            "Guardando...#Sincronizando partida en la nube"),
+            "Guardando…#Sincronizando partida en la nube"),
         "seeSourceCode":
             MessageLookupByLibrary.simpleMessage("Ver el código fuente"),
         "signIn": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),

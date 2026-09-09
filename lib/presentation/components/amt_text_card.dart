@@ -31,6 +31,7 @@ class AMTTextCard extends StatelessWidget {
           style: style ??
               theme.textTheme.bodySmall!.copyWith(
                 color: foreground ?? theme.colorScheme.onHeader,
+                fontFeatures: const [FontFeature.tabularFigures()],
               ),
           overflow: TextOverflow.ellipsis,
           maxLines: maxLines ?? 1,

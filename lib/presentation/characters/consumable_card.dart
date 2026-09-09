@@ -20,8 +20,10 @@ class ConsumableCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final styleS = theme.textTheme.bodySmall;
-    final styleM = theme.textTheme.bodyMedium;
+    // Cifras tabulares para que los contadores no se muevan al cambiar.
+    const tabular = [FontFeature.tabularFigures()];
+    final styleS = theme.textTheme.bodySmall!.copyWith(fontFeatures: tabular);
+    final styleM = theme.textTheme.bodyMedium!.copyWith(fontFeatures: tabular);
 
     final header = Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
@@ -98,6 +100,7 @@ class ConsumableCard extends StatelessWidget {
           Row(
             children: [
               IconButton(
+                tooltip: 'Restar ${consumable.step} a ${consumable.name}',
                 onPressed: () {
                   onChangedActual((consumable.actualValue - consumable.step).toString());
                 },
@@ -131,6 +134,7 @@ class ConsumableCard extends StatelessWidget {
                 ),
               ),
               IconButton(
+                tooltip: 'Sumar ${consumable.step} a ${consumable.name}',
                 onPressed: () {
                   onChangedActual((consumable.actualValue + consumable.step).toString());
                 },
