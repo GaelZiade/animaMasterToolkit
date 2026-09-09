@@ -11,6 +11,13 @@ class ScreenCombatStateAttack {
   String attack = '';
 
   DamageTypes damageType = DamageTypes.ene;
+
+  /// Ataque cuya area cubre al menos la mitad del cuerpo del defensor.
+  ///
+  /// Solo cambia algo contra criaturas con acumulacion de dano, que en ese caso
+  /// reciben el doble.
+  bool areaAttack = false;
+
   Character? character;
 
   ModifiersState modifiers = ModifiersState();
@@ -86,6 +93,7 @@ class ScreenCombatState {
       attackValue: finalAttackValue,
       defenseValue: finalDefenseValue,
       finalAbsorption: calculateFinalAbsorption,
+      areaAttack: attack.areaAttack,
       baseDamage: CombatRules.calculateBaseDamage(
         weapon: attack.character?.selectedWeapon(),
         damageModifier: attack.damage,

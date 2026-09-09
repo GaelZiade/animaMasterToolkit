@@ -182,21 +182,11 @@ class CharactersTable extends StatelessWidget {
                           ),
                           _cell(
                             size: 1,
-                            child: Stack(
-                              alignment: AlignmentDirectional.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: CircularProgressIndicator(
-                                    value: character.state.getLifePointsPercentage().toDouble() / 100,
-                                    color: character.state.getLifePointsPercentage().percentageColor(),
-                                  ),
-                                ),
-                                Text(
-                                  '${character.state.getLifePointsPercentage()}%',
-                                  style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
+                            child: _percentageBar(
+                              theme,
+                              label: '${character.state.getLifePointsPercentage()}%',
+                              percentage: character.state.getLifePointsPercentage(),
+                              tooltip: 'Puntos de vida',
                             ),
                           ),
                           _cell(
@@ -498,24 +488,10 @@ class CharactersTable extends StatelessWidget {
     final options = character.state.trackableConsumables();
     final percentage = character.state.getOtherConsumablePercentage();
 
-    final indicator = Stack(
-      alignment: AlignmentDirectional.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: CircularProgressIndicator(
-            value: percentage.toDouble() / 100,
-            color: percentage.percentageColor(),
-          ),
-        ),
-        Text(
-          tracked?.actualValue.toString() ?? '',
-          style: theme.textTheme.bodySmall!.copyWith(
-            fontWeight: FontWeight.bold,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        ),
-      ],
+    final indicator = _percentageBar(
+      theme,
+      label: tracked?.actualValue.toString() ?? '',
+      percentage: percentage,
     );
 
     if (options.length < 2) {
@@ -551,6 +527,52 @@ class CharactersTable extends StatelessWidget {
       ],
       child: indicator,
     );
+  }
+
+  /// Barra de proporcion con su cifra encima.
+  ///
+  /// Reemplaza al indicador circular: la cifra iba centrada dentro del circulo
+  /// y en cuanto pasaba de dos caracteres se salia del trazo. Una barra ademas
+  /// se lee mejor en una fila de tabla, donde sobra ancho y falta alto.
+  Widget _percentageBar(
+    ThemeData theme, {
+    required String label,
+    required int percentage,
+    String? tooltip,
+  }) {
+    final clamped = (percentage.clamp(0, 100)) / 100;
+
+    final bar = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodySmall!.copyWith(
+              fontWeight: FontWeight.bold,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          const SizedBox(height: 3),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(2),
+            child: LinearProgressIndicator(
+              value: clamped,
+              minHeight: 5,
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation(percentage.percentageColor(lastTransparent: false)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return tooltip == null ? bar : Tooltip(message: tooltip, child: bar);
   }
 
   Widget _header(ThemeData theme, int size, String text) {

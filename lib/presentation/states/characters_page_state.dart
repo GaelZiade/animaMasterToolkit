@@ -231,7 +231,10 @@ class CharactersPageState extends ChangeNotifier {
     String? baseAttackModifiers,
     String? baseDefenseModifiers,
     SurpriseType? surprise,
+    bool? areaAttack,
   }) {
+    combatState.attack.areaAttack = areaAttack ?? combatState.attack.areaAttack;
+
     combatState.attack.attack = baseAttackModifiers ?? combatState.attack.attack;
     combatState.defense.defense = baseDefenseModifiers ?? combatState.defense.defense;
 

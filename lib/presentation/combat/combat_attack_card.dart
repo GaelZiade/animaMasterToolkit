@@ -234,6 +234,21 @@ class CombatAttackCard extends StatelessWidget {
             ),
           ],
         ),
+        // Solo tiene efecto contra criaturas con acumulacion de dano, asi que
+        // no se muestra en el resto de los combates.
+        if (appState.combatState.defense.character?.profile.damageAccumulation ?? false)
+          CheckboxListTile(
+            value: attackState.areaAttack,
+            onChanged: (value) => appState.updateCombatState(areaAttack: value ?? false),
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text('Ataque en área', style: theme.textTheme.bodyMedium),
+            subtitle: Text(
+              'Cubre al menos la mitad del cuerpo: dobla el daño',
+              style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
         const SizedBox(
           height: 10,
         ),

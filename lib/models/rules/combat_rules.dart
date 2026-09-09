@@ -143,6 +143,7 @@ class CombatRules {
     required ExplainedText finalAbsorption,
     required Character? defender,
     required int baseDamage,
+    bool areaAttack = false,
   }) {
     final info = ExplainedText(title: 'Daño');
 
@@ -154,7 +155,12 @@ class CombatRules {
     final difference = (attackValue.result ?? 0) - (defenseValue.result ?? 0);
 
     final finalResult = (difference - (finalAbsorption.result ?? 0)).roundToTens;
-    final damageDone = max(((finalResult / 100) * baseDamage).toInt(), 0);
+    final baseDamageDone = max(((finalResult / 100) * baseDamage).toInt(), 0);
+
+    // Un area que cubra al menos la mitad del cuerpo dobla el dano sobre una
+    // criatura con acumulacion. (Core Exxet, p. 99)
+    final doublesDamage = areaAttack && (defender?.profile.damageAccumulation ?? false);
+    final damageDone = doublesDamage ? baseDamageDone * 2 : baseDamageDone;
 
     info
       ..add(
@@ -167,9 +173,16 @@ class CombatRules {
         explanation: 'Daño base: $baseDamage',
       )
       ..add(
-        explanation: 'Daño causado: $damageDone = (Resultado final / 100) * Daño base',
+        explanation: 'Daño causado: $baseDamageDone = (Resultado final / 100) * Daño base',
         result: damageDone,
       );
+
+    if (doublesDamage) {
+      info.add(
+        explanation: 'Daño doblado a $damageDone: el área del ataque cubre al menos la mitad del cuerpo de una criatura con acumulación',
+        reference: BookReference(page: 99, book: Books.coreExxet),
+      );
+    }
 
     if (difference <= 0) {
       info.add(
@@ -493,6 +506,13 @@ class CombatRules {
         text: 'El nivel del crítico se reduce automáticamente a la mitad',
         reference: BookReference(page: 97, book: Books.coreExxet),
       );
+
+      if (result > 50) {
+        info.add(
+          text: 'El ser no puede actuar en este asalto: el efecto final del crítico supera 50',
+          reference: BookReference(page: 99, book: Books.coreExxet),
+        );
+      }
     } else if (result > 200) {
       info.add(
         text: 'Si la cifra es mayor de 200, cualquier exceso por encima de dicha cantidad debe de reducirse a la mitad',
