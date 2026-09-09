@@ -1,4 +1,3 @@
-
 import 'package:amt/models/models.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/utils/assets.dart';
@@ -151,202 +150,184 @@ class CharactersTable extends StatelessWidget {
                     final character = appState.characters[index];
 
                     return Card(
-                    shape: _characterShape(character, appState, theme),
-                    child: Row(
-                      children: [
-                        _cell(
-                          size: 1,
-                          child: Checkbox(
-                            value: character.state.hasAction,
-                            onChanged: (value) {
-                              character.state.hasAction = value ?? true;
-                              appState.updateCharacter(character);
-                            },
+                      shape: _characterShape(character, appState, theme),
+                      child: Row(
+                        children: [
+                          _cell(
+                            size: 1,
+                            child: Checkbox(
+                              value: character.state.hasAction,
+                              onChanged: (value) {
+                                character.state.hasAction = value ?? true;
+                                appState.updateCharacter(character);
+                              },
+                            ),
                           ),
-                        ),
-                        _cell(
-                          size: 2,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Tooltip(
-                                  message: character.profile.name,
-                                  child: Text(
-                                    character.profile.name,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _cell(
-                          size: 1,
-                          child: Stack(
-                            alignment: AlignmentDirectional.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: CircularProgressIndicator(
-                                  value: character.state.getLifePointsPercentage().toDouble() / 100,
-                                  color: character.state.getLifePointsPercentage().percentageColor(),
-                                ),
-                              ),
-                              Text(
-                                '${character.state.getLifePointsPercentage()}%',
-                                style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                        _cell(
-                          size: 2,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Tooltip(
-                                  message: character.state.currentTurn.description,
-                                  child: Card(
-                                    color: theme.colorScheme.header,
+                          _cell(
+                            size: 2,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Tooltip(
+                                    message: character.profile.name,
                                     child: Text(
-                                      character.state.currentTurn.roll.toString(),
-                                      // Cifras tabulares: la columna no baila
-                                      // cuando cambian los digitos.
-                                      style: theme.textTheme.bodyMedium!.copyWith(
-                                        color: theme.colorScheme.onHeader,
-                                        fontFeatures: const [FontFeature.tabularFigures()],
-                                      ),
-                                      textAlign: TextAlign.center,
+                                      character.profile.name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ),
-                              ),
-                              _surpriseDesc(appState.characters, character, appState, theme),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        _cell(
-                          size: 1,
-                          child: Tooltip(
-                            message: '${character.state.getFirstOtherConsumable()?.name}\n${character.state.getFirstOtherConsumable()?.description}',
+                          _cell(
+                            size: 1,
                             child: Stack(
                               alignment: AlignmentDirectional.center,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8),
                                   child: CircularProgressIndicator(
-                                    value: character.state.getOtherConsumablePercentage().toDouble() / 100,
-                                    color: character.state.getOtherConsumablePercentage().percentageColor(),
+                                    value: character.state.getLifePointsPercentage().toDouble() / 100,
+                                    color: character.state.getLifePointsPercentage().percentageColor(),
                                   ),
                                 ),
                                 Text(
-                                  character.state.getFirstOtherConsumable()?.actualValue.toString() ?? '',
+                                  '${character.state.getLifePointsPercentage()}%',
                                   style: theme.textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        _cell(
-                          size: 5,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
+                          _cell(
+                            size: 2,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                Tooltip(
-                                  message: 'Info',
-                                  child: IconButton(
-                                    icon: const Icon(Icons.info),
-                                    onPressed: () {
-                                      ShowCharacterInfo.call(context, character, onEdit: appState.updateCharacter);
-                                    },
-                                  ),
-                                ),
-                                Tooltip(
-                                  message: 'Atacar',
-                                  child: IconButton(
-                                    icon: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: Assets.knife(theme.colorScheme.onSurfaceVariant),
+                                Expanded(
+                                  child: Tooltip(
+                                    message: character.state.currentTurn.description,
+                                    child: Card(
+                                      color: theme.colorScheme.header,
+                                      child: Text(
+                                        character.state.currentTurn.roll.toString(),
+                                        // Cifras tabulares: la columna no baila
+                                        // cuando cambian los digitos.
+                                        style: theme.textTheme.bodyMedium!.copyWith(
+                                          color: theme.colorScheme.onHeader,
+                                          fontFeatures: const [FontFeature.tabularFigures()],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      final surprise = SurpriseType.calculate(
-                                        attacker: character,
-                                        defendant: appState.combatState.defense.character,
-                                      );
-
-                                      appState.updateCombatState(
-                                        attacking: character,
-                                        attackRoll: '',
-                                        attackingModifiers: ModifiersState(),
-                                        damageModifier: '',
-                                        baseAttackModifiers: '',
-                                        surprise: surprise,
-                                      );
-                                    },
                                   ),
                                 ),
-                                Tooltip(
-                                  message: 'Parada',
-                                  child: IconButton(
-                                    icon: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: Assets.shield(theme.colorScheme.onSurfaceVariant),
-                                    ),
-                                    onPressed: () {
-                                      _updateDefense(
-                                        appState,
-                                        character,
-                                        DefenseType.parry,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Tooltip(
-                                  message: 'Esquiva',
-                                  child: IconButton(
-                                    icon: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: Assets.dodging(theme.colorScheme.onSurfaceVariant),
-                                    ),
-                                    iconSize: 12,
-                                    onPressed: () {
-                                      _updateDefense(
-                                        appState,
-                                        character,
-                                        DefenseType.dodge,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Tooltip(
-                                  message: 'Opciones',
-                                  child: IconButton(
-                                    icon: const Icon(Icons.settings),
-                                    onPressed: () {
-                                      ShowCharacterOptions.call(
-                                        context,
-                                        character,
-                                        onRemove: (character) => {appState.removeCharacter(character)},
-                                        onEdit: appState.updateCharacter,
-                                        onAddCharacter: (character) {
-                                          appState.addCharacter(character, isNpc: character.profile.isNpc ?? false);
-                                        },
-                                      );
-                                    },
-                                  ),
-                                ),
+                                _surpriseDesc(appState.characters, character, appState, theme),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                          _cell(
+                            size: 1,
+                            child: _trackedConsumable(context, appState, character, theme),
+                          ),
+                          _cell(
+                            size: 5,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Tooltip(
+                                    message: 'Info',
+                                    child: IconButton(
+                                      icon: const Icon(Icons.info),
+                                      onPressed: () {
+                                        ShowCharacterInfo.call(context, character, onEdit: appState.updateCharacter);
+                                      },
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'Atacar',
+                                    child: IconButton(
+                                      icon: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Assets.knife(theme.colorScheme.onSurfaceVariant),
+                                      ),
+                                      onPressed: () {
+                                        final surprise = SurpriseType.calculate(
+                                          attacker: character,
+                                          defendant: appState.combatState.defense.character,
+                                        );
+
+                                        appState.updateCombatState(
+                                          attacking: character,
+                                          attackRoll: '',
+                                          attackingModifiers: ModifiersState(),
+                                          damageModifier: '',
+                                          baseAttackModifiers: '',
+                                          surprise: surprise,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'Parada',
+                                    child: IconButton(
+                                      icon: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Assets.shield(theme.colorScheme.onSurfaceVariant),
+                                      ),
+                                      onPressed: () {
+                                        _updateDefense(
+                                          appState,
+                                          character,
+                                          DefenseType.parry,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'Esquiva',
+                                    child: IconButton(
+                                      icon: SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: Assets.dodging(theme.colorScheme.onSurfaceVariant),
+                                      ),
+                                      iconSize: 12,
+                                      onPressed: () {
+                                        _updateDefense(
+                                          appState,
+                                          character,
+                                          DefenseType.dodge,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Tooltip(
+                                    message: 'Opciones',
+                                    child: IconButton(
+                                      icon: const Icon(Icons.settings),
+                                      onPressed: () {
+                                        ShowCharacterOptions.call(
+                                          context,
+                                          character,
+                                          onRemove: (character) => {appState.removeCharacter(character)},
+                                          onEdit: appState.updateCharacter,
+                                          onAddCharacter: (character) {
+                                            appState.addCharacter(character, isNpc: character.profile.isNpc ?? false);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -500,6 +481,75 @@ class CharactersTable extends StatelessWidget {
     return RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppTheme.cardRadius),
       side: BorderSide(color: color, width: width),
+    );
+  }
+
+  /// Indicador del recurso que se sigue para este personaje.
+  ///
+  /// Se elige solo al importar, pero no siempre se puede acertar, asi que al
+  /// pulsarlo se puede cambiar entre las reservas que tenga el personaje.
+  Widget _trackedConsumable(
+    BuildContext context,
+    CharactersPageState appState,
+    Character character,
+    ThemeData theme,
+  ) {
+    final tracked = character.state.getFirstOtherConsumable();
+    final options = character.state.trackableConsumables();
+    final percentage = character.state.getOtherConsumablePercentage();
+
+    final indicator = Stack(
+      alignment: AlignmentDirectional.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8),
+          child: CircularProgressIndicator(
+            value: percentage.toDouble() / 100,
+            color: percentage.percentageColor(),
+          ),
+        ),
+        Text(
+          tracked?.actualValue.toString() ?? '',
+          style: theme.textTheme.bodySmall!.copyWith(
+            fontWeight: FontWeight.bold,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
+    );
+
+    if (options.length < 2) {
+      return Tooltip(
+        message: '${tracked?.name ?? ''}: ${tracked?.description ?? ''}',
+        child: indicator,
+      );
+    }
+
+    return PopupMenuButton<ConsumableState>(
+      tooltip: 'Recurso seguido: ${tracked?.name ?? '-'}. Pulsa para cambiarlo.',
+      padding: EdgeInsets.zero,
+      onSelected: (consumable) {
+        character.state.trackConsumable(consumable);
+        appState.updateCharacter(character);
+      },
+      itemBuilder: (context) => [
+        for (final option in options)
+          PopupMenuItem<ConsumableState>(
+            value: option,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(option.name),
+                const SizedBox(width: 16),
+                Text(
+                  '${option.actualValue}/${option.maxValue}',
+                  style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ),
+      ],
+      child: indicator,
     );
   }
 

@@ -63,7 +63,9 @@ class Character extends HiveObject {
         for (var i = 0; i < max.length; i++) {
           if (max[i] > 0) {
             consumables.add(
-              ConsumableState(name: 'Ki/${names[i]}', maxValue: max[i], actualValue: 1, step: accumulation[i], description: ''),
+              // Arranca lleno, como el resto de las reservas: es una bolsa que
+              // se gasta, no un contador que se acumula desde cero.
+              ConsumableState(name: 'Ki/${names[i]}', maxValue: max[i], actualValue: max[i], step: accumulation[i], description: ''),
             );
           }
         }
@@ -73,7 +75,7 @@ class Character extends HiveObject {
             ConsumableState(
               name: 'Ki',
               maxValue: ki.maximumAccumulation,
-              actualValue: 01,
+              actualValue: ki.maximumAccumulation,
               step: ki.genericAccumulation,
               description: 'Usando ki unificado',
             ),
@@ -109,6 +111,14 @@ class Character extends HiveObject {
         ),
       );
     }
+
+    // Recurso que se sigue en la tabla: es el primer consumible que no sea vida
+    // ni cansancio, asi que se adelanta el que de verdad usa el personaje.
+    //
+    // Todos los personajes tienen algo de Zeon y de Ki por sus caracteristicas,
+    // asi que ninguno de los dos alcanza por si solo para decidir. Los CVs
+    // libres, en cambio, solo existen en quien invirtio en psiquismo.
+    _promoteTrackedConsumable(consumables, psychic: psychic, mystical: mystical, json: json);
 
     final combat = CombatData.fromJson(json.getMap('Combate')) ??
         CombatData(
@@ -162,6 +172,41 @@ class Character extends HiveObject {
   late PsychicData? psychic;
   @HiveField(9)
   late CharacterResistances? resistances;
+
+  /// Adelanta el consumible que la tabla debe mostrar.
+  static void _promoteTrackedConsumable(
+    List<ConsumableState> consumables, {
+    required PsychicData? psychic,
+    required Mystical? mystical,
+    required Map<String, dynamic> json,
+  }) {
+    String? wanted;
+
+    if ((psychic?.freeCvs ?? 0) > 0) {
+      wanted = 'CV';
+    } else {
+      // La proyeccion magica solo aparece como arma si el personaje invirtio en
+      // ella, asi que sirve para distinguir a un mistico de quien tiene Zeon
+      // por su Poder y nada mas.
+      final weapons = (json.getMap('Combate')?['armas'] as List<dynamic>?) ?? [];
+      final hasMagicProjection = weapons.any(
+        (weapon) => weapon is Map && '${weapon['nombre']}'.toLowerCase().contains('magica'),
+      );
+
+      if (hasMagicProjection && (mystical?.zeon ?? 0) > 0) wanted = 'Zeon';
+    }
+
+    if (wanted == null) return;
+
+    final index = consumables.indexWhere((consumable) => consumable.name == wanted);
+
+    if (index <= 0) return;
+
+    final tracked = consumables.removeAt(index);
+    final firstOther = consumables.indexWhere((consumable) => consumable.type == ConsumableType.other);
+
+    consumables.insert(firstOther == -1 ? consumables.length : firstOther, tracked);
+  }
 
   Map<String, dynamic> toJson() {
     return {

@@ -94,11 +94,15 @@ abstract class SheetToJson {
       'SubVias': _rangeToMap(book, _misticos, 'C15:H25', 1, 3),
       'Metamagia': _rangeToMap(book, _misticos, 'W53:AB73', 1, 6),
       'Conjuros': _rangeToMap(book, _misticos, 'Y12:AC50', 5, 1),
+      'Libres': _rangeToMap(book, _misticos, 'AG12:AK50', 5, 1),
     };
   }
 
   static Map<String, dynamic> _psychicData(XlsxWorkbook book) {
     return {
+      // CVs libres. La macro nunca los exportaba, asi que el consumible de CV
+      // no se creaba ni siquiera con el conversor en la nube.
+      'cvsLibres': _text(book, _psiquicos, 'M10'),
       'Disciplinas': _rangeToMap(book, _psiquicos, 'C25:Q36', 1, 4),
       'Patrones': _rangeToMap(book, _psiquicos, 'C39:Q50', 1, 4),
       'Poderes': _rangeToMap(book, _psiquicos, 'V11:AB64', 1, 7),

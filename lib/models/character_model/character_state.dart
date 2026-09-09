@@ -106,6 +106,31 @@ class CharacterState {
     }
   }
 
+  /// Consumibles entre los que se puede elegir el que sigue la tabla.
+  List<ConsumableState> trackableConsumables() {
+    final others = consumables.where((element) => element.type == ConsumableType.other).toList();
+    final fatigue = getConsumable(ConsumableType.fatigue);
+
+    if (fatigue != null && fatigue.name.isNotEmpty) others.add(fatigue);
+
+    return others;
+  }
+
+  /// Elige el consumible que se muestra en la tabla.
+  ///
+  /// No hace falta guardar la eleccion aparte: la tabla toma el primero de la
+  /// lista, asi que basta con adelantarlo, y el orden ya se persiste.
+  void trackConsumable(ConsumableState consumable) {
+    final index = consumables.indexWhere((element) => element.name == consumable.name);
+
+    if (index <= 0) return;
+
+    final tracked = consumables.removeAt(index);
+    final firstOther = consumables.indexWhere((element) => element.type == ConsumableType.other);
+
+    consumables.insert(firstOther == -1 ? consumables.length : firstOther, tracked);
+  }
+
   ConsumableState? getFirstOtherConsumable() {
     final other = consumables.where((element) => element.type == ConsumableType.other).firstOrNull ?? getConsumable(ConsumableType.fatigue);
 
