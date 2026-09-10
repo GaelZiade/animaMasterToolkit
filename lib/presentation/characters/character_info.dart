@@ -178,7 +178,8 @@ class _CharacterSheetState extends State<_CharacterSheet> {
     final weapon = _character.selectedWeapon();
     final armour = _character.combat.armour.calculatedArmour;
     final defenseLabel = weapon.defenseType == DefenseType.parry ? 'Parada' : 'Esquiva';
-    final critical = [weapon.principalDamage?.name, weapon.secondaryDamage?.name].whereType<String>().map((e) => e.toUpperCase()).join(' / ');
+    // Si el critico secundario coincide con el principal no aporta nada.
+    final critical = {weapon.principalDamage?.name, weapon.secondaryDamage?.name}.whereType<String>().map((e) => e.toUpperCase()).join(' / ');
 
     return _Section(
       title: 'Combate',
@@ -292,7 +293,13 @@ class _CharacterSheetState extends State<_CharacterSheet> {
           if (categories.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Text('Sin resultados', textAlign: TextAlign.center, style: theme.textTheme.bodySmall),
+              // Sin busqueda, que no haya nada significa que la ficha no trae
+              // habilidades, no que el filtro las haya descartado.
+              child: Text(
+                query.isEmpty ? 'Este personaje no tiene habilidades cargadas' : 'Ninguna habilidad coincide con "$_search"',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
             ),
           for (final category in categories) ...[
             Padding(
