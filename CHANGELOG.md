@@ -106,10 +106,12 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   Cada maniobra es un grupo de selección única con sus variantes. Las que
   corresponden al personaje por sus tablas y artes marciales aparecen primero y
   marcadas con ★ al atacar, al defenderse y en los estados.
-- **Defensas sin penalizador.** La tarjeta de defensa permite indicar cuántas
-  defensas del asalto no aplican el penalizador por defensas adicionales, y
-  arranca con lo que corresponde al defensor: Lama (1 o 2), Lama Tsu (2 más, o
-  todas en Arcano) y Tabla de 2ª Arma: Estilo Defensivo (1 con dos armas).
+- **Defensas sin penalizador.** Cuando el defensor tiene algo que lo otorga, la
+  tarjeta de defensa muestra cuántas defensas del asalto no aplican el
+  penalizador por defensas adicionales, ya cargado: Lama (1 o 2), Lama Tsu (2
+  más, o todas en Arcano) y Tabla de 2ª Arma: Estilo Defensivo (1 con dos
+  armas). Para cualquier otro, como un PNJ sin ficha, se activa a mano y se
+  vuelve a ocultar eligiendo 0.
 - **Tablas y artes marciales en la ficha.** Se importan todas de la planilla y se
   editan como una lista, con el catálogo de los manuales para elegir o un
   nombre propio. Reemplazan a los interruptores de Ataque Encadenado, Ataque

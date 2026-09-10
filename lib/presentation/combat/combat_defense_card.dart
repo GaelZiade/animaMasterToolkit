@@ -34,6 +34,10 @@ class CombatDefenseCard extends StatelessWidget {
     // Una criatura con acumulación que no usa escudo no tiene defensa que
     // penalizar: los situacionales se le aplican cuando ataca (Core, p. 99).
     final situationalsApply = editable;
+    // Solo corresponde con Lama, Lama Tsu o la Tabla de 2ª Arma: Estilo
+    // Defensivo; para el resto se activa a mano.
+    final freeDefensesSuggested =
+        character == null ? 0 : CombatTraits.suggestedFreeDefenses(weapon: character.selectedWeapon(), combat: character.combat);
 
     return CustomCombatCard(
       title:
@@ -267,11 +271,22 @@ class CombatDefenseCard extends StatelessWidget {
               ],
             ),
           ),
-          _FreeDefensesRow(
-            value: defense.freeDefenses,
-            suggested: CombatTraits.suggestedFreeDefenses(weapon: character.selectedWeapon(), combat: character.combat),
-            onChanged: (value) => appState.updateCombatState(freeDefenses: value),
-          ),
+          if (freeDefensesSuggested != 0 || defense.freeDefenses != 0)
+            _FreeDefensesRow(
+              value: defense.freeDefenses,
+              suggested: freeDefensesSuggested,
+              onChanged: (value) => appState.updateCombatState(freeDefenses: value),
+            )
+          else
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
+                onPressed: () => appState.updateCombatState(freeDefenses: 1),
+                icon: const Icon(Icons.add, size: 18),
+                label: const Text('Defensas sin penalizador'),
+              ),
+            ),
         ],
       ],
     );
