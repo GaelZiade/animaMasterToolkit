@@ -141,13 +141,18 @@ void main() {
     test('Lee artes marciales y Ataque Encadenado de la planilla', () {
       final combat = CombatData.fromJson({
         'armas': <dynamic>[],
-        'ArtesMarciales': {'Kempo': 'Avanzado', 'Tae Kwon Do': 'Base'},
-        'TablasDeArmas': {'Tabla de estilo': 'Tabla de Ataque Encadenado'},
+        'ArtesMarciales': {
+          'Kempo (Avanzado)': 'Ataques adicionales con penalizador de -10 a la HA',
+          'Tae Kwon Do (Base)': 'Ataque adicional, incluso tras atacar con armas al -30',
+        },
+        'EstilosDeCombate': {'Tabla de Ataque encadenado': 'Reduce el penalizador de Ataque adicional 1 Tamano'},
       })!;
 
       expect(combat.kempoGrade, 2);
       expect(combat.taeKwonDoGrade, 1);
       expect(combat.chainAttackTable, isTrue);
+      // La descripción del Encadenado nombra el "Ataque adicional".
+      expect(combat.additionalAttackTable, isFalse);
       expect(combat.ambidextrous, isFalse);
     });
 
@@ -163,7 +168,7 @@ void main() {
     test('Lee la Tabla de Ataque Adicional de la planilla', () {
       final combat = CombatData.fromJson({
         'armas': <dynamic>[],
-        'TablasDeArmas': {'Tabla de estilo': 'Tabla de Ataque Adicional'},
+        'EstilosDeCombate': {'Tabla de Ataque adicional': 'Permite 1 ataque adicional con el penalizador correspondiente'},
       })!;
 
       expect(combat.additionalAttackTable, isTrue);

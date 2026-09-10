@@ -135,8 +135,8 @@ class Weapon {
   @HiveField(19)
   bool? variableDamage;
 
-  /// Tamaño para los ataques adicionales: 'P', 'M' o 'G' (Core, p. 91). La
-  /// planilla no lo exporta; null significa deducirlo del nombre.
+  /// Tamaño para los ataques adicionales: 'P', 'M' o 'G' (Core, p. 91), leído
+  /// de la planilla o elegido a mano; null significa deducirlo del nombre.
   @HiveField(20)
   String? attackSize;
 

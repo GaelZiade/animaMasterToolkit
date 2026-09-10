@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:amt/utils/xlsx/xlsx_workbook.dart';
 
 /// Convierte una planilla de personaje de Ánima al JSON que consume
@@ -118,6 +120,9 @@ abstract class SheetToJson {
       'ArtesMarciales': _rangeToMap(book, _combate, 'AB31:AQ49', 1, 5),
       'armas': _weapons(book),
       'armadura': _armourData(book),
+      // La macro no exporta las ventajas; la ambidestría cambia el ataque con
+      // un arma adicional.
+      'ambidestria': _hasAdvantage(book, 'ambidestr'),
     };
   }
 
@@ -176,6 +181,76 @@ abstract class SheetToJson {
     final invested = double.tryParse(book.cell('PDs', 'M' + row.toString()) ?? '');
 
     return invested != null && invested > 0;
+  }
+
+  /// Busca una ventaja en la lista de la hoja Principal, que empieza bajo
+  /// "Puntos de Creación" y termina en "Desventajas". Algunas versiones además
+  /// las resumen en D55.
+  static bool _hasAdvantage(XlsxWorkbook book, String name) {
+    final needle = name.toLowerCase();
+
+    for (var row = 33; row <= 55; row++) {
+      final value = _text(book, _principal, 'C$row').toLowerCase();
+
+      if (value.startsWith('desventajas')) break;
+      if (value.contains(needle)) return true;
+    }
+
+    return _text(book, _principal, 'D55').toLowerCase().contains(needle);
+  }
+
+  /// Tamaño del arma de un bloque para los ataques adicionales: 'P', 'M' o 'G'.
+  ///
+  /// Si el bloque es la mano hábil de un combate con dos armas (Combate!R22 y
+  /// U22), manda la más grande de las dos (Core, p. 91).
+  static String? _weaponSize(XlsxWorkbook book, String block) {
+    final sizes = [_sizeOfBaseWeapon(book, _block(book, _combate, block, 'C2'))];
+
+    final slot = _block(book, _combate, block, 'A1');
+    final mainHand = _text(book, _combate, 'R22');
+    final offHand = _text(book, _combate, 'U22');
+
+    if (slot.isNotEmpty && offHand.isNotEmpty && mainHand.startsWith('$slot ')) {
+      final offSlot = offHand.split(' ').first;
+
+      for (final other in _baseWeaponBlocks) {
+        if (_block(book, _combate, other, 'A1') == offSlot) {
+          sizes.add(_sizeOfBaseWeapon(book, _block(book, _combate, other, 'C2')));
+        }
+      }
+    }
+
+    final known = sizes.whereType<int>();
+
+    return known.isEmpty ? null : const ['P', 'M', 'G'][known.reduce(max)];
+  }
+
+  /// Columna Tamaño de la "Tabla de Armas y Escudos" de la hoja Tablas, para
+  /// el arma base de un bloque: 0 pequeña, 1 mediana, 2 grande.
+  static int? _sizeOfBaseWeapon(XlsxWorkbook book, String name) {
+    if (name.isEmpty || !book.hasSheet('Tablas')) return null;
+
+    final header = book.findRow('Tablas', 'X', 'Tama', from: 600, to: 700);
+
+    if (header == null) return null;
+
+    final wanted = name.toLowerCase();
+
+    for (var row = header + 1; row <= header + 500; row++) {
+      final weapon = book.cell('Tablas', 'D$row');
+
+      if (weapon == null || XlsxWorkbook.stripAccents(weapon).trim().toLowerCase() != wanted) continue;
+
+      final size = XlsxWorkbook.stripAccents(book.cell('Tablas', 'X$row') ?? '').toLowerCase();
+
+      if (size.startsWith('peque')) return 0;
+      if (size.startsWith('median')) return 1;
+      if (size.startsWith('grande')) return 2;
+
+      return null;
+    }
+
+    return null;
   }
 
   static String _block(XlsxWorkbook book, String sheet, String block, String relative) {
@@ -270,6 +345,7 @@ abstract class SheetToJson {
       'advertencia': _block(book, _combate, block, 'I6'),
       'municion': '-',
       'especial': _block(book, _combate, block, 'H6'),
+      if (_weaponSize(book, block) case final size?) 'tamanoAtaque': size,
     };
   }
 

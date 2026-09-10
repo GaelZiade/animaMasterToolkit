@@ -55,9 +55,9 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 - **Ataques adicionales** (p. 91). La tarjeta de ataque calcula el tope, un
   ataque más por cada 100 de HA de la ficha, y el penalizador que aplican todos
   los ataques declarados:
-  - según el tamaño del arma: −20 pequeña, −30 media, −40 grande. La planilla
-    no exporta el tamaño, así que se deduce del nombre con las tablas de armas
-    del Core y se puede corregir desde la tarjeta;
+  - según el tamaño del arma: −20 pequeña, −30 media, −40 grande. Se lee de la
+    planilla; si falta, se deduce del nombre con las tablas de armas del Core, y
+    en los dos casos se puede corregir desde la tarjeta;
   - **segunda arma**: un ataque más fuera del tope, con −40 propio, o −10 con
     Ambidestría. Desarmado no la admite;
   - **Tabla de Ataque Encadenado**: armas grandes como medias y medias como
@@ -73,9 +73,11 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
     la casa.
 
   Ambidestría, las dos tablas y los grados de Kempo y Tae Kwon Do se marcan en la
-  ficha del personaje. Las artes marciales y las tablas se toman de la planilla
-  al importar; la ambidestría no, porque la planilla no la exporta. Los
-  personajes cargados antes de este cambio arrancan con todo apagado.
+  ficha del personaje, y al importar se leen de la planilla: las ventajas de la
+  hoja Principal, las Tablas de Estilos y las artes marciales de Combate. El
+  tamaño de cada arma sale de la Tabla de Armas y Escudos; con dos armas, el de
+  la más grande. Verificado contra tres planillas reales. Los personajes
+  cargados antes de este cambio arrancan con todo apagado hasta reimportarlos.
 
 ## Importación de fichas
 

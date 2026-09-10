@@ -22,7 +22,10 @@ class CombatData {
     if (json == null) return null;
 
     final martialArts = json.getMap('ArtesMarciales') ?? const <String, dynamic>{};
-    final weaponTables = json.getMap('TablasDeArmas') ?? const <String, dynamic>{};
+    // Ataque Encadenado y Ataque Adicional son Tablas de Estilos, que la
+    // planilla exporta como EstilosDeCombate. Se suman las Tablas de Armas por
+    // si otra versión las ubica ahí.
+    final styleTables = {...?json.getMap('TablasDeArmas'), ...?json.getMap('EstilosDeCombate')};
 
     return CombatData(
       armour: ArmourData.fromJson(json.getMap('armadura')) ?? ArmourData(calculatedArmour: Armour(), armours: []),
@@ -32,24 +35,28 @@ class CombatData {
       ambidextrous: JsonUtils.boolean(json['ambidestria'], placeholder: false),
       chainAttackTable: json.containsKey('tablaAtaqueEncadenado')
           ? JsonUtils.boolean(json['tablaAtaqueEncadenado'], placeholder: false)
-          : _grade(weaponTables, const ['ataque encadenado']) > 0,
+          : _grade(styleTables, const ['ataque encadenado']) > 0,
       kempoGrade: json.containsKey('kempo') ? JsonUtils.integer(json['kempo'], 0).clamp(0, 3) : _grade(martialArts, const ['kempo']),
       taeKwonDoGrade: json.containsKey('taeKwonDo')
           ? JsonUtils.integer(json['taeKwonDo'], 0).clamp(0, 3)
           : _grade(martialArts, const ['tae kwon do', 'taekwondo', 'tae kwondo']),
       additionalAttackTable: json.containsKey('tablaAtaqueAdicional')
           ? JsonUtils.boolean(json['tablaAtaqueAdicional'], placeholder: false)
-          : _grade(weaponTables, const ['ataque adicional']) > 0,
+          : _grade(styleTables, const ['ataque adicional']) > 0,
     );
   }
 
-  /// Grado de lo que nombra [aliases] en una tabla de la planilla: 0 si no
-  /// figura, 1 base, 2 avanzado, 3 supremo.
+  /// Grado de lo que nombra [aliases] entre los nombres de una tabla de la
+  /// planilla, como "Tae Kwon Do (Base)": 0 si no figura, 1 base, 2 avanzado,
+  /// 3 supremo.
+  ///
+  /// Las descripciones no se miran: la del Ataque Encadenado dice "Reduce el
+  /// penalizador de Ataque adicional" y se confundiría con la otra tabla.
   static int _grade(Map<String, dynamic> table, List<String> aliases) {
     var grade = 0;
 
-    for (final entry in table.entries) {
-      final text = '${entry.key} ${entry.value}'.toLowerCase();
+    for (final name in table.keys) {
+      final text = name.toLowerCase();
 
       if (!aliases.any(text.contains)) continue;
 
