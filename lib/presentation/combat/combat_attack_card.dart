@@ -240,8 +240,9 @@ class CombatAttackCard extends StatelessWidget {
           ],
         ),
         if (character != null && attackPlan != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           _AdditionalAttacks(plan: attackPlan, character: character),
+          const SizedBox(height: 8),
         ],
         // Solo tiene efecto contra criaturas con acumulacion de dano, asi que
         // no se muestra en el resto de los combates.
@@ -334,31 +335,18 @@ class _AdditionalAttacks extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Divider(height: 1, color: theme.colorScheme.outlineVariant),
+        const SizedBox(height: 12),
+        // Título del bloque y tamaño del arma, que fija el penalizador.
         Row(
           children: [
-            Text('Ataques', style: theme.textTheme.bodyMedium),
-            const SizedBox(width: 4),
-            IconButton(
-              tooltip: 'Declarar un ataque menos',
-              visualDensity: VisualDensity.compact,
-              onPressed: plan.declared > 1 ? () => appState.updateCombatState(declaredAttacks: plan.declared - 1) : null,
-              icon: const Icon(Icons.remove),
-            ),
-            Text('${plan.declared}', style: number),
-            IconButton(
-              tooltip: 'Declarar un ataque más',
-              visualDensity: VisualDensity.compact,
-              onPressed: plan.declared < plan.maxAttacks ? () => appState.updateCombatState(declaredAttacks: plan.declared + 1) : null,
-              icon: const Icon(Icons.add),
-            ),
-            Flexible(
-              child: Tooltip(
-                message: plan.maxAttacksBreakdown,
-                child: Text('de ${plan.maxAttacks} con el arma', style: muted, overflow: TextOverflow.ellipsis),
+            Expanded(
+              child: Text(
+                'Ataques del asalto',
+                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             const SizedBox(width: 8),
-            const Spacer(),
             if (plan.unarmed)
               Tooltip(
                 message: 'Desarmado no admite un arma adicional',
@@ -388,37 +376,69 @@ class _AdditionalAttacks extends StatelessWidget {
               ),
           ],
         ),
-        if (plan.secondWeaponAllowed || plan.kickAllowed)
+        const SizedBox(height: 8),
+        // Contador de ataques con el arma, con el desglose del tope a la vista.
+        Row(
+          children: [
+            IconButton.outlined(
+              tooltip: 'Declarar un ataque menos',
+              onPressed: plan.declared > 1 ? () => appState.updateCombatState(declaredAttacks: plan.declared - 1) : null,
+              icon: const Icon(Icons.remove),
+            ),
+            SizedBox(
+              width: 40,
+              child: Text('${plan.declared}', style: number, textAlign: TextAlign.center),
+            ),
+            IconButton.outlined(
+              tooltip: 'Declarar un ataque más',
+              onPressed: plan.declared < plan.maxAttacks ? () => appState.updateCombatState(declaredAttacks: plan.declared + 1) : null,
+              icon: const Icon(Icons.add),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('de ${plan.maxAttacks} posibles con el arma', style: theme.textTheme.bodyMedium),
+                  Text(plan.maxAttacksBreakdown, style: muted),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (plan.secondWeaponAllowed || plan.kickAllowed) ...[
+          const SizedBox(height: 12),
           Wrap(
             spacing: 8,
-            runSpacing: 4,
+            runSpacing: 8,
             children: [
               if (plan.secondWeaponAllowed)
                 FilterChip(
                   tooltip: character.combat.ambidextrous ? 'Con Ambidestría' : 'Sin Ambidestría (se activa en la ficha)',
-                  label: Text('Segunda arma ${_signed(plan.secondWeaponPenalty)}'),
+                  label: Text('+1 Segunda arma · ${_signed(plan.secondWeaponPenalty)}'),
                   selected: plan.secondWeapon,
                   onSelected: (value) => appState.updateCombatState(secondWeapon: value),
                 ),
               if (plan.kickAllowed)
                 FilterChip(
-                  label: Text('Patada de Tae Kwon Do ${plan.kickPenalty == 0 ? 'sin penalizador' : _signed(plan.kickPenalty)}'),
+                  label: Text('+1 Patada de Tae Kwon Do · ${plan.kickPenalty == 0 ? 'sin penalizador' : _signed(plan.kickPenalty)}'),
                   selected: plan.kick,
                   onSelected: (value) => appState.updateCombatState(kick: value),
                 ),
             ],
           ),
+        ],
         if (plan.needsSize)
           Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: const EdgeInsets.only(top: 8),
             child: Text(
               'Falta el tamaño del arma: el penalizador por ataques adicionales no se está aplicando.',
               style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.error),
             ),
           ),
         if (showsBreakdown) ...[
-          const SizedBox(height: 8),
-          if (plan.secondWeapon || plan.kick)
+          const SizedBox(height: 12),
+          if (plan.secondWeapon || plan.kick) ...[
             SegmentedButton<AttackSlot>(
               showSelectedIcon: false,
               segments: [
@@ -429,7 +449,8 @@ class _AdditionalAttacks extends StatelessWidget {
               selected: {plan.slot},
               onSelectionChanged: (selection) => appState.updateCombatState(attackSlot: selection.first),
             ),
-          const SizedBox(height: 4),
+            const SizedBox(height: 8),
+          ],
           Text(
             plan.secondWeapon || plan.kick
                 ? '${plan.totalAttacks} ataques en el asalto. HA sin tirada ni situacionales; se calcula el marcado.'
