@@ -326,7 +326,9 @@ class _AdditionalAttacks extends StatelessWidget {
         ? '${plan.penaltySource[0].toUpperCase()}${plan.penaltySource.substring(1)} · ${_signed(penalty ?? 0)} c/u'
         : plan.size == null
             ? 'Elegir tamaño'
-            : 'Arma ${plan.size!.code} · ${_signed(penalty ?? 0)} c/u';
+            : plan.penaltySize != plan.size
+                ? 'Arma ${plan.size!.code} como ${plan.penaltySize!.code} · ${_signed(penalty ?? 0)} c/u'
+                : 'Arma ${plan.size!.code} · ${_signed(penalty ?? 0)} c/u';
     final showsBreakdown = plan.additionalAttacks > 0 || plan.secondWeapon || plan.kick;
 
     return Column(
@@ -349,7 +351,12 @@ class _AdditionalAttacks extends StatelessWidget {
               onPressed: plan.declared < plan.maxAttacks ? () => appState.updateCombatState(declaredAttacks: plan.declared + 1) : null,
               icon: const Icon(Icons.add),
             ),
-            Flexible(child: Text('de ${plan.maxAttacks} posibles', style: muted, overflow: TextOverflow.ellipsis)),
+            Flexible(
+              child: Tooltip(
+                message: plan.maxAttacksBreakdown,
+                child: Text('de ${plan.maxAttacks} con el arma', style: muted, overflow: TextOverflow.ellipsis),
+              ),
+            ),
             const SizedBox(width: 8),
             const Spacer(),
             if (plan.unarmed)
@@ -425,7 +432,7 @@ class _AdditionalAttacks extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             plan.secondWeapon || plan.kick
-                ? 'HA de cada ataque sin tirada ni situacionales. Se calcula el marcado.'
+                ? '${plan.totalAttacks} ataques en el asalto. HA sin tirada ni situacionales; se calcula el marcado.'
                 : 'HA en cada uno de los ${plan.declared} ataques: ${abilityFor(AttackSlot.main)}, sin tirada ni situacionales.',
             style: muted,
           ),

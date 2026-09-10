@@ -61,7 +61,10 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   - **segunda arma**: un ataque más fuera del tope, con −40 propio, o −10 con
     Ambidestría. Desarmado no la admite;
   - **Tabla de Ataque Encadenado**: armas grandes como medias y medias como
-    pequeñas;
+    pequeñas. La tarjeta lo muestra como «Arma M como P»;
+  - **Tabla de Ataque Adicional**: un ataque más al tope, con el penalizador
+    habitual. No está en los manuales digitalizados; viene de la planilla y de
+    la Pantalla del Director;
   - **Kempo** (Dominus Exxet, que manda sobre el Core): −15 en grado base, −10
     en avanzado y un ataque extra en supremo. Solo sin armas;
   - **Tae Kwon Do**: patada adicional con −30, −20 o sin penalizador según el
@@ -69,9 +72,10 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   - desarmado sin arte marcial aplica −20. Los manuales no lo fijan: es regla de
     la casa.
 
-  Ambidestría, Ataque Encadenado y los grados de Kempo y Tae Kwon Do se marcan en
-  la ficha del personaje. Las artes marciales y la tabla se toman de la planilla
-  al importar; la ambidestría no, porque la planilla no la exporta.
+  Ambidestría, las dos tablas y los grados de Kempo y Tae Kwon Do se marcan en la
+  ficha del personaje. Las artes marciales y las tablas se toman de la planilla
+  al importar; la ambidestría no, porque la planilla no la exporta. Los
+  personajes cargados antes de este cambio arrancan con todo apagado.
 
 ## Importación de fichas
 

@@ -34,6 +34,9 @@ class AttackPlan {
     required this.maxAttacks,
     required this.declared,
     required this.size,
+    required this.penaltySize,
+    required this.additionalAttackTable,
+    required this.kempoSupreme,
     required this.unarmed,
     required this.penaltyPerAttack,
     required this.penaltySource,
@@ -54,6 +57,13 @@ class AttackPlan {
 
   /// Null si el arma no tiene tamaño elegido ni se pudo deducir del nombre.
   final AttackSize? size;
+
+  /// Tamaño con el que penaliza: con Ataque Encadenado, uno menos que [size].
+  final AttackSize? penaltySize;
+
+  /// Tope aumentado por la Tabla de Ataque Adicional o por Kempo supremo.
+  final bool additionalAttackTable;
+  final bool kempoSupreme;
   final bool unarmed;
 
   /// Penalizador por cada ataque adicional. Null mientras falte el tamaño.
@@ -71,6 +81,21 @@ class AttackPlan {
   final AttackSlot slot;
 
   int get additionalAttacks => declared - 1;
+
+  /// Todos los ataques del asalto, con la segunda arma y la patada.
+  int get totalAttacks => declared + (secondWeapon ? 1 : 0) + (kick ? 1 : 0);
+
+  /// De dónde sale el tope, para mostrarlo.
+  String get maxAttacksBreakdown {
+    final byAbility = maxAttacks - 1 - (kempoSupreme ? 1 : 0) - (additionalAttackTable ? 1 : 0);
+
+    return [
+      '1 base',
+      if (byAbility > 0) '$byAbility por HA',
+      if (additionalAttackTable) '1 por Tabla de Ataque Adicional',
+      if (kempoSupreme) '1 por Kempo supremo',
+    ].join(' + ');
+  }
 
   /// Penalizador que se aplica a todos los ataques del asalto.
   int get sharedPenalty => additionalAttacks * (penaltyPerAttack ?? 0);
@@ -112,8 +137,18 @@ abstract class AdditionalAttackRules {
 
   /// Un golpe adicional por cada 100 puntos de ataque. Kempo en grado supremo
   /// suma otro, como si se tuvieran 100 puntos más.
-  static int maxAttacksFor({required int attackAbility, bool kempoSupreme = false}) {
-    return max(1, 1 + attackAbility ~/ 100) + (kempoSupreme ? 1 : 0);
+  ///
+  /// La Tabla de Ataque Adicional también suma uno. No está en los manuales
+  /// digitalizados: viene de la planilla y de la Pantalla del Director, y
+  /// penaliza como cualquier otro ataque adicional.
+  static int maxAttacksFor({required int attackAbility, bool kempoSupreme = false, bool additionalAttackTable = false}) {
+    return max(1, 1 + attackAbility ~/ 100) + (kempoSupreme ? 1 : 0) + (additionalAttackTable ? 1 : 0);
+  }
+
+  /// Con Ataque Encadenado las armas grandes penalizan como medias y las
+  /// medias como pequeñas.
+  static AttackSize chainedSize(AttackSize size, {required bool chainAttackTable}) {
+    return chainAttackTable && size != AttackSize.small ? AttackSize.values[size.index - 1] : size;
   }
 
   /// Penalizador por cada ataque adicional. Null si falta el tamaño del arma.
@@ -159,9 +194,11 @@ abstract class AdditionalAttackRules {
 
     if (size == null) return 'tamaño sin definir';
 
-    final encadenado = chainAttackTable && size != AttackSize.small ? ', Ataque Encadenado' : '';
+    final chained = chainedSize(size, chainAttackTable: chainAttackTable);
 
-    return 'arma ${size.label.toLowerCase()}$encadenado';
+    if (chained != size) return 'arma ${size.label.toLowerCase()} como ${chained.label.toLowerCase()}, Ataque Encadenado';
+
+    return 'arma ${size.label.toLowerCase()}';
   }
 
   /// Un arma en cada mano da un ataque más, fuera del tope: −40, o −10 con
@@ -246,7 +283,11 @@ abstract class AdditionalAttackRules {
     // arma en la mano. Tae Kwon Do es la excepción y lo dice expresamente.
     final kempo = unarmed ? combat.kempoGrade : 0;
     final size = unarmed ? null : AttackSize.fromCode(weapon.attackSize) ?? suggestSize(weapon.name);
-    final maxAttacks = maxAttacksFor(attackAbility: weapon.attack, kempoSupreme: kempo >= 3);
+    final maxAttacks = maxAttacksFor(
+      attackAbility: weapon.attack,
+      kempoSupreme: kempo >= 3,
+      additionalAttackTable: combat.additionalAttackTable,
+    );
 
     // Combatir sin armas usa todo el cuerpo: no admite un arma adicional.
     final secondWeaponAllowed = !unarmed;
@@ -264,6 +305,9 @@ abstract class AdditionalAttackRules {
       maxAttacks: maxAttacks,
       declared: declared.clamp(1, maxAttacks),
       size: size,
+      penaltySize: size == null ? null : chainedSize(size, chainAttackTable: combat.chainAttackTable),
+      additionalAttackTable: combat.additionalAttackTable,
+      kempoSupreme: kempo >= 3,
       unarmed: unarmed,
       penaltyPerAttack: penaltyPerAttack(size: size, unarmed: unarmed, kempoGrade: kempo, chainAttackTable: combat.chainAttackTable),
       penaltySource: penaltySource(size: size, unarmed: unarmed, kempoGrade: kempo, chainAttackTable: combat.chainAttackTable),

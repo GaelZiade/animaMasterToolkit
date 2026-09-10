@@ -10,7 +10,7 @@ Weapon _weapon(String name, int attack, {String type = 'A una mano', String? siz
   return Weapon(name: name, turn: 0, attack: attack, defense: 0, defenseType: DefenseType.parry, damage: 50, type: type, attackSize: size);
 }
 
-CombatData _combat({bool ambidextrous = false, bool chain = false, int kempo = 0, int taeKwonDo = 0}) {
+CombatData _combat({bool ambidextrous = false, bool chain = false, int kempo = 0, int taeKwonDo = 0, bool extraTable = false}) {
   return CombatData(
     armour: ArmourData(calculatedArmour: Armour(), armours: []),
     weapons: [],
@@ -18,6 +18,7 @@ CombatData _combat({bool ambidextrous = false, bool chain = false, int kempo = 0
     chainAttackTable: chain,
     kempoGrade: kempo,
     taeKwonDoGrade: taeKwonDo,
+    additionalAttackTable: extraTable,
   );
 }
 
@@ -157,6 +158,37 @@ void main() {
       expect(restored.ambidextrous, isTrue);
       expect(restored.kempoGrade, 3);
       expect(restored.chainAttackTable, isFalse);
+    });
+
+    test('Lee la Tabla de Ataque Adicional de la planilla', () {
+      final combat = CombatData.fromJson({
+        'armas': <dynamic>[],
+        'TablasDeArmas': {'Tabla de estilo': 'Tabla de Ataque Adicional'},
+      })!;
+
+      expect(combat.additionalAttackTable, isTrue);
+      expect(combat.chainAttackTable, isFalse);
+    });
+  });
+
+  group('Kaito', () {
+    test('HA 210, espadas medias con Encadenado, Ataque Adicional, ambidiestro y Tae Kwon Do: 6 ataques', () {
+      final plan = AdditionalAttackRules.plan(
+        weapon: _weapon('Espada Kaitos y Espada Kaitos', 210),
+        combat: _combat(ambidextrous: true, chain: true, taeKwonDo: 1, extraTable: true),
+        declared: 4,
+        secondWeapon: true,
+        kick: true,
+      )!;
+
+      expect(plan.maxAttacks, 4);
+      expect(plan.maxAttacksBreakdown, '1 base + 2 por HA + 1 por Tabla de Ataque Adicional');
+      expect(plan.size, AttackSize.medium);
+      expect(plan.penaltySize, AttackSize.small);
+      expect(plan.totalAttacks, 6);
+      expect(_ability(plan, 210, AttackSlot.main), 150);
+      expect(_ability(plan, 210, AttackSlot.secondWeapon), 140);
+      expect(_ability(plan, 210, AttackSlot.kick), 120);
     });
   });
 }

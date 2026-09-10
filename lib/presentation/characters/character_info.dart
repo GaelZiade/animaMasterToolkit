@@ -236,6 +236,12 @@ class _CharacterSheetState extends State<_CharacterSheet> {
                 selected: _character.combat.chainAttackTable,
                 onSelected: (value) => _commit(() => _character.combat.chainAttackTable = value),
               ),
+              FilterChip(
+                label: const Text('Tabla de Ataque Adicional'),
+                tooltip: 'Un ataque más al tope, con el penalizador habitual',
+                selected: _character.combat.additionalAttackTable,
+                onSelected: (value) => _commit(() => _character.combat.additionalAttackTable = value),
+              ),
               _GradeMenu(
                 label: 'Kempo',
                 grade: _character.combat.kempoGrade,

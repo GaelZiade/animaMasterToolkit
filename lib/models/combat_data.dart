@@ -15,6 +15,7 @@ class CombatData {
     this.chainAttackTable = false,
     this.kempoGrade = 0,
     this.taeKwonDoGrade = 0,
+    this.additionalAttackTable = false,
   });
 
   static CombatData? fromJson(Map<String, dynamic>? json) {
@@ -36,6 +37,9 @@ class CombatData {
       taeKwonDoGrade: json.containsKey('taeKwonDo')
           ? JsonUtils.integer(json['taeKwonDo'], 0).clamp(0, 3)
           : _grade(martialArts, const ['tae kwon do', 'taekwondo', 'tae kwondo']),
+      additionalAttackTable: json.containsKey('tablaAtaqueAdicional')
+          ? JsonUtils.boolean(json['tablaAtaqueAdicional'], placeholder: false)
+          : _grade(weaponTables, const ['ataque adicional']) > 0,
     );
   }
 
@@ -69,6 +73,7 @@ class CombatData {
       'tablaAtaqueEncadenado': chainAttackTable,
       'kempo': kempoGrade,
       'taeKwonDo': taeKwonDoGrade,
+      'tablaAtaqueAdicional': additionalAttackTable,
     };
   }
 
@@ -93,6 +98,11 @@ class CombatData {
   @HiveField(5)
   int taeKwonDoGrade;
 
+  /// Tabla de Ataque Adicional: un ataque más al tope (planilla, Pantalla del
+  /// Director).
+  @HiveField(6)
+  bool additionalAttackTable;
+
   void updateWeapon(Weapon weapon) {
     for (var i = 0; i > weapons.length; i++) {
       if (weapons[i].name == weapon.name) {
@@ -110,6 +120,7 @@ class CombatData {
       chainAttackTable: chainAttackTable,
       kempoGrade: kempoGrade,
       taeKwonDoGrade: taeKwonDoGrade,
+      additionalAttackTable: additionalAttackTable,
     );
   }
 }

@@ -23,13 +23,14 @@ class CombatDataAdapter extends TypeAdapter<CombatData> {
       chainAttackTable: fields[3] as bool? ?? false,
       kempoGrade: fields[4] as int? ?? 0,
       taeKwonDoGrade: fields[5] as int? ?? 0,
+      additionalAttackTable: fields[6] as bool? ?? false,
     );
   }
 
   @override
   void write(BinaryWriter writer, CombatData obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.weapons)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class CombatDataAdapter extends TypeAdapter<CombatData> {
       ..writeByte(4)
       ..write(obj.kempoGrade)
       ..writeByte(5)
-      ..write(obj.taeKwonDoGrade);
+      ..write(obj.taeKwonDoGrade)
+      ..writeByte(6)
+      ..write(obj.additionalAttackTable);
   }
 
   @override

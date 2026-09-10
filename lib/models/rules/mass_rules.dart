@@ -112,6 +112,7 @@ abstract class MassRules {
       chainAttackTable: mass.combat.chainAttackTable,
       kempoGrade: mass.combat.kempoGrade,
       taeKwonDoGrade: mass.combat.taeKwonDoGrade,
+      additionalAttackTable: mass.combat.additionalAttackTable,
       weapons: [
         for (final weapon in member.combat.weapons)
           weapon.copy()..damage = _isSupernatural(weapon) ? weapon.damage * 2 : (weapon.damage * 1.5).floor(),
