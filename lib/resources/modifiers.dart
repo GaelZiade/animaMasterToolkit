@@ -21,10 +21,23 @@ class Modifiers {
   /// Tae Kwon Do, técnicas. Forman un grupo de selección única.
   static const extraAttackPrefix = 'Ataque extra: ';
 
+  /// Catálogo único: situaciones de combate, maniobras y estados en una sola
+  /// lista, sin repetir nombres. El panel del personaje y el de cada tirada
+  /// muestran los mismos modificadores.
+  static List<Map<String, dynamic>> get _catalog {
+    final seen = <String>{};
+
+    return [
+      for (final element in [..._valuesSituational.jsonList, ..._values.jsonList])
+        if (seen.add('${element['name']}')) element,
+    ];
+  }
+
   static List<StatusModifier> getSituationalModifiers(ModifiersType type, {bool includeAllDefense = false}) {
     final modifiers = <StatusModifier>[];
 
-    for (final element in _valuesSituational.jsonList) {
+    // Solo los que afectan a este tipo de tirada.
+    for (final element in _catalog) {
       final modifier = StatusModifier.fromJson(element);
 
       if (modifier == null) continue;
@@ -50,7 +63,7 @@ class Modifiers {
   static List<StatusModifier> getStatusModifiers() {
     final modifiers = <StatusModifier>[];
 
-    for (final element in _values.jsonList) {
+    for (final element in _catalog) {
       modifiers.tryAdd(StatusModifier.fromJson(element));
     }
 
@@ -679,12 +692,12 @@ class Modifiers {
     {"name": "Recién estabilizado tras estar entre la vida y la muerte", "attack": -60, "parry": -60, "dodge": -60, "turn": -30, "physicalAction": -60},
     {"name": "Defensa total con Shephon", "attack": -200, "parry": 60, "dodge": 60},
     {"name": "Defensa total con Shephon arcano", "attack": -200, "parry": 100, "dodge": 100},
-    {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30},
+    {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30, "keepFor": ["attack", "parry", "dodge"]},
     {"name": "Espacio reducido (Tabla de Movimiento en Espacios Reducidos)", "attack": -20, "parry": -20, "dodge": -20, "physicalAction": -10},
-    {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20},
-    {"name": "Parálisis menor con Hanja arcano", "attack": -20, "turn": -20, "physicalAction": -40},
-    {"name": "Parálisis parcial con Hanja arcano", "attack": -80, "turn": -30, "physicalAction": -60},
-    {"name": "Amenazado con Hanja arcano", "attack": -20, "turn": -50, "physicalAction": -100},
+    {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20, "keepFor": ["parry", "dodge"]},
+    {"name": "Parálisis menor con Hanja arcano", "attack": -20, "turn": -20, "physicalAction": -40, "keepFor": ["parry", "dodge"]},
+    {"name": "Parálisis parcial con Hanja arcano", "attack": -80, "turn": -30, "physicalAction": -60, "keepFor": ["parry", "dodge"]},
+    {"name": "Amenazado con Hanja arcano", "attack": -20, "turn": -50, "physicalAction": -100, "keepFor": ["parry", "dodge"]},
     {"name": "Kung Fu: +10 al ataque", "attack": 10},
     {"name": "Kung Fu: +10 a la parada", "parry": 10},
     {"name": "Kung Fu: +10 a la esquiva", "dodge": 10},

@@ -110,8 +110,12 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   tarjeta de defensa muestra cuántas defensas del asalto no aplican el
   penalizador por defensas adicionales, ya cargado: Lama (1 o 2), Lama Tsu (2
   más, o todas en Arcano) y Tabla de 2ª Arma: Estilo Defensivo (1 con dos
-  armas). Para cualquier otro, como un PNJ sin ficha, se activa a mano y se
-  vuelve a ocultar eligiendo 0.
+  armas). Para cualquier otro, como un PNJ sin ficha, se activa a mano, y un
+  botón la quita y la vuelve a 0, incluso a quien la tiene por ficha.
+- **Un solo catálogo de modificadores.** El panel del personaje y el de
+  Situacionales tenían listas distintas: la Defensa total, Shephon o el vuelo
+  solo existían como estados y no aparecían al defenderse. Ahora comparten el
+  catálogo completo, y cada tirada muestra los que la afectan.
 - **Tablas y artes marciales en la ficha.** Se importan todas de la planilla y se
   editan como una lista, con el catálogo de los manuales para elegir o un
   nombre propio. Reemplazan a los interruptores de Ataque Encadenado, Ataque

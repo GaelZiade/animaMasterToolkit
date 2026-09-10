@@ -240,12 +240,14 @@ class CharactersPageState extends ChangeNotifier {
     bool? supernaturalShield,
     int? declaredAttacks,
     int? freeDefenses,
+    bool? showFreeDefenses,
   }) {
     // Los ataques declarados son de ese atacante: al cambiarlo vuelven a uno.
     if (attacking != null) combatState.attack.declaredAttacks = 1;
 
     combatState.attack.declaredAttacks = declaredAttacks ?? combatState.attack.declaredAttacks;
     combatState.defense.freeDefenses = freeDefenses ?? combatState.defense.freeDefenses;
+    combatState.defense.showFreeDefenses = showFreeDefenses ?? combatState.defense.showFreeDefenses;
 
     combatState.attack.areaAttack = areaAttack ?? combatState.attack.areaAttack;
     combatState.attack.areaTargets = areaTargets ?? combatState.attack.areaTargets;
@@ -290,6 +292,10 @@ class CharactersPageState extends ChangeNotifier {
     // Las defensas sin penalizador dependen de la ficha del nuevo defensor.
     if (defendant != null && freeDefenses == null) {
       combatState.defense.freeDefenses = CombatTraits.suggestedFreeDefenses(weapon: defendant.selectedWeapon(), combat: defendant.combat);
+    }
+
+    if (defendant != null && showFreeDefenses == null) {
+      combatState.defense.showFreeDefenses = combatState.defense.freeDefenses != 0;
     }
 
     combatState.attack.modifiers = attackingModifiers ?? combatState.attack.modifiers;

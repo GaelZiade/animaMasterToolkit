@@ -271,18 +271,22 @@ class CombatDefenseCard extends StatelessWidget {
               ],
             ),
           ),
-          if (freeDefensesSuggested != 0 || defense.freeDefenses != 0)
+          if (defense.showFreeDefenses)
             _FreeDefensesRow(
               value: defense.freeDefenses,
               suggested: freeDefensesSuggested,
               onChanged: (value) => appState.updateCombatState(freeDefenses: value),
+              onRemove: () => appState.updateCombatState(showFreeDefenses: false, freeDefenses: 0),
             )
           else
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
                 style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                onPressed: () => appState.updateCombatState(freeDefenses: 1),
+                onPressed: () => appState.updateCombatState(
+                  showFreeDefenses: true,
+                  freeDefenses: freeDefensesSuggested != 0 ? freeDefensesSuggested : 1,
+                ),
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Defensas sin penalizador'),
               ),
@@ -296,11 +300,15 @@ class CombatDefenseCard extends StatelessWidget {
 /// Defensas del asalto que no aplican el penalizador por defensas adicionales:
 /// Lama, Lama Tsu, Tabla de 2ª Arma: Estilo Defensivo, técnicas de Ki.
 class _FreeDefensesRow extends StatelessWidget {
-  const _FreeDefensesRow({required this.value, required this.suggested, required this.onChanged});
+  const _FreeDefensesRow({required this.value, required this.suggested, required this.onChanged, required this.onRemove});
 
   final int value;
   final int suggested;
   final void Function(int) onChanged;
+
+  /// Oculta la fila y vuelve a 0: por un clic de más, o para quitarle el
+  /// beneficio a alguien que lo tiene por ficha.
+  final VoidCallback onRemove;
 
   /// -1 representa que ninguna defensa aplica el penalizador.
   static const _options = [0, 1, 2, 3, 4, -1];
@@ -321,12 +329,23 @@ class _FreeDefensesRow extends StatelessWidget {
               child: Text('Sin penalizador:', maxLines: 2, overflow: TextOverflow.ellipsis),
             ),
           ),
-          ToggleButtons(
-            isSelected: [for (final option in _options) option == value],
-            onPressed: (index) => onChanged(_options[index]),
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              for (final option in _options) Text(option == suggested && option != 0 ? '${label(option)}★' : label(option)),
+              ToggleButtons(
+                isSelected: [for (final option in _options) option == value],
+                onPressed: (index) => onChanged(_options[index]),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                children: [
+                  for (final option in _options) Text(option == suggested && option != 0 ? '${label(option)}★' : label(option)),
+                ],
+              ),
+              IconButton(
+                tooltip: 'Quitar defensas sin penalizador',
+                visualDensity: VisualDensity.compact,
+                onPressed: onRemove,
+                icon: const Icon(Icons.close),
+              ),
             ],
           ),
         ],

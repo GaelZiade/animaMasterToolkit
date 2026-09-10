@@ -47,6 +47,10 @@ class ScreenCombatStateDefense {
   /// adicionales (Lama, Tabla de 2ª Arma: Estilo Defensivo…). -1: ninguna.
   int freeDefenses = 0;
 
+  /// La fila de defensas sin penalizador solo se muestra cuando corresponde
+  /// por la ficha o si se activa a mano.
+  bool showFreeDefenses = false;
+
   Character? character;
 
   ModifiersState modifiers = ModifiersState();

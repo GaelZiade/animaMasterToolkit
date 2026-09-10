@@ -91,6 +91,27 @@ void main() {
     });
   });
 
+  group('Catálogo único de modificadores', () {
+    List<String> namesFor(ModifiersType type) => Modifiers.getSituationalModifiers(type).map((modifier) => modifier.name).toList();
+
+    test('La defensa ve los positivos que antes solo eran estados', () {
+      expect(namesFor(ModifiersType.parry), containsAll(['Defensa total', 'Defensa total con Shephon', 'Defensa total con Shephon arcano']));
+      expect(_value('Defensa total', ModifiersType.dodge), 30);
+    });
+
+    test('Los estados sin penalizador a una tirada siguen apareciendo en ella', () {
+      expect(namesFor(ModifiersType.attack), contains('Derribado con Soo Bahk supremo'));
+      expect(namesFor(ModifiersType.parry), contains('Amenazado con Hanja arcano'));
+    });
+
+    test('El panel del personaje incluye las maniobras y no repite nombres', () {
+      final status = Modifiers.getStatusModifiers().map((modifier) => modifier.name).toList();
+
+      expect(status, containsAll(['Derribo', 'Flanco', 'Dolor']));
+      expect(status.length, status.toSet().length);
+    });
+  });
+
   group('Valores de los manuales', () {
     test('Maniobras del Core', () {
       expect(_value('Derribo', ModifiersType.attack), -30);
