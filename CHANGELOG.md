@@ -128,7 +128,6 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   [#45](https://github.com/aoalejo/animaMasterToolkit/issues/45)). Duplicar un
   personaje ya numerado apilaba sufijos: «PJ», «PJ #2», «PJ #2 #3»… Ahora se
   numera siempre sobre el nombre base.
-
 - **Contraste del modo oscuro.** Los nueve iconos SVG se dibujaban con su
   relleno original en negro. Los chips y cabeceras usaban `colorScheme.primary`
   como relleno, que en Material 3 oscuro es un tono claro pensado para texto.
