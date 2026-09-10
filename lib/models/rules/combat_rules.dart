@@ -377,7 +377,15 @@ class CombatRules {
 
   static ExplainedText? criticalDamage({required Character? defender, required int? damage}) {
     // Una masa no tiene un único cuerpo que dañar: es inmune a los críticos.
-    if (defender?.profile.isMass ?? false) return null;
+    // Se avisa en vez de omitirlo, para que no parezca que el cálculo falta.
+    if (defender?.profile.isMass ?? false) {
+      return ExplainedText(
+        title: 'Critico',
+        text: 'Inmune a críticos (masa de enemigos)',
+        explanation: 'Una masa no tiene un único cuerpo que pueda ser dañado como tal, así que es completamente inmune a los críticos '
+            '(Bestiario, Combate de Masas).',
+      );
+    }
 
     final info = ExplainedText(title: 'Critico');
     final actualLife = defender?.state.getConsumable(ConsumableType.hitPoints)?.actualValue ?? 999;
@@ -549,6 +557,15 @@ class CombatRules {
     final criticalRollInt = criticalRoll?.safeInterpret ?? 0;
 
     final damageAccumulation = defender?.profile.damageAccumulation ?? false;
+
+    if (defender?.profile.isMass ?? false) {
+      return ExplainedText(
+        title: 'Resultado Crítico',
+        text: 'Inmune a críticos (masa de enemigos)',
+        explanation: 'Una masa no sufre críticos: no se calcula nivel ni se aplica penalizador (Bestiario, Combate de Masas).',
+        result: 0,
+      );
+    }
 
     final physicalResistanceBaseInt = physicalResistanceBase?.safeInterpret ?? 0;
     final physicalResistanceRollInt = physicalResistanceRoll?.safeInterpret ?? 0;

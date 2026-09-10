@@ -19,9 +19,11 @@ class CombatCriticalCard extends StatelessWidget {
     final criticalResult = combatState.criticalResult();
 
     final criticalResultResult = combatState.criticalResultWithReduction(criticalResult: criticalResult.result);
+    // Las masas son inmunes a los críticos: no hay penalizador que aplicar.
+    final defenderIsMass = combatState.defense.character?.profile.isMass ?? false;
 
     return CustomCombatCard(
-      title: 'Critico',
+      title: defenderIsMass ? 'Crítico (la masa es inmune)' : 'Crítico',
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,31 +168,33 @@ class CombatCriticalCard extends StatelessWidget {
               Flexible(
                 child: Center(
                   child: TextButton(
-                    onPressed: () {
-                      final character = combatState.defense.character;
-                      final result = criticalResultResult;
+                    onPressed: defenderIsMass
+                        ? null
+                        : () {
+                            final character = combatState.defense.character;
+                            final result = criticalResultResult;
 
-                      var midValue = -(result ~/ 2);
-                      if (result < 50) {
-                        midValue = 0;
-                      }
+                            var midValue = -(result ~/ 2);
+                            if (result < 50) {
+                              midValue = 0;
+                            }
 
-                      final criticalModifier = StatusModifier(
-                        name: 'Critico ($result)',
-                        attack: -result,
-                        dodge: -result,
-                        parry: -result,
-                        physicalAction: -result,
-                        turn: -result,
-                        isOfCritical: true,
-                        midValue: midValue,
-                      );
+                            final criticalModifier = StatusModifier(
+                              name: 'Critico ($result)',
+                              attack: -result,
+                              dodge: -result,
+                              parry: -result,
+                              physicalAction: -result,
+                              turn: -result,
+                              isOfCritical: true,
+                              midValue: midValue,
+                            );
 
-                      character?.state.modifiers.add(criticalModifier);
+                            character?.state.modifiers.add(criticalModifier);
 
-                      appState.updateCharacter(character);
-                    },
-                    child: Text('Aplicar penalizador ($criticalResultResult)'),
+                            appState.updateCharacter(character);
+                          },
+                    child: Text(defenderIsMass ? 'Sin penalizador (inmune)' : 'Aplicar penalizador ($criticalResultResult)'),
                   ),
                 ),
               ),
