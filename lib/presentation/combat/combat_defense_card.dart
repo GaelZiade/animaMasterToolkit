@@ -30,6 +30,9 @@ class CombatDefenseCard extends StatelessWidget {
     // tira, y su defensa media más el modificador es su Defensa Final.
     final isMass = character?.profile.isMass ?? false;
     final editable = !damageAccumulation || usesShield || isMass;
+    // Una criatura con acumulación que no usa escudo no tiene defensa que
+    // penalizar: los situacionales se le aplican cuando ataca (Core, p. 99).
+    final situationalsApply = editable;
 
     return CustomCombatCard(
       title:
@@ -167,7 +170,7 @@ class CombatDefenseCard extends StatelessWidget {
                     height: 40,
                     child: TextButton(
                       onPressed: () {
-                        if (damageAccumulation) return;
+                        if (!situationalsApply) return;
                         BottomSheetModifiers.show(
                             context,
                             combatState.defense.modifiers,
@@ -182,7 +185,7 @@ class CombatDefenseCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            damageAccumulation ? ' - ' : 'Situacionales',
+                            situationalsApply ? 'Situacionales' : 'Aplican al atacar',
                             textAlign: TextAlign.center,
                           ),
                           Text(

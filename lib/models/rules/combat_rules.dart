@@ -93,11 +93,15 @@ class CombatRules {
 
     final damageAccumulation = defender?.profile.damageAccumulation ?? false;
     final typedModifier = modifier?.safeInterpret ?? 0;
+    // Los situacionales de la Tabla 43 (flanco, ceguera...) sí afectan a la masa
+    // y al escudo, que tienen una defensa real. La masa solo se salva del
+    // penalizador por defensas múltiples.
+    final situationalModifiers = modifiers?.getAllModifiersForType(defenseType ?? ModifiersType.dodge) ?? 0;
 
     // Una masa de enemigos no tira: su defensa media es directamente su Defensa
     // Final, y nunca sufre penalizadores por recibir ataques adicionales.
     if (defender?.profile.isMass ?? false) {
-      final total = max(0, baseDefenseNumber + typedModifier);
+      final total = max(0, baseDefenseNumber + typedModifier + situationalModifiers);
 
       return ExplainedText(
         title: 'Defensa final',
@@ -107,6 +111,7 @@ class CombatRules {
         ..setTerms(
           [
             ExplainedTerm('Defensa media de la masa', baseDefenseNumber),
+            ExplainedTerm('Modificadores de estado', situationalModifiers),
             ExplainedTerm('Modificador', typedModifier),
           ],
           totalLabel: 'Defensa final',
@@ -122,7 +127,7 @@ class CombatRules {
     // aplicando -80 a su Proyección, pero si lo superan sí pierde la acción.
     if (damageAccumulation && supernaturalShield) {
       const shieldPenalty = -80;
-      final total = max(0, shieldProjection + shieldPenalty + rollNumber + typedModifier);
+      final total = max(0, shieldProjection + shieldPenalty + rollNumber + typedModifier + situationalModifiers);
 
       return ExplainedText(
         title: 'Defensa final',
@@ -133,6 +138,7 @@ class CombatRules {
           [
             ExplainedTerm('Proyección', shieldProjection),
             ExplainedTerm('Escudo con acumulación', shieldPenalty),
+            ExplainedTerm('Modificadores de estado', situationalModifiers),
             ExplainedTerm('Tirada', rollNumber),
             ExplainedTerm('Modificador', typedModifier),
           ],
