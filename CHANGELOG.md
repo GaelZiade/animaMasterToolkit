@@ -72,8 +72,7 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
     la Pantalla del Director;
   - **Kempo** (Dominus Exxet, que manda sobre el Core): −15 en grado base, −10
     en avanzado y un ataque extra en supremo. Solo sin armas;
-  - desarmado sin arte marcial aplica −20. Los manuales no lo fijan: es regla de
-    la casa.
+  - desarmado sin arte marcial aplica −20, como un arma pequeña.
 
   Ambidestría, las dos tablas y los grados de Kempo y Tae Kwon Do se marcan en la
   ficha del personaje, y al importar se leen de la planilla: las ventajas de la

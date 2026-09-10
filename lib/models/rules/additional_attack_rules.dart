@@ -135,7 +135,7 @@ abstract class AdditionalAttackRules {
       if (kempoGrade == 1) return -15;
 
       // Los manuales no dan el penalizador del combate desarmado sin arte
-      // marcial: se lo trata como un arma pequeña (regla de la casa).
+      // marcial: se lo trata como un arma pequeña.
       return -20;
     }
 
@@ -158,7 +158,7 @@ abstract class AdditionalAttackRules {
         >= 3 => 'Kempo supremo',
         2 => 'Kempo avanzado',
         1 => 'Kempo',
-        _ => 'desarmado, regla de la casa',
+        _ => 'desarmado',
       };
     }
 
