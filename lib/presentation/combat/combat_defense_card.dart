@@ -26,10 +26,14 @@ class CombatDefenseCard extends StatelessWidget {
     final damageAccumulation = defense.character?.profile.damageAccumulation ?? false;
     final shieldProjection = ScreenCombatState.shieldProjectionOf(character);
     final usesShield = damageAccumulation && defense.supernaturalShield;
+    // Una masa también cuenta como acumulación, pero se defiende distinto: no
+    // tira, y su defensa media más el modificador es su Defensa Final.
+    final isMass = character?.profile.isMass ?? false;
+    final editable = !damageAccumulation || usesShield || isMass;
 
     return CustomCombatCard(
       title:
-          "${character?.profile.name ?? ""} ${usesShield ? 'Escudo (Total: ${combatState.finalDefenseValue.result})' : damageAccumulation ? '(Acumulación de daño)' : '${defense.defenseType.displayable} (Total: ${combatState.finalDefenseValue.result})'}",
+          "${character?.profile.name ?? ""} ${usesShield ? 'Escudo (Total: ${combatState.finalDefenseValue.result})' : isMass ? 'Masa (Total: ${combatState.finalDefenseValue.result})' : damageAccumulation ? '(Acumulación de daño)' : '${defense.defenseType.displayable} (Total: ${combatState.finalDefenseValue.result})'}",
       actionTitle: character == null
           ? null
           : IconButton(
@@ -50,9 +54,9 @@ class CombatDefenseCard extends StatelessWidget {
                   SizedBox(
                     height: 40,
                     child: AMTTextFormField(
-                      enabled: !damageAccumulation || usesShield,
-                      text: defense.roll,
-                      label: 'Tirada de defensa',
+                      enabled: (!damageAccumulation || usesShield) && !isMass,
+                      text: isMass ? '' : defense.roll,
+                      label: isMass ? 'Sin tirada (masa)' : 'Tirada de defensa',
                       onChanged: (value) => {appState.updateCombatState(defenseRoll: value)},
                       suffixIcon: IconButton(
                         tooltip: 'Tirar dados de defensa',
@@ -83,7 +87,7 @@ class CombatDefenseCard extends StatelessWidget {
                                 label: 'Defensa',
                                 text: usesShield
                                     ? '$shieldProjection-80'
-                                    : damageAccumulation
+                                    : damageAccumulation && !isMass
                                         ? '-'
                                         : character.calculateDefense(defense.defenseType),
                               ),
@@ -93,7 +97,7 @@ class CombatDefenseCard extends StatelessWidget {
                         Flexible(
                           flex: 2,
                           child: AMTTextFormField(
-                            enabled: !damageAccumulation || usesShield,
+                            enabled: editable,
                             label: character != null ? 'Modificador' : 'Defensa',
                             suffixIcon: TextButton(
                               child: const Text('+Can'),
