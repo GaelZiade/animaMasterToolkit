@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
+import 'package:amt/models/rules/mass_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/explained_text.dart';
@@ -18,6 +21,9 @@ class ScreenCombatStateAttack {
   /// reciben el doble.
   bool areaAttack = false;
 
+  /// Miembros de una masa que alcanza el ataque en área (Tabla 2).
+  int areaTargets = 0;
+
   Character? character;
 
   ModifiersState modifiers = ModifiersState();
@@ -29,6 +35,9 @@ class ScreenCombatStateDefense {
   String defense = '';
 
   DefenseType defenseType = DefenseType.parry;
+
+  /// El defensor con acumulación se protege con un escudo mágico o psíquico.
+  bool supernaturalShield = false;
   Character? character;
 
   ModifiersState modifiers = ModifiersState();
@@ -49,6 +58,17 @@ class ScreenCombatState {
   ScreenCombatStateCritical critical = ScreenCombatStateCritical();
   SurpriseType surpriseType = SurpriseType.none;
 
+  /// Mejor Proyección disponible para levantar un escudo sobrenatural.
+  ///
+  /// La planilla importa la Proyección Mágica y la Psíquica como armas, así que
+  /// se toma la defensa de la que sea más alta.
+  static int shieldProjectionOf(Character? character) {
+    final projections =
+        (character?.combat.weapons ?? const []).where((weapon) => weapon.name.toLowerCase().contains('proyecci')).map((weapon) => weapon.defense);
+
+    return projections.isEmpty ? 0 : projections.reduce(max);
+  }
+
   String get criticalLocalization {
     return CombatRules.getCriticalLocalization(critical.localizationRoll);
   }
@@ -61,6 +81,7 @@ class ScreenCombatState {
       surpriseType: surpriseType,
       modifiers: attack.modifiers,
       characterStateModifiers: attack.character?.state.modifiers.getAllModifiersForType(ModifiersType.attack) ?? 0,
+      massBonus: (attack.character?.profile.isMass ?? false) ? MassRules.attackBonus(MassRules.membersAlive(attack.character!)) : 0,
     );
   }
 
@@ -75,6 +96,8 @@ class ScreenCombatState {
       defensesNumber: defense.character?.state.defenseNumber,
       defender: defense.character,
       characterStateModifiers: defense.character?.state.modifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
+      supernaturalShield: defense.supernaturalShield,
+      shieldProjection: shieldProjectionOf(defense.character),
     );
   }
 
@@ -94,6 +117,9 @@ class ScreenCombatState {
       defenseValue: finalDefenseValue,
       finalAbsorption: calculateFinalAbsorption,
       areaAttack: attack.areaAttack,
+      massAreaMultiplier: (defense.character?.profile.isMass ?? false)
+          ? MassRules.areaDamageMultiplier(targets: attack.areaTargets, members: MassRules.membersAlive(defense.character!))
+          : 1,
       baseDamage: CombatRules.calculateBaseDamage(
         weapon: attack.character?.selectedWeapon(),
         damageModifier: attack.damage,

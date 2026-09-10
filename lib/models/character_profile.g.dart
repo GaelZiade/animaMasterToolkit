@@ -32,13 +32,14 @@ class CharacterProfileAdapter extends TypeAdapter<CharacterProfile> {
       uroboros: fields[12] as bool?,
       damageAccumulation: fields[13] as bool?,
       critLevel: fields[14] as int?,
+      massSize: fields[15] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CharacterProfile obj) {
     writer
-      ..writeByte(14)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.fatigue)
       ..writeByte(1)
@@ -68,7 +69,9 @@ class CharacterProfileAdapter extends TypeAdapter<CharacterProfile> {
       ..writeByte(13)
       ..write(obj.damageAccumulation)
       ..writeByte(14)
-      ..write(obj.critLevel);
+      ..write(obj.critLevel)
+      ..writeByte(15)
+      ..write(obj.massSize);
   }
 
   @override

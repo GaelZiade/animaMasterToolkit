@@ -21,6 +21,7 @@ class CharacterProfile {
     this.uroboros = false,
     this.damageAccumulation = false,
     this.critLevel = 90,
+    this.massSize,
   });
 
   static CharacterProfile? fromJson(Map<String, dynamic>? json) {
@@ -44,6 +45,7 @@ class CharacterProfile {
       // pierde en cada importacion.
       damageAccumulation: JsonUtils.boolean(json['acumulacionDeDanio'] ?? json['acumDanio'], placeholder: false),
       critLevel: JsonUtils.integer(json['nivelDeCritico'], 90),
+      massSize: json['tamanoMasa'] == null ? null : JsonUtils.integer(json['tamanoMasa'], 0),
     );
   }
 
@@ -63,6 +65,7 @@ class CharacterProfile {
       'uruboros': uroboros,
       'acumulacionDeDanio': damageAccumulation,
       'nivelDeCritico': critLevel,
+      'tamanoMasa': massSize,
     };
   }
 
@@ -97,6 +100,12 @@ class CharacterProfile {
   @HiveField(14)
   late int? critLevel;
 
+  /// Cantidad de miembros cuando el personaje es una masa de enemigos.
+  @HiveField(15)
+  int? massSize;
+
+  bool get isMass => (massSize ?? 0) > 1;
+
   CharacterProfile copy({bool? isNpc, int? number}) {
     return CharacterProfile(
       fatigue: fatigue,
@@ -113,6 +122,7 @@ class CharacterProfile {
       uroboros: uroboros,
       damageAccumulation: damageAccumulation,
       critLevel: critLevel,
+      massSize: massSize,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:amt/lib.dart';
+import 'package:amt/models/rules/mass_rules.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -222,9 +223,44 @@ class ShowCharacterOptions {
                       ),
                       Row(
                         children: [
-                          /*Expanded(
+                          Expanded(
                             child: InkWell(
-                              onTap: () {},
+                              onTap: () async {
+                                // No se arma una masa a partir de otra masa.
+                                if (character.profile.isMass) return;
+
+                                final controller = TextEditingController(text: '10');
+                                final members = await showDialog<int>(
+                                  context: context,
+                                  builder: (dialogContext) => AlertDialog(
+                                    title: const Text('Crear masa de enemigos'),
+                                    content: TextField(
+                                      controller: controller,
+                                      autofocus: true,
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Cantidad de miembros',
+                                        helperText: 'Suma la vida de todos, gana bono de ataque y se defiende sin tirar',
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancelar')),
+                                      FilledButton(
+                                        onPressed: () {
+                                          final value = int.tryParse(controller.text.trim());
+                                          Navigator.pop(dialogContext, value != null && value >= 2 ? value : null);
+                                        },
+                                        child: const Text('Crear'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                if (members == null || !context.mounted) return;
+
+                                Navigator.pop(context);
+                                onAddCharacter(MassRules.create(character, members));
+                              },
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -236,7 +272,7 @@ class ShowCharacterOptions {
                                 ],
                               ),
                             ),
-                          ),*/
+                          ),
                           Expanded(
                             child: InkWell(
                               onTap: () {

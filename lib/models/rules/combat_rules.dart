@@ -42,6 +42,8 @@ class CombatRules {
     // sumados dentro de [baseAttack]. Se reciben aparte sólo para poder
     // mostrarlos como una línea propia del desglose.
     int characterStateModifiers = 0,
+    // Bono de la Tabla 1 cuando el atacante es una masa de enemigos.
+    int massBonus = 0,
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final attackBaseNumber = baseAttack?.safeInterpret ?? 0;
@@ -49,7 +51,7 @@ class CombatRules {
     final surpriseNumber = surpriseType == SurpriseType.defender ? -90 : 0;
     final modifiersNumber = modifiers?.getAllModifiersForType(ModifiersType.attack) ?? 0;
 
-    final total = attackBaseNumber + modifierNumber + rollNumber + modifiersNumber + surpriseNumber;
+    final total = attackBaseNumber + modifierNumber + rollNumber + modifiersNumber + surpriseNumber + massBonus;
 
     return ExplainedText(
       title: 'Ataque final',
@@ -63,6 +65,7 @@ class CombatRules {
           ExplainedTerm('Tirada', rollNumber),
           ExplainedTerm('Modificadores de estado', modifiersNumber),
           ExplainedTerm('Sorpresa', surpriseNumber),
+          ExplainedTerm('Masa de enemigos', massBonus),
         ],
         totalLabel: 'Ataque final',
         total: total,
@@ -80,11 +83,67 @@ class CombatRules {
     required Character? defender,
     // Igual que en el ataque: ya están dentro de [baseDefense].
     int characterStateModifiers = 0,
+    // El defensor con acumulación se protege con un escudo mágico o psíquico.
+    bool supernaturalShield = false,
+    // Habilidad de Proyección con la que levanta ese escudo.
+    int shieldProjection = 0,
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final baseDefenseNumber = baseDefense?.safeInterpret ?? 0;
 
     final damageAccumulation = defender?.profile.damageAccumulation ?? false;
+    final typedModifier = modifier?.safeInterpret ?? 0;
+
+    // Una masa de enemigos no tira: su defensa media es directamente su Defensa
+    // Final, y nunca sufre penalizadores por recibir ataques adicionales.
+    if (defender?.profile.isMass ?? false) {
+      final total = max(0, baseDefenseNumber + typedModifier);
+
+      return ExplainedText(
+        title: 'Defensa final',
+        text: 'Resultado en defensa: $total (Masa de enemigos)',
+        result: total,
+      )
+        ..setTerms(
+          [
+            ExplainedTerm('Defensa media de la masa', baseDefenseNumber),
+            ExplainedTerm('Modificador', typedModifier),
+          ],
+          totalLabel: 'Defensa final',
+          total: total,
+        )
+        ..add(
+          explanation: 'Una masa no realiza tirada defensiva: su habilidad de defensa media es su Defensa Final '
+              'y no sufre penalizadores por ataques adicionales (Bestiario, Combate de Masas).',
+        );
+    }
+
+    // Un ser con acumulación puede defenderse con un escudo mágico o psíquico
+    // aplicando -80 a su Proyección, pero si lo superan sí pierde la acción.
+    if (damageAccumulation && supernaturalShield) {
+      const shieldPenalty = -80;
+      final total = max(0, shieldProjection + shieldPenalty + rollNumber + typedModifier);
+
+      return ExplainedText(
+        title: 'Defensa final',
+        text: 'Resultado en defensa: $total (Escudo sobrenatural)',
+        result: total,
+      )
+        ..setTerms(
+          [
+            ExplainedTerm('Proyección', shieldProjection),
+            ExplainedTerm('Escudo con acumulación', shieldPenalty),
+            ExplainedTerm('Tirada', rollNumber),
+            ExplainedTerm('Modificador', typedModifier),
+          ],
+          totalLabel: 'Defensa final',
+          total: total,
+        )
+        ..add(
+          text: 'Si el ataque supera el escudo, el ser pierde su acción',
+          reference: BookReference(page: 99, book: Books.coreExxet),
+        );
+    }
 
     if (damageAccumulation) {
       final result = ExplainedText(
@@ -144,6 +203,8 @@ class CombatRules {
     required Character? defender,
     required int baseDamage,
     bool areaAttack = false,
+    // Multiplicador de la Tabla 2 al atacar en área a una masa de enemigos.
+    int massAreaMultiplier = 1,
   }) {
     final info = ExplainedText(title: 'Daño');
 
@@ -159,8 +220,11 @@ class CombatRules {
 
     // Un area que cubra al menos la mitad del cuerpo dobla el dano sobre una
     // criatura con acumulacion. (Core Exxet, p. 99)
-    final doublesDamage = areaAttack && (defender?.profile.damageAccumulation ?? false);
-    final damageDone = doublesDamage ? baseDamageDone * 2 : baseDamageDone;
+    final isMass = defender?.profile.isMass ?? false;
+    // Contra una masa manda la Tabla 2: el doble por área es para una sola criatura.
+    final doublesDamage = !isMass && areaAttack && (defender?.profile.damageAccumulation ?? false);
+    final multiplier = isMass && areaAttack ? max(1, massAreaMultiplier) : (doublesDamage ? 2 : 1);
+    final damageDone = baseDamageDone * multiplier;
 
     info
       ..add(
@@ -176,6 +240,12 @@ class CombatRules {
         explanation: 'Daño causado: $baseDamageDone = (Resultado final / 100) * Daño base',
         result: damageDone,
       );
+
+    if (isMass && areaAttack && multiplier > 1) {
+      info.add(
+        explanation: 'Daño multiplicado por $multiplier hasta $damageDone: ataque en área contra una masa de enemigos (Tabla 2)',
+      );
+    }
 
     if (doublesDamage) {
       info.add(
@@ -300,6 +370,9 @@ class CombatRules {
   }
 
   static ExplainedText? criticalDamage({required Character? defender, required int? damage}) {
+    // Una masa no tiene un único cuerpo que dañar: es inmune a los críticos.
+    if (defender?.profile.isMass ?? false) return null;
+
     final info = ExplainedText(title: 'Critico');
     final actualLife = defender?.state.getConsumable(ConsumableType.hitPoints)?.actualValue ?? 999;
     damage = damage ?? 0;

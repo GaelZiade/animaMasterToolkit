@@ -5,6 +5,7 @@ import 'package:amt/presentation/characters/modifiers_card.dart';
 import 'package:amt/presentation/combat/custom_combat_card.dart';
 import 'package:amt/presentation/components/components.dart';
 import 'package:amt/presentation/states/characters_page_state.dart';
+import 'package:amt/presentation/states/combat_state.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/assets.dart';
 import 'package:amt/utils/status_colors.dart';
@@ -23,10 +24,12 @@ class CombatDefenseCard extends StatelessWidget {
     final character = defense.character;
 
     final damageAccumulation = defense.character?.profile.damageAccumulation ?? false;
+    final shieldProjection = ScreenCombatState.shieldProjectionOf(character);
+    final usesShield = damageAccumulation && defense.supernaturalShield;
 
     return CustomCombatCard(
       title:
-          "${character?.profile.name ?? ""} ${damageAccumulation ? '(Acumulación de daño)' : '${defense.defenseType.displayable} (Total: ${combatState.finalDefenseValue.result})'}",
+          "${character?.profile.name ?? ""} ${usesShield ? 'Escudo (Total: ${combatState.finalDefenseValue.result})' : damageAccumulation ? '(Acumulación de daño)' : '${defense.defenseType.displayable} (Total: ${combatState.finalDefenseValue.result})'}",
       actionTitle: character == null
           ? null
           : IconButton(
@@ -47,7 +50,7 @@ class CombatDefenseCard extends StatelessWidget {
                   SizedBox(
                     height: 40,
                     child: AMTTextFormField(
-                      enabled: !damageAccumulation,
+                      enabled: !damageAccumulation || usesShield,
                       text: defense.roll,
                       label: 'Tirada de defensa',
                       onChanged: (value) => {appState.updateCombatState(defenseRoll: value)},
@@ -78,7 +81,11 @@ class CombatDefenseCard extends StatelessWidget {
                               child: AMTTextFormField(
                                 enabled: false,
                                 label: 'Defensa',
-                                text: damageAccumulation ? '-' : character.calculateDefense(defense.defenseType),
+                                text: usesShield
+                                    ? '$shieldProjection-80'
+                                    : damageAccumulation
+                                        ? '-'
+                                        : character.calculateDefense(defense.defenseType),
                               ),
                             ),
                           ),
@@ -86,7 +93,7 @@ class CombatDefenseCard extends StatelessWidget {
                         Flexible(
                           flex: 2,
                           child: AMTTextFormField(
-                            enabled: !damageAccumulation,
+                            enabled: !damageAccumulation || usesShield,
                             label: character != null ? 'Modificador' : 'Defensa',
                             suffixIcon: TextButton(
                               child: const Text('+Can'),
@@ -188,6 +195,20 @@ class CombatDefenseCard extends StatelessWidget {
             ),
           ],
         ),
+        // Solo para un ser con acumulación que proyecte magia o poderes; una masa
+        // de enemigos no puede usarlo.
+        if (damageAccumulation && !(character?.profile.isMass ?? false) && shieldProjection > 0)
+          SwitchListTile(
+            value: defense.supernaturalShield,
+            onChanged: (value) => appState.updateCombatState(supernaturalShield: value),
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            title: Text('Defenderse con escudo sobrenatural', style: theme.textTheme.bodyMedium),
+            subtitle: Text(
+              'Proyección $shieldProjection con −80. Si lo superan, pierde la acción.',
+              style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
         const SizedBox(
           height: 10,
         ),

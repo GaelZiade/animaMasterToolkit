@@ -19,6 +19,7 @@ class CombatAttackCard extends StatelessWidget {
     final appState = context.watch<CharactersPageState>();
     final theme = Theme.of(context);
     final attackState = appState.combatState.attack;
+    final defenderIsMass = appState.combatState.defense.character?.profile.isMass ?? false;
     final character = attackState.character;
     final weapon = character?.selectedWeapon();
     final isVariableDamage = weapon?.variableDamage ?? false;
@@ -245,8 +246,21 @@ class CombatAttackCard extends StatelessWidget {
             dense: true,
             title: Text('Ataque en área', style: theme.textTheme.bodyMedium),
             subtitle: Text(
-              'Cubre al menos la mitad del cuerpo: dobla el daño',
+              defenderIsMass
+                  ? 'Contra una masa: multiplica el daño según a cuántos alcanza (Tabla 2)'
+                  : 'Cubre al menos la mitad del cuerpo: dobla el daño',
               style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+          ),
+        // Contra una masa el multiplicador depende de cuántos miembros alcanza.
+        if (defenderIsMass && attackState.areaAttack)
+          SizedBox(
+            height: 40,
+            child: AMTTextFormField(
+              label: 'Enemigos alcanzados',
+              text: attackState.areaTargets > 0 ? '${attackState.areaTargets}' : '',
+              inputType: TextInputType.number,
+              onChanged: (value) => appState.updateCombatState(areaTargets: int.tryParse(value.trim()) ?? 0),
             ),
           ),
         const SizedBox(

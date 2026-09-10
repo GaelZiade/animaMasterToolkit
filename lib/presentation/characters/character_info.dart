@@ -70,9 +70,13 @@ class _CharacterSheetState extends State<_CharacterSheet> {
                       builder: (context, constraints) {
                         final wide = constraints.maxWidth >= 720;
                         final left = [_attributes(theme), const SizedBox(height: 16), _resistances(theme)];
-                        final right = [_combat(theme), if (_hasSupernatural) ...[const SizedBox(height: 16), _supernatural(theme)]];
+                        final right = [
+                          _combat(theme),
+                          if (_hasSupernatural) ...[const SizedBox(height: 16), _supernatural(theme)]
+                        ];
 
-                        if (!wide) return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...left, const SizedBox(height: 16), ...right]);
+                        if (!wide)
+                          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...left, const SizedBox(height: 16), ...right]);
 
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +253,8 @@ class _CharacterSheetState extends State<_CharacterSheet> {
         spacing: 8,
         runSpacing: 8,
         children: [
-          if (_kiTotal > 0) _StatTile(label: 'Ki', value: '$_kiTotal', caption: ki != null && ki.genericAccumulation > 0 ? 'Acum. ${ki.genericAccumulation}' : null),
+          if (_kiTotal > 0)
+            _StatTile(label: 'Ki', value: '$_kiTotal', caption: ki != null && ki.genericAccumulation > 0 ? 'Acum. ${ki.genericAccumulation}' : null),
           if ((mystical?.zeon ?? 0) > 0) _StatTile(label: 'Zeon', value: '${mystical!.zeon}', caption: 'ACT ${mystical.act}'),
           if ((mystical?.zeonRegeneration ?? 0) > 0) _StatTile(label: 'Regen. Zeon', value: '${mystical!.zeonRegeneration}'),
           if ((psychic?.freeCvs ?? 0) > 0) _StatTile(label: 'CV libres', value: '${psychic!.freeCvs}'),
@@ -385,8 +390,7 @@ class _CharacterSheetState extends State<_CharacterSheet> {
                     child: Row(
                       children: [
                         Expanded(child: Text(item.key, style: theme.textTheme.bodyMedium)),
-                        if (item.value.trim().isNotEmpty && item.value != '-')
-                          Text(item.value, style: _numberStyle(theme)),
+                        if (item.value.trim().isNotEmpty && item.value != '-') Text(item.value, style: _numberStyle(theme)),
                       ],
                     ),
                   ),
@@ -503,14 +507,14 @@ class _Header extends StatelessWidget {
                   profile.name.trim().isEmpty ? 'Sin nombre' : profile.name,
                   style: theme.textTheme.headlineSmall!.copyWith(fontFamily: 'Metamorphous', fontWeight: FontWeight.w700),
                 ),
-                if (subtitle.isNotEmpty)
-                  Text(subtitle, style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-                if ((profile.damageAccumulation ?? false) || (profile.uroboros ?? false))
+                if (subtitle.isNotEmpty) Text(subtitle, style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                if ((profile.damageAccumulation ?? false) || (profile.uroboros ?? false) || profile.isMass)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Wrap(
                       spacing: 6,
                       children: [
+                        if (profile.isMass) _RuleChip(label: 'Masa de ${profile.massSize}', color: theme.colorScheme.primary),
                         if (profile.damageAccumulation ?? false) _RuleChip(label: 'Acumulación de daño', color: theme.colorScheme.danger),
                         if (profile.uroboros ?? false) _RuleChip(label: 'Uróboros', color: theme.colorScheme.uroboros),
                       ],
@@ -663,7 +667,8 @@ class _EditableGrid extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        Text(item.label, style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
+                        Text(item.label,
+                            style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant, fontWeight: FontWeight.w700)),
                         _InlineNumberField(value: item.value, onChanged: item.onChanged, style: _numberStyle(theme, strong: true)),
                       ],
                     ),
@@ -781,13 +786,14 @@ class _SkillRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final value = int.tryParse(skill.value.trim()) ?? (() {
-      try {
-        return skill.value.interpret().toInt();
-      } catch (_) {
-        return null;
-      }
-    })();
+    final value = int.tryParse(skill.value.trim()) ??
+        (() {
+          try {
+            return skill.value.interpret().toInt();
+          } catch (_) {
+            return null;
+          }
+        })();
 
     // Los negativos son información (penalizador por no tener la habilidad),
     // así que se atenúan pero no se ocultan.

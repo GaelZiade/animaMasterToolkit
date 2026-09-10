@@ -161,7 +161,10 @@ class CharactersPageState extends ChangeNotifier {
       _box.add(newChar);
     } else {
       if (maxValue > 0) {
-        character.profile.name = '${character.profile.name} #${maxValue + 1}';
+        // Se numera sobre el nombre base: sin esto, duplicar "PJ #2" daba
+        // "PJ #2 #3", y cada copia sucesiva sumaba otro sufijo.
+        final baseName = character.profile.name.split('#').first.trim();
+        character.profile.name = '$baseName #${maxValue + 1}';
       }
 
       characters.add(character);
@@ -232,8 +235,12 @@ class CharactersPageState extends ChangeNotifier {
     String? baseDefenseModifiers,
     SurpriseType? surprise,
     bool? areaAttack,
+    int? areaTargets,
+    bool? supernaturalShield,
   }) {
     combatState.attack.areaAttack = areaAttack ?? combatState.attack.areaAttack;
+    combatState.attack.areaTargets = areaTargets ?? combatState.attack.areaTargets;
+    combatState.defense.supernaturalShield = supernaturalShield ?? combatState.defense.supernaturalShield;
 
     combatState.attack.attack = baseAttackModifiers ?? combatState.attack.attack;
     combatState.defense.defense = baseDefenseModifiers ?? combatState.defense.defense;
@@ -265,6 +272,11 @@ class CharactersPageState extends ChangeNotifier {
       syncDamageTypeWithWeapon();
     }
     combatState.defense.character = defendant ?? combatState.defense.character;
+
+    // El escudo es una decisión de ese defensor: al cambiarlo se apaga.
+    if (defendant != null && supernaturalShield == null) {
+      combatState.defense.supernaturalShield = false;
+    }
 
     combatState.attack.modifiers = attackingModifiers ?? combatState.attack.modifiers;
     combatState.defense.modifiers = defenderModifiers ?? combatState.defense.modifiers;
