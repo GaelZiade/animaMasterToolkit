@@ -52,6 +52,26 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   de [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47). Una
   criatura con acumulación que tenga Proyección puede defenderse con un escudo
   mágico o psíquico aplicando −80, y si se lo superan pierde la acción (p. 99).
+- **Ataques adicionales** (p. 91). La tarjeta de ataque calcula el tope, un
+  ataque más por cada 100 de HA de la ficha, y el penalizador que aplican todos
+  los ataques declarados:
+  - según el tamaño del arma: −20 pequeña, −30 media, −40 grande. La planilla
+    no exporta el tamaño, así que se deduce del nombre con las tablas de armas
+    del Core y se puede corregir desde la tarjeta;
+  - **segunda arma**: un ataque más fuera del tope, con −40 propio, o −10 con
+    Ambidestría. Desarmado no la admite;
+  - **Tabla de Ataque Encadenado**: armas grandes como medias y medias como
+    pequeñas;
+  - **Kempo** (Dominus Exxet, que manda sobre el Core): −15 en grado base, −10
+    en avanzado y un ataque extra en supremo. Solo sin armas;
+  - **Tae Kwon Do**: patada adicional con −30, −20 o sin penalizador según el
+    grado, incluso empuñando armas;
+  - desarmado sin arte marcial aplica −20. Los manuales no lo fijan: es regla de
+    la casa.
+
+  Ambidestría, Ataque Encadenado y los grados de Kempo y Tae Kwon Do se marcan en
+  la ficha del personaje. Las artes marciales y la tabla se toman de la planilla
+  al importar; la ambidestría no, porque la planilla no la exporta.
 
 ## Importación de fichas
 

@@ -19,17 +19,29 @@ class CombatDataAdapter extends TypeAdapter<CombatData> {
     return CombatData(
       armour: fields[1] as ArmourData,
       weapons: (fields[0] as List).cast<Weapon>(),
+      ambidextrous: fields[2] as bool? ?? false,
+      chainAttackTable: fields[3] as bool? ?? false,
+      kempoGrade: fields[4] as int? ?? 0,
+      taeKwonDoGrade: fields[5] as int? ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, CombatData obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.weapons)
       ..writeByte(1)
-      ..write(obj.armour);
+      ..write(obj.armour)
+      ..writeByte(2)
+      ..write(obj.ambidextrous)
+      ..writeByte(3)
+      ..write(obj.chainAttackTable)
+      ..writeByte(4)
+      ..write(obj.kempoGrade)
+      ..writeByte(5)
+      ..write(obj.taeKwonDoGrade);
   }
 
   @override

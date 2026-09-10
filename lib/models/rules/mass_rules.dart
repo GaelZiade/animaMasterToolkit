@@ -108,6 +108,10 @@ abstract class MassRules {
     // El daño físico sube un 50 %; el de conjuros y poderes se dobla.
     mass.combat = CombatData(
       armour: mass.combat.armour,
+      ambidextrous: mass.combat.ambidextrous,
+      chainAttackTable: mass.combat.chainAttackTable,
+      kempoGrade: mass.combat.kempoGrade,
+      taeKwonDoGrade: mass.combat.taeKwonDoGrade,
       weapons: [
         for (final weapon in member.combat.weapons)
           weapon.copy()..damage = _isSupernatural(weapon) ? weapon.damage * 2 : (weapon.damage * 1.5).floor(),

@@ -44,6 +44,13 @@ class CombatRules {
     int characterStateModifiers = 0,
     // Bono de la Tabla 1 cuando el atacante es una masa de enemigos.
     int massBonus = 0,
+    // Penalizador que aplican todos los ataques del asalto por los ataques
+    // adicionales declarados (Core, p. 91).
+    int additionalAttacksPenalty = 0,
+    String additionalAttacksLabel = 'Ataques adicionales',
+    // Penalizador propio del ataque en curso: segunda arma o patada.
+    int extraAttackPenalty = 0,
+    String extraAttackLabel = 'Ataque extra',
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final attackBaseNumber = baseAttack?.safeInterpret ?? 0;
@@ -51,7 +58,14 @@ class CombatRules {
     final surpriseNumber = surpriseType == SurpriseType.defender ? -90 : 0;
     final modifiersNumber = modifiers?.getAllModifiersForType(ModifiersType.attack) ?? 0;
 
-    final total = attackBaseNumber + modifierNumber + rollNumber + modifiersNumber + surpriseNumber + massBonus;
+    final total = attackBaseNumber +
+        modifierNumber +
+        rollNumber +
+        modifiersNumber +
+        surpriseNumber +
+        massBonus +
+        additionalAttacksPenalty +
+        extraAttackPenalty;
 
     return ExplainedText(
       title: 'Ataque final',
@@ -66,6 +80,8 @@ class CombatRules {
           ExplainedTerm('Modificadores de estado', modifiersNumber),
           ExplainedTerm('Sorpresa', surpriseNumber),
           ExplainedTerm('Masa de enemigos', massBonus),
+          ExplainedTerm(additionalAttacksLabel, additionalAttacksPenalty),
+          ExplainedTerm(extraAttackLabel, extraAttackPenalty),
         ],
         totalLabel: 'Ataque final',
         total: total,

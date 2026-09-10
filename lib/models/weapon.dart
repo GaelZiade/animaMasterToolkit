@@ -27,6 +27,7 @@ class Weapon {
     this.ammunition,
     this.special,
     this.variableDamage = false,
+    this.attackSize,
   });
 
   Weapon.blank() {
@@ -63,6 +64,7 @@ class Weapon {
       ammunition: JsonUtils.string(json['municion'], ''),
       special: JsonUtils.string(json['especial'], ''),
       variableDamage: JsonUtils.boolean(json['variable'], placeholder: false),
+      attackSize: json['tamanoAtaque'] == null ? null : JsonUtils.string(json['tamanoAtaque'], ''),
     );
   }
 
@@ -88,6 +90,7 @@ class Weapon {
       'municion': ammunition,
       'especial': special,
       'variable': variableDamage,
+      'tamanoAtaque': attackSize,
     };
   }
 
@@ -132,6 +135,11 @@ class Weapon {
   @HiveField(19)
   bool? variableDamage;
 
+  /// Tamaño para los ataques adicionales: 'P', 'M' o 'G' (Core, p. 91). La
+  /// planilla no lo exporta; null significa deducirlo del nombre.
+  @HiveField(20)
+  String? attackSize;
+
   String description({bool lineBreak = false}) {
     return "$name ${lineBreak ? '\n' : ''}HA: $attack ${lineBreak ? '\n' : ''}${defenseType == DefenseType.dodge ? "HE" : "HP"}: $defense ${lineBreak ? '\n' : ''}T: $turn ${lineBreak ? '\n' : ''}DMG: $damage ${principalDamage?.name()}/${secondaryDamage?.name()} ";
   }
@@ -144,6 +152,10 @@ class Weapon {
       defense: defense,
       defenseType: defenseType,
       damage: damage,
+      type: type,
+      principalDamage: principalDamage,
+      secondaryDamage: secondaryDamage,
+      attackSize: attackSize,
     );
   }
 }

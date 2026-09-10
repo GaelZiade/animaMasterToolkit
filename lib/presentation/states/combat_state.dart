@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
+import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/rules/mass_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -23,6 +24,18 @@ class ScreenCombatStateAttack {
 
   /// Miembros de una masa que alcanza el ataque en área (Tabla 2).
   int areaTargets = 0;
+
+  /// Ataques declarados con el arma principal, contando el primero.
+  int declaredAttacks = 1;
+
+  /// Declara el ataque extra por empuñar un arma en cada mano.
+  bool secondWeapon = false;
+
+  /// Declara la patada adicional de Tae Kwon Do.
+  bool kick = false;
+
+  /// Ataque del asalto que se está resolviendo ahora.
+  AttackSlot slot = AttackSlot.main;
 
   Character? character;
 
@@ -73,7 +86,25 @@ class ScreenCombatState {
     return CombatRules.getCriticalLocalization(critical.localizationRoll);
   }
 
+  /// Ataques adicionales del atacante: tope, penalizadores y ataque en curso.
+  AttackPlan? get attackPlan {
+    final character = attack.character;
+
+    if (character == null) return null;
+
+    return AdditionalAttackRules.plan(
+      weapon: character.selectedWeapon(),
+      combat: character.combat,
+      declared: attack.declaredAttacks,
+      secondWeapon: attack.secondWeapon,
+      kick: attack.kick,
+      slot: attack.slot,
+    );
+  }
+
   ExplainedText get finalAttackValue {
+    final plan = attackPlan;
+
     return CombatRules.finalAttackValue(
       roll: attack.roll,
       baseAttack: attack.character?.calculateAttack(),
@@ -82,6 +113,10 @@ class ScreenCombatState {
       modifiers: attack.modifiers,
       characterStateModifiers: attack.character?.state.modifiers.getAllModifiersForType(ModifiersType.attack) ?? 0,
       massBonus: (attack.character?.profile.isMass ?? false) ? MassRules.attackBonus(MassRules.membersAlive(attack.character!)) : 0,
+      additionalAttacksPenalty: plan?.sharedPenalty ?? 0,
+      additionalAttacksLabel: plan?.sharedLabel ?? '',
+      extraAttackPenalty: plan?.slotPenalty ?? 0,
+      extraAttackLabel: plan?.slotLabel ?? '',
     );
   }
 

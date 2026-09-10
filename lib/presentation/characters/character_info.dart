@@ -1,5 +1,6 @@
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
+import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/utils/app_theme.dart';
 import 'package:amt/utils/key_value.dart';
 import 'package:amt/utils/status_colors.dart';
@@ -214,6 +215,38 @@ class _CharacterSheetState extends State<_CharacterSheet> {
               'FRI': armour.fri,
               'ENE': armour.ene,
             },
+          ),
+          const SizedBox(height: 12),
+          Text('Ataques adicionales', style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              FilterChip(
+                label: const Text('Ambidestría'),
+                tooltip: 'El ataque con un arma adicional aplica −10 en vez de −40',
+                selected: _character.combat.ambidextrous,
+                onSelected: (value) => _commit(() => _character.combat.ambidextrous = value),
+              ),
+              FilterChip(
+                label: const Text('Tabla de Ataque Encadenado'),
+                tooltip: 'Armas grandes como medias y medias como pequeñas',
+                selected: _character.combat.chainAttackTable,
+                onSelected: (value) => _commit(() => _character.combat.chainAttackTable = value),
+              ),
+              _GradeMenu(
+                label: 'Kempo',
+                grade: _character.combat.kempoGrade,
+                onSelected: (grade) => _commit(() => _character.combat.kempoGrade = grade),
+              ),
+              _GradeMenu(
+                label: 'Tae Kwon Do',
+                grade: _character.combat.taeKwonDoGrade,
+                onSelected: (grade) => _commit(() => _character.combat.taeKwonDoGrade = grade),
+              ),
+            ],
           ),
         ],
       ),
@@ -529,6 +562,34 @@ class _Header extends StatelessWidget {
             icon: const Icon(Icons.close),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Grado en un arte marcial, elegido de un menú.
+class _GradeMenu extends StatelessWidget {
+  const _GradeMenu({required this.label, required this.grade, required this.onSelected});
+
+  final String label;
+  final int grade;
+  final void Function(int) onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final grades = AdditionalAttackRules.martialArtGrades;
+    final known = grade > 0;
+
+    return PopupMenuButton<int>(
+      tooltip: 'Grado en $label',
+      initialValue: grade,
+      onSelected: onSelected,
+      itemBuilder: (context) => [
+        for (var i = 0; i < grades.length; i++) PopupMenuItem(value: i, child: Text(i == 0 ? 'No lo domina' : grades[i])),
+      ],
+      child: Chip(
+        avatar: Icon(known ? Icons.check : Icons.expand_more, size: 18),
+        label: Text(known ? '$label: ${grades[grade]}' : label),
       ),
     );
   }
