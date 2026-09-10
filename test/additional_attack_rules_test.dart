@@ -4,6 +4,7 @@ import 'package:amt/models/combat_data.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/weapon.dart';
+import 'package:amt/resources/modifiers.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Weapon _weapon(String name, int attack, {String type = 'A una mano', String? size}) {
@@ -22,7 +23,10 @@ CombatData _combat({bool ambidextrous = false, bool chain = false, int kempo = 0
   );
 }
 
-int _ability(AttackPlan plan, int base, AttackSlot slot) => base + plan.sharedPenalty + plan.penaltyFor(slot);
+int _ability(AttackPlan plan, int base) => base + plan.sharedPenalty;
+
+/// Penalizador del modificador de ataque extra con ese nombre.
+int _extra(String name) => Modifiers.getSituationalModifiers(ModifiersType.attack).firstWhere((modifier) => modifier.name == name).attack;
 
 void main() {
   group('Ejemplos del Core (p. 91)', () {
@@ -30,13 +34,13 @@ void main() {
       final plan = AdditionalAttackRules.plan(weapon: _weapon('Espada larga', 220), combat: _combat(), declared: 3)!;
 
       expect(plan.maxAttacks, 3);
-      expect(_ability(plan, 220, AttackSlot.main), 160);
+      expect(_ability(plan, 220), 160);
     });
 
     test('HA 220 con mandoble: tres ataques con 140', () {
       final plan = AdditionalAttackRules.plan(weapon: _weapon('Mandoble', 220), combat: _combat(), declared: 3)!;
 
-      expect(_ability(plan, 220, AttackSlot.main), 140);
+      expect(_ability(plan, 220), 140);
     });
 
     test('HA 60: un solo ataque', () {
@@ -47,26 +51,17 @@ void main() {
     });
 
     test('Lemures: dos espadas cortas, ambidiestro, un adicional: 120, 120 y 110', () {
-      final plan = AdditionalAttackRules.plan(
-        weapon: _weapon('Espada corta y Espada corta', 140),
-        combat: _combat(ambidextrous: true),
-        declared: 2,
-        secondWeapon: true,
-      )!;
+      final plan = AdditionalAttackRules.plan(weapon: _weapon('Espada corta y Espada corta', 140), combat: _combat(ambidextrous: true), declared: 2)!;
 
-      expect(_ability(plan, 140, AttackSlot.main), 120);
-      expect(_ability(plan, 140, AttackSlot.secondWeapon), 110);
+      expect(_ability(plan, 140), 120);
+      expect(_ability(plan, 140) + _extra(AdditionalAttackRules.secondWeaponAmbidextrous), 110);
     });
 
     test('Lemures sin ataque adicional: 140 y 130', () {
-      final plan = AdditionalAttackRules.plan(
-        weapon: _weapon('Espada corta y Espada corta', 140),
-        combat: _combat(ambidextrous: true),
-        secondWeapon: true,
-      )!;
+      final plan = AdditionalAttackRules.plan(weapon: _weapon('Espada corta y Espada corta', 140), combat: _combat(ambidextrous: true))!;
 
-      expect(_ability(plan, 140, AttackSlot.main), 140);
-      expect(_ability(plan, 140, AttackSlot.secondWeapon), 130);
+      expect(_ability(plan, 140), 140);
+      expect(_ability(plan, 140) + _extra(AdditionalAttackRules.secondWeaponAmbidextrous), 130);
     });
   });
 
@@ -75,7 +70,7 @@ void main() {
       final plan = AdditionalAttackRules.plan(weapon: _weapon('Desarmado', 200, type: 'desarmado'), combat: _combat(kempo: 3), declared: 4)!;
 
       expect(plan.maxAttacks, 4);
-      expect(_ability(plan, 200, AttackSlot.main), 170);
+      expect(_ability(plan, 200), 170);
     });
 
     test('Kempo base aplica −15 y no afecta a un arma', () {
@@ -86,18 +81,35 @@ void main() {
       expect(armed.penaltyPerAttack, -30);
     });
 
-    test('Desarmado sin arte marcial: −20 y sin segunda arma', () {
-      final plan = AdditionalAttackRules.plan(weapon: _weapon('Desarmado', 200, type: 'desarmado'), combat: _combat(), declared: 2, secondWeapon: true)!;
+    test('Desarmado sin arte marcial: −20', () {
+      final plan = AdditionalAttackRules.plan(weapon: _weapon('Desarmado', 200, type: 'desarmado'), combat: _combat(), declared: 2)!;
 
       expect(plan.penaltyPerAttack, -20);
-      expect(plan.secondWeaponAllowed, isFalse);
-      expect(plan.secondWeapon, isFalse);
+    });
+  });
+
+  group('Ataques extra como modificadores', () {
+    test('Están entre los situacionales de ataque, incluidos los que no penalizan', () {
+      expect(_extra(AdditionalAttackRules.secondWeapon), -40);
+      expect(_extra(AdditionalAttackRules.secondWeaponAmbidextrous), -10);
+      expect(_extra(AdditionalAttackRules.kicks[0]), -30);
+      expect(_extra(AdditionalAttackRules.kicks[1]), -20);
+      expect(_extra(AdditionalAttackRules.kicks[2]), 0);
+      expect(_extra('${Modifiers.extraAttackPrefix}Técnica de Ki sin penalizador'), 0);
     });
 
-    test('Patada de Tae Kwon Do por grado', () {
-      expect(AdditionalAttackRules.kickPenalty(1), -30);
-      expect(AdditionalAttackRules.kickPenalty(2), -20);
-      expect(AdditionalAttackRules.kickPenalty(3), 0);
+    test('Sugiere los que corresponden por la ficha', () {
+      final pair = _weapon('Espada Kaitos y Espada Kaitos', 210);
+      final single = _weapon('Mandoble', 210);
+      final unarmed = _weapon('Desarmado', 175, type: 'desarmado');
+
+      expect(
+        AdditionalAttackRules.suggestedExtraAttacks(weapon: pair, combat: _combat(ambidextrous: true, taeKwonDo: 1)),
+        [AdditionalAttackRules.secondWeaponAmbidextrous, AdditionalAttackRules.kicks[0]],
+      );
+      expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: pair, combat: _combat()), [AdditionalAttackRules.secondWeapon]);
+      expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: single, combat: _combat(ambidextrous: true)), isEmpty);
+      expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: unarmed, combat: _combat(ambidextrous: true, taeKwonDo: 2)), [AdditionalAttackRules.kicks[1]]);
     });
   });
 
@@ -177,23 +189,18 @@ void main() {
   });
 
   group('Kaito', () {
-    test('HA 210, espadas medias con Encadenado, Ataque Adicional, ambidiestro y Tae Kwon Do: 6 ataques', () {
-      final plan = AdditionalAttackRules.plan(
-        weapon: _weapon('Espada Kaitos y Espada Kaitos', 210),
-        combat: _combat(ambidextrous: true, chain: true, taeKwonDo: 1, extraTable: true),
-        declared: 4,
-        secondWeapon: true,
-        kick: true,
-      )!;
+    test('HA 210, espadas medias con Encadenado y Ataque Adicional: 4 ataques con 150, más los extra', () {
+      final combat = _combat(ambidextrous: true, chain: true, taeKwonDo: 1, extraTable: true);
+      final pair = _weapon('Espada Kaitos y Espada Kaitos', 210);
+      final plan = AdditionalAttackRules.plan(weapon: pair, combat: combat, declared: 4)!;
 
       expect(plan.maxAttacks, 4);
       expect(plan.maxAttacksBreakdown, '1 base + 2 por HA + 1 por Tabla de Ataque Adicional');
       expect(plan.size, AttackSize.medium);
       expect(plan.penaltySize, AttackSize.small);
-      expect(plan.totalAttacks, 6);
-      expect(_ability(plan, 210, AttackSlot.main), 150);
-      expect(_ability(plan, 210, AttackSlot.secondWeapon), 140);
-      expect(_ability(plan, 210, AttackSlot.kick), 120);
+      expect(_ability(plan, 210), 150);
+      expect(_ability(plan, 210) + _extra(AdditionalAttackRules.secondWeaponAmbidextrous), 140);
+      expect(_ability(plan, 210) + _extra(AdditionalAttackRules.kicks[0]), 120);
     });
   });
 }

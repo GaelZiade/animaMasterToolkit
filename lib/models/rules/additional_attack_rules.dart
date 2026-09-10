@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:amt/models/combat_data.dart';
 import 'package:amt/models/weapon.dart';
+import 'package:amt/resources/modifiers.dart';
 
 /// Tamaño de un arma a efectos de ataques adicionales (Core, p. 91).
 enum AttackSize {
@@ -25,10 +26,8 @@ enum AttackSize {
   }
 }
 
-/// Ataque del asalto que se está resolviendo.
-enum AttackSlot { main, secondWeapon, kick }
-
-/// Ataques que declara un personaje en el asalto y lo que le cuestan.
+/// Ataques que declara un personaje con su arma en el asalto y lo que le
+/// cuestan.
 class AttackPlan {
   const AttackPlan({
     required this.maxAttacks,
@@ -40,19 +39,12 @@ class AttackPlan {
     required this.unarmed,
     required this.penaltyPerAttack,
     required this.penaltySource,
-    required this.secondWeaponAllowed,
-    required this.secondWeapon,
-    required this.secondWeaponPenalty,
-    required this.kickAllowed,
-    required this.kick,
-    required this.kickPenalty,
-    required this.slot,
   });
 
   /// Ataques posibles con la habilidad de la ficha: uno más por cada 100.
   final int maxAttacks;
 
-  /// Ataques con el arma principal, contando el primero.
+  /// Ataques con el arma, contando el primero.
   final int declared;
 
   /// Null si el arma no tiene tamaño elegido ni se pudo deducir del nombre.
@@ -70,20 +62,15 @@ class AttackPlan {
   final int? penaltyPerAttack;
   final String penaltySource;
 
-  final bool secondWeaponAllowed;
-  final bool secondWeapon;
-  final int secondWeaponPenalty;
-
-  final bool kickAllowed;
-  final bool kick;
-  final int kickPenalty;
-
-  final AttackSlot slot;
-
   int get additionalAttacks => declared - 1;
 
-  /// Todos los ataques del asalto, con la segunda arma y la patada.
-  int get totalAttacks => declared + (secondWeapon ? 1 : 0) + (kick ? 1 : 0);
+  /// Penalizador que se aplica a todos los ataques del asalto.
+  int get sharedPenalty => additionalAttacks * (penaltyPerAttack ?? 0);
+
+  String get sharedLabel => 'Ataques adicionales ($additionalAttacks × ${penaltyPerAttack ?? 0}, $penaltySource)';
+
+  /// El tamaño hace falta solo cuando hay ataques adicionales que penalizar.
+  bool get needsSize => penaltyPerAttack == null && additionalAttacks > 0;
 
   /// De dónde sale el tope, para mostrarlo.
   String get maxAttacksBreakdown {
@@ -96,44 +83,29 @@ class AttackPlan {
       if (kempoSupreme) '1 por Kempo supremo',
     ].join(' + ');
   }
-
-  /// Penalizador que se aplica a todos los ataques del asalto.
-  int get sharedPenalty => additionalAttacks * (penaltyPerAttack ?? 0);
-
-  String get sharedLabel => 'Ataques adicionales ($additionalAttacks × ${penaltyPerAttack ?? 0}, $penaltySource)';
-
-  /// El tamaño hace falta solo cuando hay ataques adicionales que penalizar.
-  bool get needsSize => penaltyPerAttack == null && additionalAttacks > 0;
-
-  /// Penalizador propio de un ataque, además del compartido.
-  int penaltyFor(AttackSlot slot) {
-    return switch (slot) {
-      AttackSlot.main => 0,
-      AttackSlot.secondWeapon => secondWeapon ? secondWeaponPenalty : 0,
-      AttackSlot.kick => kick ? kickPenalty : 0,
-    };
-  }
-
-  int get slotPenalty => penaltyFor(slot);
-
-  String get slotLabel {
-    return switch (slot) {
-      AttackSlot.main => '',
-      AttackSlot.secondWeapon => 'Segunda arma',
-      AttackSlot.kick => 'Patada (Tae Kwon Do)',
-    };
-  }
 }
 
-/// Ataques adicionales, armas adicionales y las artes marciales que los
-/// modifican.
+/// Ataques adicionales y lo que los modifica.
+///
+/// Acá se calcula lo automático: el tope y el penalizador que comparten todos
+/// los ataques declarados con el arma. Los ataques fuera del tope (segunda
+/// arma, patada de Tae Kwon Do, técnicas) son modificadores situacionales del
+/// grupo "Ataque extra"; esta clase solo sugiere cuáles corresponden.
 ///
 /// Fuentes: Core Exxet, "Ataques adicionales" y "Ataques con armas
-/// adicionales" (p. 91), tipos de arma (p. 76), tablas de armas y "La
-/// combinación de artes marciales"; Dominus Exxet para Kempo y Tae Kwon Do,
-/// que como regla específica manda sobre el Core.
+/// adicionales" (p. 91), tipos de arma (p. 76) y tablas de armas; Dominus Exxet
+/// para Kempo y Tae Kwon Do, que como regla específica manda sobre el Core.
 abstract class AdditionalAttackRules {
   static const martialArtGrades = ['No', 'Base', 'Avanzado', 'Supremo'];
+
+  /// Nombres de los modificadores de ataque extra (ver [Modifiers]).
+  static const secondWeapon = '${Modifiers.extraAttackPrefix}Segunda arma';
+  static const secondWeaponAmbidextrous = '${Modifiers.extraAttackPrefix}Segunda arma con Ambidestría';
+  static const kicks = [
+    '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Base)',
+    '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Avanzado)',
+    '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Supremo)',
+  ];
 
   /// Un golpe adicional por cada 100 puntos de ataque. Kempo en grado supremo
   /// suma otro, como si se tuvieran 100 puntos más.
@@ -169,8 +141,6 @@ abstract class AdditionalAttackRules {
 
     return switch (size) {
       AttackSize.small => -20,
-      // La Tabla de Ataque Encadenado usa las medias como pequeñas y las
-      // grandes como medias.
       AttackSize.medium => chainAttackTable ? -20 : -30,
       AttackSize.large => chainAttackTable ? -30 : -40,
       null => null,
@@ -201,18 +171,18 @@ abstract class AdditionalAttackRules {
     return 'arma ${size.label.toLowerCase()}';
   }
 
-  /// Un arma en cada mano da un ataque más, fuera del tope: −40, o −10 con
-  /// Ambidestría.
-  static int secondWeaponPenalty({required bool ambidextrous}) => ambidextrous ? -10 : -40;
-
-  /// Patada adicional de Tae Kwon Do según el grado (Dominus Exxet).
-  static int kickPenalty(int grade) {
-    return switch (grade) {
-      >= 3 => 0,
-      2 => -20,
-      _ => -30,
-    };
+  /// Ataques extra que corresponden al personaje con el arma que empuña, para
+  /// mostrarlos primero entre los modificadores. El resto sigue disponible.
+  static List<String> suggestedExtraAttacks({required Weapon weapon, required CombatData combat}) {
+    return [
+      // Combatir sin armas no admite un arma adicional.
+      if (!isUnarmed(weapon) && wieldsTwoWeapons(weapon)) combat.ambidextrous ? secondWeaponAmbidextrous : secondWeapon,
+      if (combat.taeKwonDoGrade > 0) kicks[min(combat.taeKwonDoGrade, kicks.length) - 1],
+    ];
   }
+
+  /// La planilla nombra juntas las armas de las dos manos: "Espada y Daga".
+  static bool wieldsTwoWeapons(Weapon weapon) => RegExp(r'\S\s+y\s+\S').hasMatch(weapon.name);
 
   static bool isUnarmed(Weapon weapon) {
     final type = _normalize(weapon.type ?? '');
@@ -272,15 +242,12 @@ abstract class AdditionalAttackRules {
     required Weapon weapon,
     required CombatData combat,
     int declared = 1,
-    bool secondWeapon = false,
-    bool kick = false,
-    AttackSlot slot = AttackSlot.main,
   }) {
     if (isProjection(weapon)) return null;
 
     final unarmed = isUnarmed(weapon);
     // Las artes marciales son estilos sin armas: Kempo no cambia nada con un
-    // arma en la mano. Tae Kwon Do es la excepción y lo dice expresamente.
+    // arma en la mano.
     final kempo = unarmed ? combat.kempoGrade : 0;
     final size = unarmed ? null : AttackSize.fromCode(weapon.attackSize) ?? suggestSize(weapon.name);
     final maxAttacks = maxAttacksFor(
@@ -288,18 +255,6 @@ abstract class AdditionalAttackRules {
       kempoSupreme: kempo >= 3,
       additionalAttackTable: combat.additionalAttackTable,
     );
-
-    // Combatir sin armas usa todo el cuerpo: no admite un arma adicional.
-    final secondWeaponAllowed = !unarmed;
-    final kickAllowed = combat.taeKwonDoGrade > 0;
-    final usesSecondWeapon = secondWeaponAllowed && secondWeapon;
-    final usesKick = kickAllowed && kick;
-
-    final activeSlot = switch (slot) {
-      AttackSlot.secondWeapon when !usesSecondWeapon => AttackSlot.main,
-      AttackSlot.kick when !usesKick => AttackSlot.main,
-      _ => slot,
-    };
 
     return AttackPlan(
       maxAttacks: maxAttacks,
@@ -311,13 +266,6 @@ abstract class AdditionalAttackRules {
       unarmed: unarmed,
       penaltyPerAttack: penaltyPerAttack(size: size, unarmed: unarmed, kempoGrade: kempo, chainAttackTable: combat.chainAttackTable),
       penaltySource: penaltySource(size: size, unarmed: unarmed, kempoGrade: kempo, chainAttackTable: combat.chainAttackTable),
-      secondWeaponAllowed: secondWeaponAllowed,
-      secondWeapon: usesSecondWeapon,
-      secondWeaponPenalty: secondWeaponPenalty(ambidextrous: combat.ambidextrous),
-      kickAllowed: kickAllowed,
-      kick: usesKick,
-      kickPenalty: kickPenalty(combat.taeKwonDoGrade),
-      slot: activeSlot,
     );
   }
 

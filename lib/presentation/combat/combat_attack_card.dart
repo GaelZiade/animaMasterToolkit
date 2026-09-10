@@ -28,6 +28,19 @@ class CombatAttackCard extends StatelessWidget {
     final isVariableDamage = weapon?.variableDamage ?? false;
     final attackPlan = appState.combatState.attackPlan;
 
+    // Los ataques extra que corresponden por la ficha aparecen primero.
+    void openAttackModifiers() {
+      BottomSheetModifiers.show(
+        context,
+        attackState.modifiers,
+        Modifiers.getSituationalModifiers(ModifiersType.attack),
+        appState.updateAttackingModifiers,
+        suggested: character == null
+            ? const []
+            : AdditionalAttackRules.suggestedExtraAttacks(weapon: character.selectedWeapon(), combat: character.combat),
+      );
+    }
+
     return CustomCombatCard(
       title: "${character?.profile.name ?? ""} Ataca (Total: ${appState.combatState.finalAttackValue.result})",
       actionTitle: character == null
@@ -210,14 +223,7 @@ class CombatAttackCard extends StatelessWidget {
                   SizedBox(
                     height: 40,
                     child: TextButton(
-                      onPressed: () {
-                        BottomSheetModifiers.show(
-                          context,
-                          attackState.modifiers,
-                          Modifiers.getSituationalModifiers(ModifiersType.attack),
-                          appState.updateAttackingModifiers,
-                        );
-                      },
+                      onPressed: openAttackModifiers,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
@@ -241,7 +247,7 @@ class CombatAttackCard extends StatelessWidget {
         ),
         if (character != null && attackPlan != null) ...[
           const SizedBox(height: 16),
-          _AdditionalAttacks(plan: attackPlan, character: character),
+          _AdditionalAttacks(plan: attackPlan, character: character, onOpenModifiers: openAttackModifiers),
           const SizedBox(height: 8),
         ],
         // Solo tiene efecto contra criaturas con acumulacion de dano, asi que
@@ -290,13 +296,15 @@ class CombatAttackCard extends StatelessWidget {
   }
 }
 
-/// Ataques del asalto: cuántos se declaran, el tamaño del arma que fija el
-/// penalizador y los ataques extra de la segunda arma o la patada.
+/// Ataques del asalto: cuántos se declaran con el arma y el tamaño que fija su
+/// penalizador. Los ataques extra (segunda arma, patada, técnicas) son
+/// modificadores situacionales; acá se ve el que esté activo.
 class _AdditionalAttacks extends StatelessWidget {
-  const _AdditionalAttacks({required this.plan, required this.character});
+  const _AdditionalAttacks({required this.plan, required this.character, required this.onOpenModifiers});
 
   final AttackPlan plan;
   final Character character;
+  final VoidCallback onOpenModifiers;
 
   static String _signed(int value) => value < 0 ? '−${-value}' : '+$value';
 
@@ -320,7 +328,8 @@ class _AdditionalAttacks extends StatelessWidget {
       fontFeatures: const [FontFeature.tabularFigures()],
     );
 
-    String abilityFor(AttackSlot slot) => '${_ability + plan.sharedPenalty + plan.penaltyFor(slot)}';
+    final attackState = appState.combatState.attack;
+    final activeExtra = attackState.modifiers.getAll().where((modifier) => modifier.name.startsWith(Modifiers.extraAttackPrefix)).firstOrNull;
 
     final penalty = plan.penaltyPerAttack;
     final sizeText = plan.unarmed
@@ -330,7 +339,6 @@ class _AdditionalAttacks extends StatelessWidget {
             : plan.penaltySize != plan.size
                 ? 'Arma ${plan.size!.code} como ${plan.penaltySize!.code} · ${_signed(penalty ?? 0)} c/u'
                 : 'Arma ${plan.size!.code} · ${_signed(penalty ?? 0)} c/u';
-    final showsBreakdown = plan.additionalAttacks > 0 || plan.secondWeapon || plan.kick;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -406,28 +414,34 @@ class _AdditionalAttacks extends StatelessWidget {
             ),
           ],
         ),
-        if (plan.secondWeaponAllowed || plan.kickAllowed) ...[
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (plan.secondWeaponAllowed)
-                FilterChip(
-                  tooltip: character.combat.ambidextrous ? 'Con Ambidestría' : 'Sin Ambidestría (se activa en la ficha)',
-                  label: Text('+1 Segunda arma · ${_signed(plan.secondWeaponPenalty)}'),
-                  selected: plan.secondWeapon,
-                  onSelected: (value) => appState.updateCombatState(secondWeapon: value),
+        const SizedBox(height: 12),
+        // El ataque extra es un modificador que queda marcado hasta quitarlo:
+        // se muestra acá para que no pase desapercibido.
+        Align(
+          alignment: Alignment.centerLeft,
+          child: activeExtra == null
+              ? TextButton.icon(
+                  onPressed: onOpenModifiers,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Ataque extra (segunda arma, patada, técnica…)'),
+                )
+              : InputChip(
+                  selected: true,
+                  showCheckmark: false,
+                  avatar: const Icon(Icons.bolt, size: 18),
+                  label: Text(
+                    'Ataque extra activo: ${activeExtra.name.substring(Modifiers.extraAttackPrefix.length)}'
+                    ' · ${activeExtra.attack == 0 ? 'sin penalizador' : _signed(activeExtra.attack)}',
+                  ),
+                  tooltip: 'Cambiar el ataque extra',
+                  onPressed: onOpenModifiers,
+                  deleteButtonTooltipMessage: 'Quitar el ataque extra',
+                  onDeleted: () {
+                    attackState.modifiers.removeModifier(activeExtra);
+                    appState.updateAttackingModifiers(attackState.modifiers);
+                  },
                 ),
-              if (plan.kickAllowed)
-                FilterChip(
-                  label: Text('+1 Patada de Tae Kwon Do · ${plan.kickPenalty == 0 ? 'sin penalizador' : _signed(plan.kickPenalty)}'),
-                  selected: plan.kick,
-                  onSelected: (value) => appState.updateCombatState(kick: value),
-                ),
-            ],
-          ),
-        ],
+        ),
         if (plan.needsSize)
           Padding(
             padding: const EdgeInsets.only(top: 8),
@@ -436,25 +450,10 @@ class _AdditionalAttacks extends StatelessWidget {
               style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.error),
             ),
           ),
-        if (showsBreakdown) ...[
-          const SizedBox(height: 12),
-          if (plan.secondWeapon || plan.kick) ...[
-            SegmentedButton<AttackSlot>(
-              showSelectedIcon: false,
-              segments: [
-                ButtonSegment(value: AttackSlot.main, label: Text('Principal ${abilityFor(AttackSlot.main)}')),
-                if (plan.secondWeapon) ButtonSegment(value: AttackSlot.secondWeapon, label: Text('2ª arma ${abilityFor(AttackSlot.secondWeapon)}')),
-                if (plan.kick) ButtonSegment(value: AttackSlot.kick, label: Text('Patada ${abilityFor(AttackSlot.kick)}')),
-              ],
-              selected: {plan.slot},
-              onSelectionChanged: (selection) => appState.updateCombatState(attackSlot: selection.first),
-            ),
-            const SizedBox(height: 8),
-          ],
+        if (plan.additionalAttacks > 0) ...[
+          const SizedBox(height: 8),
           Text(
-            plan.secondWeapon || plan.kick
-                ? '${plan.totalAttacks} ataques en el asalto. HA sin tirada ni situacionales; se calcula el marcado.'
-                : 'HA en cada uno de los ${plan.declared} ataques: ${abilityFor(AttackSlot.main)}, sin tirada ni situacionales.',
+            'HA en cada uno de los ${plan.declared} ataques: ${_ability + plan.sharedPenalty}, sin tirada ni situacionales.',
             style: muted,
           ),
         ],

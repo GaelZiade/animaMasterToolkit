@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
-import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/presentation/states/combat_state.dart';
 import 'package:amt/utils/xlsx/xlsx_character_parser.dart';
@@ -239,23 +238,11 @@ class CharactersPageState extends ChangeNotifier {
     int? areaTargets,
     bool? supernaturalShield,
     int? declaredAttacks,
-    bool? secondWeapon,
-    bool? kick,
-    AttackSlot? attackSlot,
   }) {
     // Los ataques declarados son de ese atacante: al cambiarlo vuelven a uno.
-    if (attacking != null) {
-      combatState.attack
-        ..declaredAttacks = 1
-        ..secondWeapon = false
-        ..kick = false
-        ..slot = AttackSlot.main;
-    }
+    if (attacking != null) combatState.attack.declaredAttacks = 1;
 
     combatState.attack.declaredAttacks = declaredAttacks ?? combatState.attack.declaredAttacks;
-    combatState.attack.secondWeapon = secondWeapon ?? combatState.attack.secondWeapon;
-    combatState.attack.kick = kick ?? combatState.attack.kick;
-    combatState.attack.slot = attackSlot ?? combatState.attack.slot;
 
     combatState.attack.areaAttack = areaAttack ?? combatState.attack.areaAttack;
     combatState.attack.areaTargets = areaTargets ?? combatState.attack.areaTargets;

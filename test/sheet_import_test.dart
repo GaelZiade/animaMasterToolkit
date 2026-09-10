@@ -40,13 +40,14 @@ void main() {
     expect(pair.attack, 210);
     expect(pair.attackSize, 'M');
 
-    final plan = AdditionalAttackRules.plan(weapon: pair, combat: combat, declared: 4, secondWeapon: true, kick: true)!;
+    final plan = AdditionalAttackRules.plan(weapon: pair, combat: combat, declared: 4)!;
 
     expect(plan.maxAttacks, 4);
-    expect(plan.totalAttacks, 6);
     expect(plan.penaltyPerAttack, -20);
-    expect(plan.secondWeaponPenalty, -10);
-    expect(plan.kickPenalty, -30);
+    expect(
+      AdditionalAttackRules.suggestedExtraAttacks(weapon: pair, combat: combat),
+      [AdditionalAttackRules.secondWeaponAmbidextrous, AdditionalAttackRules.kicks.first],
+    );
   });
 
   test('Teseo: sin ambidestría ni tablas de ataque, armas de distinto tamaño', () {
@@ -61,6 +62,7 @@ void main() {
     expect(_weapon(combat, 'Leviatan').attackSize, 'M');
     expect(_weapon(combat, 'Ojiplato').attackSize, 'G');
     expect(_weapon(combat, 'Hacha de mano').attackSize, 'M');
+    expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: _weapon(combat, 'Ojiplato'), combat: combat), isEmpty);
   });
 
   test('Kiran: artes marciales que no tocan los ataques adicionales', () {

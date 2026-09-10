@@ -226,7 +226,7 @@ class _CharacterSheetState extends State<_CharacterSheet> {
             children: [
               FilterChip(
                 label: const Text('Ambidestría'),
-                tooltip: 'El ataque con un arma adicional aplica −10 en vez de −40',
+                tooltip: 'Sugiere «Segunda arma con Ambidestría» (−10) entre los ataques extra',
                 selected: _character.combat.ambidextrous,
                 onSelected: (value) => _commit(() => _character.combat.ambidextrous = value),
               ),

@@ -1,4 +1,5 @@
 import 'package:amt/models/character_model/status_modifier.dart';
+import 'package:amt/resources/modifiers.dart';
 
 /// Conjunto de modificadores que se excluyen entre sí.
 ///
@@ -34,6 +35,7 @@ class ModifierGroup {
 
   static const all = <ModifierGroup>[
     ModifierGroup(label: 'Zona apuntada', prefix: 'Apuntado: '),
+    ModifierGroup(label: 'Ataque extra', prefix: Modifiers.extraAttackPrefix),
     ModifierGroup(label: 'Actitud de combate', names: ['A la defensiva', 'A la ofensiva']),
     ModifierGroup(label: 'Acción total', names: ['Defensa total', 'Ataque total']),
     ModifierGroup(label: 'Posición relativa', names: ['Flanco', 'De espalda']),

@@ -11,8 +11,11 @@ class BottomSheetModifiers {
     BuildContext context,
     ModifiersState state,
     List<StatusModifier> allModifiersBase,
-    void Function(ModifiersState) onModifiersChanged,
-  ) {
+    void Function(ModifiersState) onModifiersChanged, {
+    // Modificadores que corresponden al personaje según su ficha: se muestran
+    // primero y marcados, sin ocultar el resto.
+    List<String> suggested = const [],
+  }) {
     void toggleModifier(StateSetter setState, StatusModifier modifier) {
       setState(
         () {
@@ -75,8 +78,16 @@ class BottomSheetModifiers {
 
             // Un grupo se muestra si su nombre coincide con la búsqueda o si
             // alguna de sus opciones coincide.
-            final visibleGroups =
-                grouped.entries.where((entry) => query.isEmpty || entry.key.label.toLowerCase().contains(query) || entry.value.any(matches)).toList();
+            final matchingGroups =
+                grouped.entries.where((entry) => query.isEmpty || entry.key.label.toLowerCase().contains(query) || entry.value.any(matches));
+
+            bool hasSuggestion(MapEntry<ModifierGroup, List<StatusModifier>> entry) => entry.value.any((modifier) => suggested.contains(modifier.name));
+
+            // Los grupos con algo sugerido para el personaje van primero.
+            final visibleGroups = [
+              ...matchingGroups.where(hasSuggestion),
+              ...matchingGroups.where((entry) => !hasSuggestion(entry)),
+            ];
             final visibleLoose = loose.where(matches).toList();
             final isEmpty = visibleGroups.isEmpty && visibleLoose.isEmpty;
 
@@ -187,6 +198,7 @@ class BottomSheetModifiers {
                                 group: entry.key,
                                 options: entry.value,
                                 state: state,
+                                suggested: suggested,
                                 onSelected: (selection) => selectInGroup(setState, entry.value, selection),
                               ),
                             ),
@@ -221,9 +233,13 @@ class BottomSheetModifiers {
     required List<StatusModifier> options,
     required ModifiersState state,
     required void Function(StatusModifier?) onSelected,
+    List<String> suggested = const [],
   }) {
     final selected = options.where(state.containsModifier).firstOrNull;
     final isActive = selected != null;
+    bool isSuggested(StatusModifier modifier) => suggested.contains(modifier.name);
+    final ordered = [...options.where(isSuggested), ...options.where((option) => !isSuggested(option))];
+    final hasSuggestions = ordered.any(isSuggested);
 
     // La etiqueta va encima del campo y no flotando sobre el borde: en una
     // grilla apretada el label flotante se recorta contra la fila de arriba.
@@ -234,7 +250,7 @@ class BottomSheetModifiers {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 4),
           child: Text(
-            group.label,
+            hasSuggestions ? '${group.label}  ·  ★ sugeridos por la ficha' : group.label,
             style: theme.textTheme.labelMedium!.copyWith(
               color: isActive ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
@@ -253,12 +269,22 @@ class BottomSheetModifiers {
             DropdownMenuItem<StatusModifier?>(
               child: Text('Ninguno', style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
             ),
-            for (final option in options)
+            for (final option in ordered)
               DropdownMenuItem<StatusModifier?>(
                 value: option,
-                child: Text(
-                  '${group.optionLabel(option)}  ·  ${option.description()}',
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    if (isSuggested(option)) ...[
+                      Icon(Icons.star, size: 16, color: theme.colorScheme.primary, semanticLabel: 'Sugerido'),
+                      const SizedBox(width: 6),
+                    ],
+                    Expanded(
+                      child: Text(
+                        '${group.optionLabel(option)}  ·  ${option.description().isEmpty ? 'sin penalizador' : option.description()}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ),
           ],

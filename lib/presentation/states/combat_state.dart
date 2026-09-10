@@ -28,15 +28,6 @@ class ScreenCombatStateAttack {
   /// Ataques declarados con el arma principal, contando el primero.
   int declaredAttacks = 1;
 
-  /// Declara el ataque extra por empuñar un arma en cada mano.
-  bool secondWeapon = false;
-
-  /// Declara la patada adicional de Tae Kwon Do.
-  bool kick = false;
-
-  /// Ataque del asalto que se está resolviendo ahora.
-  AttackSlot slot = AttackSlot.main;
-
   Character? character;
 
   ModifiersState modifiers = ModifiersState();
@@ -96,9 +87,6 @@ class ScreenCombatState {
       weapon: character.selectedWeapon(),
       combat: character.combat,
       declared: attack.declaredAttacks,
-      secondWeapon: attack.secondWeapon,
-      kick: attack.kick,
-      slot: attack.slot,
     );
   }
 
@@ -115,8 +103,6 @@ class ScreenCombatState {
       massBonus: (attack.character?.profile.isMass ?? false) ? MassRules.attackBonus(MassRules.membersAlive(attack.character!)) : 0,
       additionalAttacksPenalty: plan?.sharedPenalty ?? 0,
       additionalAttacksLabel: plan?.sharedLabel ?? '',
-      extraAttackPenalty: plan?.slotPenalty ?? 0,
-      extraAttackLabel: plan?.slotLabel ?? '',
     );
   }
 

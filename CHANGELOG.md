@@ -58,8 +58,13 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   - según el tamaño del arma: −20 pequeña, −30 media, −40 grande. Se lee de la
     planilla; si falta, se deduce del nombre con las tablas de armas del Core, y
     en los dos casos se puede corregir desde la tarjeta;
-  - **segunda arma**: un ataque más fuera del tope, con −40 propio, o −10 con
-    Ambidestría. Desarmado no la admite;
+  - **ataques extra** fuera del tope: segunda arma (−40, o −10 con
+    Ambidestría), patada de Tae Kwon Do (−30, −20 o sin penalizador según el
+    grado) y técnica de Ki sin penalizador. Son un grupo de modificadores
+    situacionales de selección única, como las zonas apuntadas. Los que
+    corresponden al personaje por su ficha aparecen primero y marcados con ★,
+    sin ocultar el resto, y el que está activo se ve en la tarjeta de ataque
+    con un botón para quitarlo;
   - **Tabla de Ataque Encadenado**: armas grandes como medias y medias como
     pequeñas. La tarjeta lo muestra como «Arma M como P»;
   - **Tabla de Ataque Adicional**: un ataque más al tope, con el penalizador
@@ -67,8 +72,6 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
     la Pantalla del Director;
   - **Kempo** (Dominus Exxet, que manda sobre el Core): −15 en grado base, −10
     en avanzado y un ataque extra en supremo. Solo sin armas;
-  - **Tae Kwon Do**: patada adicional con −30, −20 o sin penalizador según el
-    grado, incluso empuñando armas;
   - desarmado sin arte marcial aplica −20. Los manuales no lo fijan: es regla de
     la casa.
 

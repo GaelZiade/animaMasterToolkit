@@ -48,9 +48,6 @@ class CombatRules {
     // adicionales declarados (Core, p. 91).
     int additionalAttacksPenalty = 0,
     String additionalAttacksLabel = 'Ataques adicionales',
-    // Penalizador propio del ataque en curso: segunda arma o patada.
-    int extraAttackPenalty = 0,
-    String extraAttackLabel = 'Ataque extra',
   }) {
     final rollNumber = roll?.safeInterpret ?? 0;
     final attackBaseNumber = baseAttack?.safeInterpret ?? 0;
@@ -64,8 +61,7 @@ class CombatRules {
         modifiersNumber +
         surpriseNumber +
         massBonus +
-        additionalAttacksPenalty +
-        extraAttackPenalty;
+        additionalAttacksPenalty;
 
     return ExplainedText(
       title: 'Ataque final',
@@ -81,7 +77,6 @@ class CombatRules {
           ExplainedTerm('Sorpresa', surpriseNumber),
           ExplainedTerm('Masa de enemigos', massBonus),
           ExplainedTerm(additionalAttacksLabel, additionalAttacksPenalty),
-          ExplainedTerm(extraAttackLabel, extraAttackPenalty),
         ],
         totalLabel: 'Ataque final',
         total: total,

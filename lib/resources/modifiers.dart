@@ -17,6 +17,10 @@ extension ToModifiersType on DefenseType {
 }
 
 class Modifiers {
+  /// Ataques fuera del tope de ataques adicionales: segunda arma, patada de
+  /// Tae Kwon Do, técnicas. Forman un grupo de selección única.
+  static const extraAttackPrefix = 'Ataque extra: ';
+
   static List<StatusModifier> getSituationalModifiers(ModifiersType type, {bool includeAllDefense = false}) {
     var modifiers = <StatusModifier>[];
 
@@ -26,7 +30,8 @@ class Modifiers {
 
     switch (type) {
       case ModifiersType.attack:
-        modifiers = modifiers.where((element) => element.attack != 0).toList();
+        // Un ataque extra sin penalizador sigue siendo una declaración válida.
+        modifiers = modifiers.where((element) => element.attack != 0 || element.name.startsWith(extraAttackPrefix)).toList();
       case ModifiersType.parry:
         modifiers = modifiers.where((element) => element.parry != 0).toList();
       case ModifiersType.dodge:
@@ -424,6 +429,30 @@ class Modifiers {
         "turn": 0,
         "type": 2,
         "physicalAction": 0
+    },
+    {
+        "name": "Ataque extra: Segunda arma",
+        "attack": -40
+    },
+    {
+        "name": "Ataque extra: Segunda arma con Ambidestría",
+        "attack": -10
+    },
+    {
+        "name": "Ataque extra: Patada de Tae Kwon Do (Base)",
+        "attack": -30
+    },
+    {
+        "name": "Ataque extra: Patada de Tae Kwon Do (Avanzado)",
+        "attack": -20
+    },
+    {
+        "name": "Ataque extra: Patada de Tae Kwon Do (Supremo)",
+        "attack": 0
+    },
+    {
+        "name": "Ataque extra: Técnica de Ki sin penalizador",
+        "attack": 0
     }
 ]
 ''';
