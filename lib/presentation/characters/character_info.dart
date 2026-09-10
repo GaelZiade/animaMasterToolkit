@@ -1,6 +1,7 @@
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
-import 'package:amt/models/rules/additional_attack_rules.dart';
+import 'package:amt/models/combat_data.dart';
+import 'package:amt/models/rules/combat_traits.dart';
 import 'package:amt/utils/app_theme.dart';
 import 'package:amt/utils/key_value.dart';
 import 'package:amt/utils/status_colors.dart';
@@ -217,7 +218,10 @@ class _CharacterSheetState extends State<_CharacterSheet> {
             },
           ),
           const SizedBox(height: 12),
-          Text('Ataques adicionales', style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            'Ventajas, tablas y artes marciales',
+            style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: 4),
           Wrap(
             spacing: 8,
@@ -230,33 +234,43 @@ class _CharacterSheetState extends State<_CharacterSheet> {
                 selected: _character.combat.ambidextrous,
                 onSelected: (value) => _commit(() => _character.combat.ambidextrous = value),
               ),
-              FilterChip(
-                label: const Text('Tabla de Ataque Encadenado'),
-                tooltip: 'Armas grandes como medias y medias como pequeñas',
-                selected: _character.combat.chainAttackTable,
-                onSelected: (value) => _commit(() => _character.combat.chainAttackTable = value),
-              ),
-              FilterChip(
-                label: const Text('Tabla de Ataque Adicional'),
-                tooltip: 'Un ataque más al tope, con el penalizador habitual',
-                selected: _character.combat.additionalAttackTable,
-                onSelected: (value) => _commit(() => _character.combat.additionalAttackTable = value),
-              ),
-              _GradeMenu(
-                label: 'Kempo',
-                grade: _character.combat.kempoGrade,
-                onSelected: (grade) => _commit(() => _character.combat.kempoGrade = grade),
-              ),
-              _GradeMenu(
-                label: 'Tae Kwon Do',
-                grade: _character.combat.taeKwonDoGrade,
-                onSelected: (grade) => _commit(() => _character.combat.taeKwonDoGrade = grade),
+              for (final table in _character.combat.styleTables)
+                InputChip(
+                  label: Text(table),
+                  deleteButtonTooltipMessage: 'Quitar $table',
+                  onDeleted: () => _commit(() => _character.combat.styleTables.remove(table)),
+                ),
+              for (final art in _character.combat.martialArts)
+                InputChip(
+                  avatar: const Icon(Icons.sports_martial_arts, size: 18),
+                  label: Text(art),
+                  deleteButtonTooltipMessage: 'Quitar $art',
+                  onDeleted: () => _commit(() => _character.combat.martialArts.remove(art)),
+                ),
+              ActionChip(
+                avatar: const Icon(Icons.add, size: 18),
+                label: const Text('Añadir tabla o arte marcial'),
+                onPressed: _addTrait,
               ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  /// Añade una tabla o un arte marcial del catálogo, o una inventada.
+  Future<void> _addTrait() async {
+    final value = await showDialog<String>(context: context, builder: (context) => const _TraitDialog());
+    final trait = value?.trim() ?? '';
+
+    if (trait.isEmpty) return;
+
+    _commit(() {
+      final list = CombatTraits.isMartialArt(trait) ? _character.combat.martialArts : _character.combat.styleTables;
+
+      if (!list.contains(trait)) list.add(trait);
+    });
   }
 
   /// Las fórmulas de ataque y defensa llegan como expresión ("120-30").
@@ -573,30 +587,51 @@ class _Header extends StatelessWidget {
   }
 }
 
-/// Grado en un arte marcial, elegido de un menú.
-class _GradeMenu extends StatelessWidget {
-  const _GradeMenu({required this.label, required this.grade, required this.onSelected});
+/// Elige una tabla o un arte marcial del catálogo de los manuales, o permite
+/// escribir una propia.
+class _TraitDialog extends StatefulWidget {
+  const _TraitDialog();
 
-  final String label;
-  final int grade;
-  final void Function(int) onSelected;
+  @override
+  State<_TraitDialog> createState() => _TraitDialogState();
+}
+
+class _TraitDialogState extends State<_TraitDialog> {
+  String _value = '';
 
   @override
   Widget build(BuildContext context) {
-    final grades = AdditionalAttackRules.martialArtGrades;
-    final known = grade > 0;
+    final options = CombatTraits.catalog;
 
-    return PopupMenuButton<int>(
-      tooltip: 'Grado en $label',
-      initialValue: grade,
-      onSelected: onSelected,
-      itemBuilder: (context) => [
-        for (var i = 0; i < grades.length; i++) PopupMenuItem(value: i, child: Text(i == 0 ? 'No lo domina' : grades[i])),
-      ],
-      child: Chip(
-        avatar: Icon(known ? Icons.check : Icons.expand_more, size: 18),
-        label: Text(known ? '$label: ${grades[grade]}' : label),
+    return AlertDialog(
+      title: const Text('Añadir tabla o arte marcial'),
+      content: SizedBox(
+        width: 420,
+        child: Autocomplete<String>(
+          optionsBuilder: (text) {
+            final query = CombatData.normalizeTrait(text.text);
+
+            return query.isEmpty ? options : options.where((option) => CombatData.normalizeTrait(option).contains(query));
+          },
+          onSelected: (selection) => setState(() => _value = selection),
+          fieldViewBuilder: (context, controller, focusNode, onSubmitted) => TextField(
+            controller: controller,
+            focusNode: focusNode,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Nombre',
+              hintText: 'Tabla de Área, Sambo (Avanzado)…',
+              helperText: 'Las artes marciales llevan el grado entre paréntesis',
+            ),
+            onChanged: (text) => _value = text,
+            onSubmitted: (text) => Navigator.pop(context, text),
+          ),
+        ),
       ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+        FilledButton(onPressed: () => Navigator.pop(context, _value), child: const Text('Añadir')),
+      ],
     );
   }
 }

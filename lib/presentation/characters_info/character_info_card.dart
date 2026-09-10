@@ -1,4 +1,5 @@
 import 'package:amt/models/character_model/character.dart';
+import 'package:amt/models/rules/combat_traits.dart';
 import 'package:amt/presentation/presentation.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/string_extension.dart';
@@ -188,10 +189,16 @@ class CharacterInfoCard extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              BottomSheetModifiers.show(context, character.state.modifiers, Modifiers.getStatusModifiers(), (newModifiersState) {
-                                character.state.modifiers = newModifiersState;
-                                appState.updateCharacter(character);
-                              });
+                              BottomSheetModifiers.show(
+                                context,
+                                character.state.modifiers,
+                                Modifiers.getStatusModifiers(),
+                                (newModifiersState) {
+                                  character.state.modifiers = newModifiersState;
+                                  appState.updateCharacter(character);
+                                },
+                                suggested: CombatTraits.suggestedModifiers(character.combat),
+                              );
                             },
                           ),
                           spacer,

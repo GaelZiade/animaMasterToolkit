@@ -36,9 +36,61 @@ class ModifierGroup {
   static const all = <ModifierGroup>[
     ModifierGroup(label: 'Zona apuntada', prefix: 'Apuntado: '),
     ModifierGroup(label: 'Ataque extra', prefix: Modifiers.extraAttackPrefix),
+    // Maniobras (Core, "Ataques específicos" y "Defensas especiales"). Cada
+    // grupo reúne la maniobra y sus variantes por tabla o arte marcial; las
+    // maniobras distintas sí se pueden combinar entre sí.
+    ModifierGroup(
+      label: 'Derribo',
+      names: [
+        'Derribo',
+        'Derribo con arma corta',
+        'Derribo a mitad (Grappling, Sambo)',
+        'Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)',
+      ],
+    ),
+    ModifierGroup(
+      label: 'Presa',
+      names: [
+        'Presa',
+        'Presa a mitad (Pankration, Grappling, Sambo avanzado)',
+        'Presa sin penalizador (Grappling avanzado, Aikido en contraataque)',
+        'Presa con arma sin regla de Presa (Tabla de Presa Inusual)',
+      ],
+    ),
+    ModifierGroup(
+      label: 'Desarmar',
+      names: [
+        'Desarmar',
+        'Desarmar a mitad (Tabla de Desarme, Sambo)',
+        'Desarmar sin penalizador (Emp, Malla-yuddha supremo en contraataque)',
+      ],
+    ),
+    ModifierGroup(
+      label: 'Ataque en área',
+      names: [
+        'Ataque en área',
+        'Ataque en área a mitad (Tabla de Área, Sambo avanzado)',
+        'Ataque en área con Capoeira supremo',
+      ],
+    ),
+    ModifierGroup(label: 'Engatillar', names: ['Engatillar', 'Engatillar a mitad (Tabla de Precisión)']),
+    ModifierGroup(
+      label: 'Crítico secundario',
+      names: ['Crítico secundario', 'Crítico secundario sin penalizador (Tabla de Ataque Inusual)'],
+    ),
+    ModifierGroup(label: 'Desenfundar', names: ['Desenfundar', 'Desenfundar con Batto jutsu (arma a una mano)']),
+    ModifierGroup(label: 'Apartar a otro', names: ['Apartar a otro', 'Apartar a otro (Tabla de Guardaespaldas)']),
+    ModifierGroup(label: 'Xing Quan', prefix: 'Xing Quan: '),
+    ModifierGroup(label: 'Kung Fu: bono variable', prefix: 'Kung Fu: '),
     ModifierGroup(label: 'Actitud de combate', names: ['A la defensiva', 'A la ofensiva']),
-    ModifierGroup(label: 'Acción total', names: ['Defensa total', 'Ataque total']),
-    ModifierGroup(label: 'Posición relativa', names: ['Flanco', 'De espalda']),
+    ModifierGroup(
+      label: 'Acción total',
+      names: ['Defensa total', 'Ataque total', 'Defensa total con Shephon', 'Defensa total con Shephon arcano'],
+    ),
+    ModifierGroup(
+      label: 'Posición relativa',
+      names: ['Flanco', 'De espalda', 'Flanco con Soo Bahk', 'Flanco con Soo Bahk avanzado', 'De espalda con Hanja'],
+    ),
     ModifierGroup(label: 'Tamaño del adversario', names: ['Adversario pequeño', 'Adversario diminuto']),
     ModifierGroup(label: 'Arma del adversario', names: ['Arma similar', 'Arma mixta', 'Arma distinta / Desarmado']),
     ModifierGroup(
@@ -52,11 +104,25 @@ class ModifierGroup {
       ],
     ),
     ModifierGroup(label: 'Ceguera', names: ['Ceguera parcial', 'Ceguera absoluta']),
-    ModifierGroup(label: 'Parálisis', names: ['Parálisis menor', 'Parálisis parcial', 'Parálisis completa']),
-    ModifierGroup(label: 'Dolor', names: ['Dolor', 'Dolor extremo']),
+    ModifierGroup(
+      label: 'Parálisis',
+      names: [
+        'Parálisis menor',
+        'Parálisis parcial',
+        'Parálisis completa',
+        'Parálisis menor con Hanja arcano',
+        'Parálisis parcial con Hanja arcano',
+      ],
+    ),
+    ModifierGroup(label: 'Derribado', names: ['Derribado', 'Derribado con Soo Bahk supremo']),
+    ModifierGroup(
+      label: 'Espacio reducido',
+      names: ['Espacio reducido', 'Espacio reducido (Tabla de Movimiento en Espacios Reducidos)', 'Espacio reducido con Hanja'],
+    ),
+    ModifierGroup(label: 'Amenazado', names: ['Amenazado', 'Amenazado con Hanja arcano']),
+    ModifierGroup(label: 'Dolor', names: ['Dolor leve', 'Dolor', 'Dolor extremo']),
     ModifierGroup(label: 'Vuelo', names: ['Vuelo tipo 7 a 14', 'Vuelo 15 o superior']),
     ModifierGroup(label: 'Seraphite', names: ['Seraphite base', 'Seraphite arcano']),
-    ModifierGroup(label: 'Shephon', names: ['Shephon base', 'Shephon arcano']),
     ModifierGroup(
       label: 'Proyectil recibido',
       names: [
@@ -64,6 +130,9 @@ class ModifierGroup {
         'Proyectil Disparado',
         'Proyectil Disparado (maestria en defensa)',
         'Proyectil Disparado (escudo)',
+        'Proyectil Lanzado con Kuan',
+        'Proyectil Disparado con Kuan avanzado',
+        'Proyectil sin penalizador (Kuan supremo)',
       ],
     ),
     ModifierGroup(

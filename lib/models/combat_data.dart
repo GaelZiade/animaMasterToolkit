@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:amt/models/armour.dart';
 import 'package:amt/models/armour_data.dart';
 import 'package:amt/models/weapon.dart';
@@ -8,68 +10,52 @@ part 'combat_data.g.dart';
 
 @HiveType(typeId: 5, adapterName: 'CombatDataAdapter')
 class CombatData {
+  /// [chainAttackTable], [additionalAttackTable], [kempoGrade] y
+  /// [taeKwonDoGrade] son atajos que se vuelcan en las listas: sirven para
+  /// crear datos a mano y para leer fichas guardadas antes de que existieran.
   CombatData({
     required this.armour,
     required this.weapons,
     this.ambidextrous = false,
-    this.chainAttackTable = false,
-    this.kempoGrade = 0,
-    this.taeKwonDoGrade = 0,
-    this.additionalAttackTable = false,
-  });
+    List<String>? styleTables,
+    List<String>? martialArts,
+    bool chainAttackTable = false,
+    bool additionalAttackTable = false,
+    int kempoGrade = 0,
+    int taeKwonDoGrade = 0,
+  })  : styleTables = [...{...?styleTables}],
+        martialArts = [...{...?martialArts}] {
+    if (chainAttackTable) _addStyleTable('Tabla de Ataque Encadenado');
+    if (additionalAttackTable) _addStyleTable('Tabla de Ataque Adicional');
+    if (kempoGrade > 0) _setMartialArt('Kempo', kempoGrade);
+    if (taeKwonDoGrade > 0) _setMartialArt('Tae Kwon Do', taeKwonDoGrade);
+  }
 
   static CombatData? fromJson(Map<String, dynamic>? json) {
     if (json == null) return null;
 
-    final martialArts = json.getMap('ArtesMarciales') ?? const <String, dynamic>{};
-    // Ataque Encadenado y Ataque Adicional son Tablas de Estilos, que la
-    // planilla exporta como EstilosDeCombate. Se suman las Tablas de Armas por
-    // si otra versión las ubica ahí.
-    final styleTables = {...?json.getMap('TablasDeArmas'), ...?json.getMap('EstilosDeCombate')};
+    List<String> list(String key) => ((json[key] as List<dynamic>?) ?? const []).map((entry) => '$entry').toList();
 
     return CombatData(
       armour: ArmourData.fromJson(json.getMap('armadura')) ?? ArmourData(calculatedArmour: Armour(), armours: []),
       weapons: json.getList('armas').map(Weapon.fromJson).nonNulls.toList(),
-      // Una ficha exportada desde la aplicación trae lo que se eligió a mano;
-      // una planilla solo trae sus tablas de armas y artes marciales.
       ambidextrous: JsonUtils.boolean(json['ambidestria'], placeholder: false),
-      chainAttackTable: json.containsKey('tablaAtaqueEncadenado')
-          ? JsonUtils.boolean(json['tablaAtaqueEncadenado'], placeholder: false)
-          : _grade(styleTables, const ['ataque encadenado']) > 0,
-      kempoGrade: json.containsKey('kempo') ? JsonUtils.integer(json['kempo'], 0).clamp(0, 3) : _grade(martialArts, const ['kempo']),
-      taeKwonDoGrade: json.containsKey('taeKwonDo')
-          ? JsonUtils.integer(json['taeKwonDo'], 0).clamp(0, 3)
-          : _grade(martialArts, const ['tae kwon do', 'taekwondo', 'tae kwondo']),
-      additionalAttackTable: json.containsKey('tablaAtaqueAdicional')
-          ? JsonUtils.boolean(json['tablaAtaqueAdicional'], placeholder: false)
-          : _grade(styleTables, const ['ataque adicional']) > 0,
+      // Una planilla trae sus tablas y artes marciales como tablas con nombre y
+      // descripción; solo interesan los nombres, como "Tae Kwon Do (Base)".
+      // Ataque Encadenado y Ataque Adicional son Tablas de Estilos, que la
+      // planilla exporta como EstilosDeCombate.
+      styleTables: [
+        ...?json.getMap('TablasDeArmas')?.keys,
+        ...?json.getMap('EstilosDeCombate')?.keys,
+        ...list('tablasEstilo'),
+      ],
+      martialArts: [...?json.getMap('ArtesMarciales')?.keys, ...list('artesMarciales')],
+      // Fichas exportadas antes de que existieran las listas.
+      chainAttackTable: JsonUtils.boolean(json['tablaAtaqueEncadenado'], placeholder: false),
+      additionalAttackTable: JsonUtils.boolean(json['tablaAtaqueAdicional'], placeholder: false),
+      kempoGrade: JsonUtils.integer(json['kempo'], 0).clamp(0, 3),
+      taeKwonDoGrade: JsonUtils.integer(json['taeKwonDo'], 0).clamp(0, 3),
     );
-  }
-
-  /// Grado de lo que nombra [aliases] entre los nombres de una tabla de la
-  /// planilla, como "Tae Kwon Do (Base)": 0 si no figura, 1 base, 2 avanzado,
-  /// 3 supremo.
-  ///
-  /// Las descripciones no se miran: la del Ataque Encadenado dice "Reduce el
-  /// penalizador de Ataque adicional" y se confundiría con la otra tabla.
-  static int _grade(Map<String, dynamic> table, List<String> aliases) {
-    var grade = 0;
-
-    for (final name in table.keys) {
-      final text = name.toLowerCase();
-
-      if (!aliases.any(text.contains)) continue;
-
-      final found = text.contains('suprem')
-          ? 3
-          : text.contains('avanzad')
-              ? 2
-              : 1;
-
-      if (found > grade) grade = found;
-    }
-
-    return grade;
   }
 
   Map<String, dynamic> toJson() {
@@ -77,10 +63,8 @@ class CombatData {
       'armadura': armour.toJson(),
       'armas': weapons.map((e) => e.toJson()).toList(),
       'ambidestria': ambidextrous,
-      'tablaAtaqueEncadenado': chainAttackTable,
-      'kempo': kempoGrade,
-      'taeKwonDo': taeKwonDoGrade,
-      'tablaAtaqueAdicional': additionalAttackTable,
+      'tablasEstilo': styleTables,
+      'artesMarciales': martialArts,
     };
   }
 
@@ -89,26 +73,75 @@ class CombatData {
   @HiveField(1)
   late ArmourData armour;
 
-  /// Reduce a −10 el ataque con un arma adicional.
+  /// Sugiere el ataque extra con un arma adicional a −10 en vez de −40.
   @HiveField(2)
   bool ambidextrous;
 
-  /// Tabla de Ataque Encadenado: armas grandes como medias y medias como
-  /// pequeñas al hacer ataques adicionales.
-  @HiveField(3)
-  bool chainAttackTable;
+  /// Tablas de armas y de estilos que domina, por nombre.
+  @HiveField(7)
+  List<String> styleTables;
 
-  /// Grado en Kempo y en Tae Kwon Do: 0 no lo domina, 1 base, 2 avanzado,
-  /// 3 supremo.
-  @HiveField(4)
-  int kempoGrade;
-  @HiveField(5)
-  int taeKwonDoGrade;
+  /// Artes marciales con su grado: "Sambo (Avanzado)", "Selene (Arcano)".
+  @HiveField(8)
+  List<String> martialArts;
 
-  /// Tabla de Ataque Adicional: un ataque más al tope (planilla, Pantalla del
-  /// Director).
-  @HiveField(6)
-  bool additionalAttackTable;
+  bool get chainAttackTable => hasStyleTable('ataque encadenado');
+  bool get additionalAttackTable => hasStyleTable('ataque adicional');
+  int get kempoGrade => martialArtGrade('Kempo');
+  int get taeKwonDoGrade => max(martialArtGrade('Tae Kwon Do'), martialArtGrade('Taekwondo'));
+
+  /// Indica si alguna tabla contiene [text] en su nombre.
+  bool hasStyleTable(String text) {
+    final wanted = normalizeTrait(text);
+
+    return styleTables.any((table) => normalizeTrait(table).contains(wanted));
+  }
+
+  /// Grado en un arte marcial por nombre exacto: 0 si no la domina. "Lama" no
+  /// confunde a "Lama Tsu".
+  int martialArtGrade(String name) {
+    final wanted = normalizeTrait(name);
+    var grade = 0;
+
+    for (final art in martialArts) {
+      if (traitName(art) == wanted) grade = max(grade, traitGrade(art));
+    }
+
+    return grade;
+  }
+
+  /// Nombre sin grado y normalizado: "Sambo (Avanzado)" → "sambo".
+  static String traitName(String entry) => normalizeTrait(entry.split('(').first);
+
+  /// 1 base (o sin grado), 2 avanzado, 3 supremo o arcano.
+  static int traitGrade(String entry) {
+    final text = normalizeTrait(entry);
+
+    if (text.contains('suprem') || text.contains('arcan')) return 3;
+    if (text.contains('avanzad')) return 2;
+
+    return 1;
+  }
+
+  /// Minúsculas, sin acentos ni espacios repetidos: la planilla exporta los
+  /// nombres sin acentos.
+  static String normalizeTrait(String text) {
+    const accents = {'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ü': 'u', 'ñ': 'n'};
+
+    return text.toLowerCase().split('').map((char) => accents[char] ?? char).join().replaceAll(RegExp(r'\s+'), ' ').trim();
+  }
+
+  void _addStyleTable(String name) {
+    if (!hasStyleTable(name)) styleTables.add(name);
+  }
+
+  void _setMartialArt(String name, int grade) {
+    const grades = ['Base', 'Avanzado', 'Supremo'];
+
+    martialArts
+      ..removeWhere((art) => traitName(art) == normalizeTrait(name))
+      ..add('$name (${grades[grade.clamp(1, 3) - 1]})');
+  }
 
   void updateWeapon(Weapon weapon) {
     for (var i = 0; i > weapons.length; i++) {
@@ -124,10 +157,8 @@ class CombatData {
       armour: armour,
       weapons: weapons,
       ambidextrous: ambidextrous,
-      chainAttackTable: chainAttackTable,
-      kempoGrade: kempoGrade,
-      taeKwonDoGrade: taeKwonDoGrade,
-      additionalAttackTable: additionalAttackTable,
+      styleTables: styleTables,
+      martialArts: martialArts,
     );
   }
 }

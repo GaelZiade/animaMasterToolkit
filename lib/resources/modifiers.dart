@@ -22,24 +22,25 @@ class Modifiers {
   static const extraAttackPrefix = 'Ataque extra: ';
 
   static List<StatusModifier> getSituationalModifiers(ModifiersType type, {bool includeAllDefense = false}) {
-    var modifiers = <StatusModifier>[];
+    final modifiers = <StatusModifier>[];
 
     for (final element in _valuesSituational.jsonList) {
-      modifiers.tryAdd(StatusModifier.fromJson(element));
-    }
+      final modifier = StatusModifier.fromJson(element);
 
-    switch (type) {
-      case ModifiersType.attack:
-        // Un ataque extra sin penalizador sigue siendo una declaración válida.
-        modifiers = modifiers.where((element) => element.attack != 0 || element.name.startsWith(extraAttackPrefix)).toList();
-      case ModifiersType.parry:
-        modifiers = modifiers.where((element) => element.parry != 0).toList();
-      case ModifiersType.dodge:
-        modifiers = modifiers.where((element) => element.dodge != 0).toList();
-      case ModifiersType.turn:
-        modifiers = modifiers.where((element) => element.turn != 0).toList();
-      case ModifiersType.action:
-        modifiers = modifiers.where((element) => element.physicalAction != 0).toList();
+      if (modifier == null) continue;
+
+      final value = switch (type) {
+        ModifiersType.attack => modifier.attack,
+        ModifiersType.parry => modifier.parry,
+        ModifiersType.dodge => modifier.dodge,
+        ModifiersType.turn => modifier.turn,
+        ModifiersType.action => modifier.physicalAction,
+      };
+      // Una variante sin penalizador ("Presa sin penalizador") sigue siendo una
+      // opción válida para ese tipo de tirada: se declara con "keepFor".
+      final keepFor = (element['keepFor'] as List<dynamic>?)?.map((entry) => '$entry') ?? const <String>[];
+
+      if (value != 0 || keepFor.contains(type.name)) modifiers.add(modifier);
     }
 
     return modifiers.map((e) => e.pruneOthers(type, includeAllDefense: includeAllDefense)).toList()
@@ -252,7 +253,7 @@ class Modifiers {
     },
     {
         "name": "Seraphite arcano",
-        "attack": 0,
+        "attack": 30,
         "parry": -50,
         "dodge": -50,
         "turn": 0,
@@ -261,27 +262,9 @@ class Modifiers {
     },
     {
         "name": "Seraphite base",
-        "attack": 0,
+        "attack": 20,
         "parry": -30,
         "dodge": -30,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "Shephon base",
-        "attack": 0,
-        "parry": 60,
-        "dodge": 60,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "Shephon arcano",
-        "attack": 0,
-        "parry": 100,
-        "dodge": 100,
         "turn": 0,
         "type": 2,
         "physicalAction": 0
@@ -448,12 +431,47 @@ class Modifiers {
     },
     {
         "name": "Ataque extra: Patada de Tae Kwon Do (Supremo)",
-        "attack": 0
+        "attack": 0,
+        "keepFor": ["attack"]
     },
     {
         "name": "Ataque extra: Técnica de Ki sin penalizador",
-        "attack": 0
-    }
+        "attack": 0,
+        "keepFor": ["attack"]
+    },
+    {"name": "Derribo", "attack": -30},
+    {"name": "Derribo con arma corta", "attack": -60},
+    {"name": "Derribo a mitad (Grappling, Sambo)", "attack": -15},
+    {"name": "Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)", "attack": 0, "keepFor": ["attack"]},
+    {"name": "Presa a mitad (Pankration, Grappling, Sambo avanzado)", "attack": -20},
+    {"name": "Presa sin penalizador (Grappling avanzado, Aikido en contraataque)", "attack": 0, "keepFor": ["attack"]},
+    {"name": "Presa con arma sin regla de Presa (Tabla de Presa Inusual)", "attack": -60},
+    {"name": "Desarmar", "attack": -40},
+    {"name": "Desarmar a mitad (Tabla de Desarme, Sambo)", "attack": -20},
+    {"name": "Desarmar sin penalizador (Emp, Malla-yuddha supremo en contraataque)", "attack": 0, "keepFor": ["attack"]},
+    {"name": "Ataque en área", "attack": -50},
+    {"name": "Ataque en área a mitad (Tabla de Área, Sambo avanzado)", "attack": -25},
+    {"name": "Ataque en área con Capoeira supremo", "attack": -10},
+    {"name": "Engatillar", "attack": -100},
+    {"name": "Engatillar a mitad (Tabla de Precisión)", "attack": -50},
+    {"name": "Crítico secundario", "attack": -10},
+    {"name": "Crítico secundario sin penalizador (Tabla de Ataque Inusual)", "attack": 0, "keepFor": ["attack"]},
+    {"name": "Dejar inconsciente sin arma contundente", "attack": -40},
+    {"name": "Moverse más de 1/4 del movimiento", "attack": -25, "physicalAction": -25},
+    {"name": "Desenfundar con Batto jutsu (arma a una mano)", "attack": 0, "parry": 0, "keepFor": ["attack", "parry"]},
+    {"name": "Flanco con Soo Bahk", "attack": -10, "parry": -15, "dodge": -15},
+    {"name": "Flanco con Soo Bahk avanzado", "keepFor": ["attack", "parry", "dodge"]},
+    {"name": "De espalda con Hanja", "keepFor": ["attack", "parry", "dodge"]},
+    {"name": "Proyectil Lanzado con Kuan", "parry": -25},
+    {"name": "Proyectil Disparado con Kuan avanzado", "parry": -40, "dodge": -15},
+    {"name": "Proyectil sin penalizador (Kuan supremo)", "keepFor": ["parry", "dodge"]},
+    {"name": "Apartar a otro", "parry": -30, "dodge": -30},
+    {"name": "Apartar a otro (Tabla de Guardaespaldas)", "parry": -10, "dodge": -10},
+    {"name": "Resistir el golpe", "parry": -80, "dodge": -80},
+    {"name": "Contraataque con Boxeo avanzado", "attack": 10},
+    {"name": "Xing Quan: +10 contra su adversario", "attack": 10},
+    {"name": "Xing Quan: +20 contra su adversario (avanzado)", "attack": 20},
+    {"name": "Xing Quan: +30 contra su adversario (supremo)", "attack": 30}
 ]
 ''';
 
@@ -652,42 +670,34 @@ class Modifiers {
         "type": 2,
         "physicalAction": 0
     },
-    {
-        "name": "Desarmar",
-        "attack": -20,
-        "parry": 0,
-        "dodge": 0,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "Dolor",
-        "attack": -40,
-        "parry": -40,
-        "dodge": -40,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "Dolor extremo",
-        "attack": -60,
-        "parry": -80,
-        "dodge": -80,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "Miedo",
-        "attack": -60,
-        "parry": -60,
-        "dodge": -60,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": -60
-    }
+    {"name": "Dolor leve", "attack": -20, "parry": -20, "dodge": -20, "turn": -10, "physicalAction": -20},
+    {"name": "Dolor", "attack": -40, "parry": -40, "dodge": -40, "turn": -20, "physicalAction": -40},
+    {"name": "Dolor extremo", "attack": -80, "parry": -80, "dodge": -80, "turn": -40, "physicalAction": -80},
+    {"name": "Miedo", "attack": -60, "parry": -60, "dodge": -60, "turn": -30, "physicalAction": -60},
+    {"name": "Fascinación", "parry": -20, "dodge": -20, "physicalAction": -20},
+    {"name": "Incapacitado (coma o inconsciente)", "attack": -200, "parry": -200, "dodge": -200, "turn": -100, "physicalAction": -200},
+    {"name": "Recién estabilizado tras estar entre la vida y la muerte", "attack": -60, "parry": -60, "dodge": -60, "turn": -30, "physicalAction": -60},
+    {"name": "Defensa total con Shephon", "attack": -200, "parry": 60, "dodge": 60},
+    {"name": "Defensa total con Shephon arcano", "attack": -200, "parry": 100, "dodge": 100},
+    {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30},
+    {"name": "Espacio reducido (Tabla de Movimiento en Espacios Reducidos)", "attack": -20, "parry": -20, "dodge": -20, "physicalAction": -10},
+    {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20},
+    {"name": "Parálisis menor con Hanja arcano", "attack": -20, "turn": -20, "physicalAction": -40},
+    {"name": "Parálisis parcial con Hanja arcano", "attack": -80, "turn": -30, "physicalAction": -60},
+    {"name": "Amenazado con Hanja arcano", "attack": -20, "turn": -50, "physicalAction": -100},
+    {"name": "Kung Fu: +10 al ataque", "attack": 10},
+    {"name": "Kung Fu: +10 a la parada", "parry": 10},
+    {"name": "Kung Fu: +10 a la esquiva", "dodge": 10},
+    {"name": "Kung Fu: +10 al turno", "turn": 10},
+    {"name": "Kung Fu: +20 al ataque (supremo)", "attack": 20},
+    {"name": "Kung Fu: +20 a la parada (supremo)", "parry": 20},
+    {"name": "Kung Fu: +20 a la esquiva (supremo)", "dodge": 20},
+    {"name": "Kung Fu: +20 al turno (supremo)", "turn": 20},
+    {"name": "Kung Fu: +40 al ataque (Asakusen arcano)", "attack": 40},
+    {"name": "Kung Fu: +40 a la parada (Asakusen arcano)", "parry": 40},
+    {"name": "Kung Fu: +40 a la esquiva (Asakusen arcano)", "dodge": 40},
+    {"name": "Kung Fu: +40 al turno (Asakusen arcano)", "turn": 40},
+    {"name": "Asakusen", "attack": 10, "parry": 10, "dodge": 10, "turn": 10}
 ]
 ''';
 }

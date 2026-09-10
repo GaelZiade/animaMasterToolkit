@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
+import 'package:amt/models/rules/combat_traits.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/presentation/states/combat_state.dart';
 import 'package:amt/utils/xlsx/xlsx_character_parser.dart';
@@ -238,11 +239,13 @@ class CharactersPageState extends ChangeNotifier {
     int? areaTargets,
     bool? supernaturalShield,
     int? declaredAttacks,
+    int? freeDefenses,
   }) {
     // Los ataques declarados son de ese atacante: al cambiarlo vuelven a uno.
     if (attacking != null) combatState.attack.declaredAttacks = 1;
 
     combatState.attack.declaredAttacks = declaredAttacks ?? combatState.attack.declaredAttacks;
+    combatState.defense.freeDefenses = freeDefenses ?? combatState.defense.freeDefenses;
 
     combatState.attack.areaAttack = areaAttack ?? combatState.attack.areaAttack;
     combatState.attack.areaTargets = areaTargets ?? combatState.attack.areaTargets;
@@ -282,6 +285,11 @@ class CharactersPageState extends ChangeNotifier {
     // El escudo es una decisión de ese defensor: al cambiarlo se apaga.
     if (defendant != null && supernaturalShield == null) {
       combatState.defense.supernaturalShield = false;
+    }
+
+    // Las defensas sin penalizador dependen de la ficha del nuevo defensor.
+    if (defendant != null && freeDefenses == null) {
+      combatState.defense.freeDefenses = CombatTraits.suggestedFreeDefenses(weapon: defendant.selectedWeapon(), combat: defendant.combat);
     }
 
     combatState.attack.modifiers = attackingModifiers ?? combatState.attack.modifiers;

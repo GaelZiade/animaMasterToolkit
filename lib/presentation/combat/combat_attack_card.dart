@@ -2,6 +2,7 @@ import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/roll.dart';
 import 'package:amt/models/rules/additional_attack_rules.dart';
+import 'package:amt/models/rules/combat_traits.dart';
 import 'package:amt/presentation/bottom_sheet_modifiers.dart';
 import 'package:amt/presentation/characters/modifiers_card.dart';
 import 'package:amt/presentation/combat/custom_combat_card.dart';
@@ -37,7 +38,10 @@ class CombatAttackCard extends StatelessWidget {
         appState.updateAttackingModifiers,
         suggested: character == null
             ? const []
-            : AdditionalAttackRules.suggestedExtraAttacks(weapon: character.selectedWeapon(), combat: character.combat),
+            : [
+                ...AdditionalAttackRules.suggestedExtraAttacks(weapon: character.selectedWeapon(), combat: character.combat),
+                ...CombatTraits.suggestedModifiers(character.combat),
+              ],
       );
     }
 

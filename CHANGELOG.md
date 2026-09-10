@@ -16,6 +16,14 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   [#50](https://github.com/aoalejo/animaMasterToolkit/issues/50))
 - **Espacio reducido** no coincidía con la Tabla 43: la Parada estaba en 0 en
   vez de −40 y la Acción Física en −40 en vez de −20.
+- **Valores de modificadores que no coincidían con los manuales:**
+  - Desarmar estaba en −20, el valor con Tabla de Desarme; el Core dice −40.
+  - Dolor extremo aplicaba −60 al ataque; es −80 a toda acción. Dolor, Dolor
+    extremo y Miedo no afectaban a la iniciativa, que sufre la mitad del
+    negativo (Estados y Accidentes).
+  - Seraphite no sumaba su bono al ataque (+20, o +30 en grado Arcano).
+  - Shephon sumaba +60 por su cuenta, además de la Defensa total; ahora es una
+    variante de la Defensa total.
 - Erratas en los textos que se muestran en pantalla: «Absorición»,
   «coontraataque», «Critico» sin tilde.
 
@@ -80,6 +88,38 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   tamaño de cada arma sale de la Tabla de Armas y Escudos; con dos armas, el de
   la más grande. Verificado contra tres planillas reales. Los personajes
   cargados antes de este cambio arrancan con todo apagado hasta reimportarlos.
+- **Maniobras y estados de los manuales que faltaban**, auditados contra el Core
+  (situaciones de combate, ataques específicos, defensas especiales, Estados y
+  Accidentes) y el Dominus (Tablas de Estilo y Artes Marciales):
+  - maniobras: Derribo, Ataque en área, Engatillar, Crítico secundario, dejar
+    inconsciente sin arma contundente, moverse más de ¼ del movimiento, Apartar
+    a otro y Resistir el golpe;
+  - variantes de cada maniobra según la tabla o el arte marcial que reduce su
+    penalizador: Sambo, Grappling, Pankration, Aikido, Emp, Malla-yuddha,
+    Capoeira, Kuan, Soo Bahk, Hanja, Batto jutsu y las tablas de Área,
+    Precisión, Desarme, Ataque Inusual, Presa Inusual, Guardaespaldas y
+    Movimiento en Espacios Reducidos;
+  - bonos de artes marciales: Kung Fu (+10, +20 o +40 con Asakusen arcano),
+    Asakusen, Xing Quan (+10, +20, +30) y contraataque con Boxeo avanzado;
+  - estados: Dolor leve, Fascinación, Incapacitado y Recién estabilizado.
+
+  Cada maniobra es un grupo de selección única con sus variantes. Las que
+  corresponden al personaje por sus tablas y artes marciales aparecen primero y
+  marcadas con ★ al atacar, al defenderse y en los estados.
+- **Defensas sin penalizador.** La tarjeta de defensa permite indicar cuántas
+  defensas del asalto no aplican el penalizador por defensas adicionales, y
+  arranca con lo que corresponde al defensor: Lama (1 o 2), Lama Tsu (2 más, o
+  todas en Arcano) y Tabla de 2ª Arma: Estilo Defensivo (1 con dos armas).
+- **Tablas y artes marciales en la ficha.** Se importan todas de la planilla y se
+  editan como una lista, con el catálogo de los manuales para elegir o un
+  nombre propio. Reemplazan a los interruptores de Ataque Encadenado, Ataque
+  Adicional, Kempo y Tae Kwon Do, que ahora se leen de esa lista.
+
+  Quedan fuera por no tener valores cerrados o no estar en los manuales
+  digitalizados: Tabla de Combate a Ciegas (sin regla de redondeo), Terror,
+  críticos, frío, electricidad y desangramiento (penalizadores variables, que
+  se cargan a mano), los bonos al crítico y el bono doble de contraataque de
+  Selene.
 
 ## Importación de fichas
 

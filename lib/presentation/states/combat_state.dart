@@ -42,6 +42,11 @@ class ScreenCombatStateDefense {
 
   /// El defensor con acumulación se protege con un escudo mágico o psíquico.
   bool supernaturalShield = false;
+
+  /// Defensas del asalto que no aplican el penalizador por defensas
+  /// adicionales (Lama, Tabla de 2ª Arma: Estilo Defensivo…). -1: ninguna.
+  int freeDefenses = 0;
+
   Character? character;
 
   ModifiersState modifiers = ModifiersState();
@@ -106,6 +111,17 @@ class ScreenCombatState {
     );
   }
 
+  /// Número de la defensa que cuenta para el penalizador, descontando las que
+  /// no lo aplican: con una libre, la tercera defensa penaliza como segunda.
+  int? get effectiveDefenseNumber {
+    final number = defense.character?.state.defenseNumber;
+
+    if (number == null) return null;
+    if (defense.freeDefenses < 0) return 1;
+
+    return max(1, number - defense.freeDefenses);
+  }
+
   ExplainedText get finalDefenseValue {
     return CombatRules.finalDefenseValue(
       roll: defense.roll,
@@ -114,7 +130,7 @@ class ScreenCombatState {
       surpriseType: surpriseType,
       modifiers: defense.modifiers,
       defenseType: defense.defenseType.toModifierType(),
-      defensesNumber: defense.character?.state.defenseNumber,
+      defensesNumber: effectiveDefenseNumber,
       defender: defense.character,
       characterStateModifiers: defense.character?.state.modifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
       supernaturalShield: defense.supernaturalShield,

@@ -109,10 +109,8 @@ abstract class MassRules {
     mass.combat = CombatData(
       armour: mass.combat.armour,
       ambidextrous: mass.combat.ambidextrous,
-      chainAttackTable: mass.combat.chainAttackTable,
-      kempoGrade: mass.combat.kempoGrade,
-      taeKwonDoGrade: mass.combat.taeKwonDoGrade,
-      additionalAttackTable: mass.combat.additionalAttackTable,
+      styleTables: mass.combat.styleTables,
+      martialArts: mass.combat.martialArts,
       weapons: [
         for (final weapon in member.combat.weapons)
           weapon.copy()..damage = _isSupernatural(weapon) ? weapon.damage * 2 : (weapon.damage * 1.5).floor(),

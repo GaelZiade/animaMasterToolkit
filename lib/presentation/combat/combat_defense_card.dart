@@ -1,5 +1,6 @@
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/roll.dart';
+import 'package:amt/models/rules/combat_traits.dart';
 import 'package:amt/presentation/bottom_sheet_modifiers.dart';
 import 'package:amt/presentation/characters/modifiers_card.dart';
 import 'package:amt/presentation/combat/custom_combat_card.dart';
@@ -179,7 +180,7 @@ class CombatDefenseCard extends StatelessWidget {
                               includeAllDefense: character == null,
                             ), (newModifiers) {
                           appState.updateCombatState(defenderModifiers: newModifiers);
-                        });
+                        }, suggested: character == null ? const [] : CombatTraits.suggestedModifiers(character.combat));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -229,7 +230,7 @@ class CombatDefenseCard extends StatelessWidget {
             },
           ),
         ),
-        if (character != null && !damageAccumulation)
+        if (character != null && !damageAccumulation) ...[
           SizedBox(
             height: 60,
             child: Row(
@@ -266,7 +267,55 @@ class CombatDefenseCard extends StatelessWidget {
               ],
             ),
           ),
+          _FreeDefensesRow(
+            value: defense.freeDefenses,
+            suggested: CombatTraits.suggestedFreeDefenses(weapon: character.selectedWeapon(), combat: character.combat),
+            onChanged: (value) => appState.updateCombatState(freeDefenses: value),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+/// Defensas del asalto que no aplican el penalizador por defensas adicionales:
+/// Lama, Lama Tsu, Tabla de 2ª Arma: Estilo Defensivo, técnicas de Ki.
+class _FreeDefensesRow extends StatelessWidget {
+  const _FreeDefensesRow({required this.value, required this.suggested, required this.onChanged});
+
+  final int value;
+  final int suggested;
+  final void Function(int) onChanged;
+
+  /// -1 representa que ninguna defensa aplica el penalizador.
+  static const _options = [0, 1, 2, 3, 4, -1];
+
+  @override
+  Widget build(BuildContext context) {
+    String label(int option) => option < 0 ? '∞' : '$option';
+
+    return SizedBox(
+      height: 60,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Flexible(
+            child: Tooltip(
+              message: 'Defensas que no aplican el penalizador por defensas adicionales. '
+                  'La ★ marca lo que corresponde por la ficha (Lama, Lama Tsu, Tabla de 2ª Arma: Estilo Defensivo).',
+              child: Text('Sin penalizador:', maxLines: 2, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+          ToggleButtons(
+            isSelected: [for (final option in _options) option == value],
+            onPressed: (index) => onChanged(_options[index]),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            children: [
+              for (final option in _options) Text(option == suggested && option != 0 ? '${label(option)}★' : label(option)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
