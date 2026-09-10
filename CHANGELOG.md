@@ -35,6 +35,23 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 - **Reserva de Ki unificada** como regla fija (Dominus Exxet, reglas
   opcionales). Un personaje con Ki repartido dejaba cinco o seis consumibles
   (`Ki/AGI`, `Ki/VOL`…) de los que la tabla mostraba uno solo.
+- **Masas de enemigos** (cierra
+  [#46](https://github.com/aoalejo/animaMasterToolkit/issues/46)), con las
+  reglas de Combate de Masas del Bestiario. Desde las opciones de un personaje
+  se elige cuántos miembros tiene y se crea un único adversario que:
+  - suma la vida de todos con las dos fórmulas del manual, la normal y la de
+    criaturas con acumulación;
+  - gana el bono de ataque de la Tabla 1 según los miembros que siguen en pie;
+  - aumenta un 50 % el daño físico y dobla el de conjuros y poderes;
+  - se defiende con su defensa media como Defensa Final, sin tirar y sin
+    penalizadores por ataques adicionales;
+  - es inmune a los críticos;
+  - recibe el multiplicador de la Tabla 2 cuando lo atacan en área, según
+    cuántos miembros alcanza el ataque.
+- **Escudo sobrenatural para criaturas con acumulación**, la regla que faltaba
+  de [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47). Una
+  criatura con acumulación que tenga Proyección puede defenderse con un escudo
+  mágico o psíquico aplicando −80, y si se lo superan pierde la acción (p. 99).
 
 ## Importación de fichas
 
@@ -99,8 +116,18 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 - **El tipo de crítico se preselecciona** según el arma empuñada. Arrancaba
   siempre en Energía, así que la absorción se calculaba contra la TA equivocada
   salvo que se tocara el selector.
+- **Ficha de personaje compacta.** Era una tabla ancha con diez columnas de
+  dificultad por fila. Ahora sigue la lógica de un bloque del bestiario:
+  vitales, características, resistencias y combate arriba; habilidades
+  agrupadas por las categorías del manual, con la escalera de dificultades al
+  tocar cada una; vías, conjuros y disciplinas en secciones plegables.
 
 ### Corregido
+
+- **Numeración de copias** (cierra
+  [#45](https://github.com/aoalejo/animaMasterToolkit/issues/45)). Duplicar un
+  personaje ya numerado apilaba sufijos: «PJ», «PJ #2», «PJ #2 #3»… Ahora se
+  numera siempre sobre el nombre base.
 
 - **Contraste del modo oscuro.** Los nueve iconos SVG se dibujaban con su
   relleno original en negro. Los chips y cabeceras usaban `colorScheme.primary`
