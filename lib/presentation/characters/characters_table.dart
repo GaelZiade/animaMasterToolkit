@@ -108,6 +108,8 @@ class CharactersTable extends StatelessWidget {
             ),
             IconButton(
               tooltip: 'Limpiar mesa',
+              // Mismo color que los botones de texto de esta fila.
+              color: theme.colorScheme.primary,
               icon: const Icon(Icons.delete_sweep_outlined),
               onPressed: appState.characters.isEmpty
                   ? null
