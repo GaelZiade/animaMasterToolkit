@@ -86,5 +86,42 @@ void main() {
     expect(combat.taeKwonDoGrade, 0);
     expect(combat.chainAttackTable, isFalse);
     expect(combat.additionalAttackTable, isFalse);
+    expect(combat.disadvantages, ['Mudo', 'Fobia grave', 'Vulnerable a frio o calor']);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Control del Ki'), isTrue);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Escudo físico'), isTrue);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Eliminación de penalizadores'), isFalse);
+    expect(combat.styleTables, contains('Tabla de Desvio'));
+  });
+
+  test('Kael: Ataque Encadenado, Arma distinta y un Ars Magnus', () {
+    final combat = _combat('Kael Avelar BOX.xlsm');
+
+    if (combat == null) return markTestSkipped('Falta la planilla de Kael');
+
+    expect(combat.chainAttackTable, isTrue);
+    expect(combat.additionalAttackTable, isFalse);
+    expect(combat.styleTables, contains('Arma distinta / Desarmado'));
+    expect(combat.arsMagnus, ['Leo: Armas-pistola']);
+    expect(combat.disadvantages, ['Fobia grave', 'Secreto inconfesable', 'Maldito (2)']);
+    expect(CombatData.hasTrait(combat.advantages, 'Acumulación plena'), isTrue);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Ataque elemental'), isTrue);
+    expect(combat.martialArts, isEmpty);
+  });
+
+  test('Stéphan: mago con dos armas pequeñas sueltas y casi sin Ki', () {
+    final combat = _combat('Stéphan Durand Deville Lvl7.xlsm');
+
+    if (combat == null) return markTestSkipped('Falta la planilla de Stéphan');
+
+    expect(_weapon(combat, 'Espada corta').attackSize, 'P');
+    expect(_weapon(combat, 'Daga').attackSize, 'P');
+    expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: _weapon(combat, 'Espada corta'), combat: combat), isEmpty);
+    expect(combat.kiAbilities.length, 2);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Inhumanidad'), isTrue);
+    expect(CombatData.hasTrait(combat.advantages, 'Versatilidad metamágica'), isTrue);
+    expect(combat.disadvantages.length, 3);
+    expect(CombatData.hasTrait(combat.disadvantages, 'Miopía'), isTrue);
+    expect(combat.styleTables, isEmpty);
+    expect(combat.ambidextrous, isFalse);
   });
 }
