@@ -101,10 +101,10 @@ abstract class AdditionalAttackRules {
   /// Nombres de los modificadores de ataque extra (ver [Modifiers]).
   static const secondWeapon = '${Modifiers.extraAttackPrefix}Segunda arma';
   static const secondWeaponAmbidextrous = '${Modifiers.extraAttackPrefix}Segunda arma con Ambidestría';
+  /// En grado Supremo la patada no penaliza, así que no necesita modificador.
   static const kicks = [
     '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Base)',
     '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Avanzado)',
-    '${Modifiers.extraAttackPrefix}Patada de Tae Kwon Do (Supremo)',
   ];
 
   /// Un golpe adicional por cada 100 puntos de ataque. Kempo en grado supremo
@@ -177,7 +177,7 @@ abstract class AdditionalAttackRules {
     return [
       // Combatir sin armas no admite un arma adicional.
       if (!isUnarmed(weapon) && wieldsTwoWeapons(weapon)) combat.ambidextrous ? secondWeaponAmbidextrous : secondWeapon,
-      if (combat.taeKwonDoGrade > 0) kicks[min(combat.taeKwonDoGrade, kicks.length) - 1],
+      if (combat.taeKwonDoGrade > 0 && combat.taeKwonDoGrade <= kicks.length) kicks[combat.taeKwonDoGrade - 1],
     ];
   }
 

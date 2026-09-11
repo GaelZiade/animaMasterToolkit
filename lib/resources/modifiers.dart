@@ -49,11 +49,8 @@ class Modifiers {
         ModifiersType.turn => modifier.turn,
         ModifiersType.action => modifier.physicalAction,
       };
-      // Una variante sin penalizador ("Presa sin penalizador") sigue siendo una
-      // opción válida para ese tipo de tirada: se declara con "keepFor".
-      final keepFor = (element['keepFor'] as List<dynamic>?)?.map((entry) => '$entry') ?? const <String>[];
-
-      if (value != 0 || keepFor.contains(type.name)) modifiers.add(modifier);
+      // Un modificador que no cambia esta tirada no se ofrece en ella.
+      if (value != 0) modifiers.add(modifier);
     }
 
     return modifiers.map((e) => e.pruneOthers(type, includeAllDefense: includeAllDefense)).toList()
@@ -206,24 +203,6 @@ class Modifiers {
         "attack": -20,
         "parry": -10,
         "dodge": 0,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "A la defensiva",
-        "attack": -30,
-        "parry": 10,
-        "dodge": 10,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
-        "name": "A la ofensiva",
-        "attack": 10,
-        "parry": -30,
-        "dodge": -30,
         "turn": 0,
         "type": 2,
         "physicalAction": 0
@@ -442,42 +421,24 @@ class Modifiers {
         "name": "Ataque extra: Patada de Tae Kwon Do (Avanzado)",
         "attack": -20
     },
-    {
-        "name": "Ataque extra: Patada de Tae Kwon Do (Supremo)",
-        "attack": 0,
-        "keepFor": ["attack"]
-    },
-    {
-        "name": "Ataque extra: Técnica de Ki sin penalizador",
-        "attack": 0,
-        "keepFor": ["attack"]
-    },
     {"name": "Derribo", "attack": -30},
     {"name": "Derribo con arma corta", "attack": -60},
     {"name": "Derribo a mitad (Grappling, Sambo)", "attack": -15},
-    {"name": "Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)", "attack": 0, "keepFor": ["attack"]},
     {"name": "Presa a mitad (Pankration, Grappling, Sambo avanzado)", "attack": -20},
-    {"name": "Presa sin penalizador (Grappling avanzado, Aikido en contraataque)", "attack": 0, "keepFor": ["attack"]},
     {"name": "Presa con arma sin regla de Presa (Tabla de Presa Inusual)", "attack": -60},
     {"name": "Desarmar", "attack": -40},
     {"name": "Desarmar a mitad (Tabla de Desarme, Sambo)", "attack": -20},
-    {"name": "Desarmar sin penalizador (Emp, Malla-yuddha supremo en contraataque)", "attack": 0, "keepFor": ["attack"]},
     {"name": "Ataque en área", "attack": -50},
     {"name": "Ataque en área a mitad (Tabla de Área, Sambo avanzado)", "attack": -25},
     {"name": "Ataque en área con Capoeira supremo", "attack": -10},
     {"name": "Engatillar", "attack": -100},
     {"name": "Engatillar a mitad (Tabla de Precisión)", "attack": -50},
     {"name": "Crítico secundario", "attack": -10},
-    {"name": "Crítico secundario sin penalizador (Tabla de Ataque Inusual)", "attack": 0, "keepFor": ["attack"]},
     {"name": "Dejar inconsciente sin arma contundente", "attack": -40},
     {"name": "Moverse más de 1/4 del movimiento", "attack": -25, "physicalAction": -25},
-    {"name": "Desenfundar con Batto jutsu (arma a una mano)", "attack": 0, "parry": 0, "keepFor": ["attack", "parry"]},
     {"name": "Flanco con Soo Bahk", "attack": -10, "parry": -15, "dodge": -15},
-    {"name": "Flanco con Soo Bahk avanzado", "keepFor": ["attack", "parry", "dodge"]},
-    {"name": "De espalda con Hanja", "keepFor": ["attack", "parry", "dodge"]},
     {"name": "Proyectil Lanzado con Kuan", "parry": -25},
     {"name": "Proyectil Disparado con Kuan avanzado", "parry": -40, "dodge": -15},
-    {"name": "Proyectil sin penalizador (Kuan supremo)", "keepFor": ["parry", "dodge"]},
     {"name": "Apartar a otro", "parry": -30, "dodge": -30},
     {"name": "Apartar a otro (Tabla de Guardaespaldas)", "parry": -10, "dodge": -10},
     {"name": "Resistir el golpe", "parry": -80, "dodge": -80},
@@ -495,7 +456,7 @@ class Modifiers {
         "attack": "-10",
         "parry": -10,
         "dodge": -10,
-        "turn": -10,
+        "turn": -5,
         "physicalAction": -10
     },
     {
@@ -503,7 +464,7 @@ class Modifiers {
         "attack": "-20",
         "parry": -20,
         "dodge": -20,
-        "turn": -20,
+        "turn": -10,
         "physicalAction": -20
     },
     {
@@ -511,7 +472,7 @@ class Modifiers {
         "attack": "-40",
         "parry": -40,
         "dodge": -40,
-        "turn": -40,
+        "turn": -20,
         "physicalAction": -40
     },
     {
@@ -519,7 +480,7 @@ class Modifiers {
         "attack": "-80",
         "parry": -80,
         "dodge": -80,
-        "turn": -80,
+        "turn": -40,
         "physicalAction": -80
     },
     {
@@ -527,7 +488,7 @@ class Modifiers {
         "attack": "-120",
         "parry": -120,
         "dodge": -120,
-        "turn": -120,
+        "turn": -60,
         "physicalAction": -120
     },
     {
@@ -630,17 +591,8 @@ class Modifiers {
         "physicalAction": -20
     },
     {
-        "name": "Escasa visibilidad",
-        "attack": -20,
-        "parry": 0,
-        "dodge": 0,
-        "turn": 0,
-        "type": 0,
-        "physicalAction": 0
-    },
-    {
         "name": "Defensa total",
-        "attack": -200,
+        "attack": 0,
         "parry": 30,
         "dodge": 30,
         "turn": 0,
@@ -648,18 +600,9 @@ class Modifiers {
         "physicalAction": 0
     },
     {
-        "name": "Ataque total",
-        "attack": 30,
-        "parry": -200,
-        "dodge": -200,
-        "turn": 0,
-        "type": 2,
-        "physicalAction": 0
-    },
-    {
         "name": "Arma distinta / Desarmado",
         "attack": -60,
-        "parry": 0,
+        "parry": -60,
         "dodge": 0,
         "turn": 0,
         "type": 2,
@@ -668,7 +611,7 @@ class Modifiers {
     {
         "name": "Arma mixta",
         "attack": -40,
-        "parry": 0,
+        "parry": -40,
         "dodge": 0,
         "turn": 0,
         "type": 2,
@@ -677,7 +620,7 @@ class Modifiers {
     {
         "name": "Arma similar",
         "attack": -20,
-        "parry": 0,
+        "parry": -20,
         "dodge": 0,
         "turn": 0,
         "type": 2,
@@ -690,14 +633,14 @@ class Modifiers {
     {"name": "Fascinación", "parry": -20, "dodge": -20, "physicalAction": -20},
     {"name": "Incapacitado (coma o inconsciente)", "attack": -200, "parry": -200, "dodge": -200, "turn": -100, "physicalAction": -200},
     {"name": "Recién estabilizado tras estar entre la vida y la muerte", "attack": -60, "parry": -60, "dodge": -60, "turn": -30, "physicalAction": -60},
-    {"name": "Defensa total con Shephon", "attack": -200, "parry": 60, "dodge": 60},
-    {"name": "Defensa total con Shephon arcano", "attack": -200, "parry": 100, "dodge": 100},
-    {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30, "keepFor": ["attack", "parry", "dodge"]},
+    {"name": "Defensa total con Shephon", "parry": 60, "dodge": 60},
+    {"name": "Defensa total con Shephon arcano", "parry": 100, "dodge": 100},
+    {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30},
     {"name": "Espacio reducido (Tabla de Movimiento en Espacios Reducidos)", "attack": -20, "parry": -20, "dodge": -20, "physicalAction": -10},
-    {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20, "keepFor": ["parry", "dodge"]},
-    {"name": "Parálisis menor con Hanja arcano", "attack": -20, "turn": -20, "physicalAction": -40, "keepFor": ["parry", "dodge"]},
-    {"name": "Parálisis parcial con Hanja arcano", "attack": -80, "turn": -30, "physicalAction": -60, "keepFor": ["parry", "dodge"]},
-    {"name": "Amenazado con Hanja arcano", "attack": -20, "turn": -50, "physicalAction": -100, "keepFor": ["parry", "dodge"]},
+    {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20},
+    {"name": "Parálisis menor con Hanja arcano", "attack": -20, "turn": -20, "physicalAction": -40},
+    {"name": "Parálisis parcial con Hanja arcano", "attack": -80, "turn": -30, "physicalAction": -60},
+    {"name": "Amenazado con Hanja arcano", "attack": -20, "turn": -50, "physicalAction": -100},
     {"name": "Kung Fu: +10 al ataque", "attack": 10},
     {"name": "Kung Fu: +10 a la parada", "parry": 10},
     {"name": "Kung Fu: +10 a la esquiva", "dodge": 10},

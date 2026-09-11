@@ -24,6 +24,21 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   - Seraphite no sumaba su bono al ataque (+20, o +30 en grado Arcano).
   - Shephon sumaba +60 por su cuenta, además de la Defensa total; ahora es una
     variante de la Defensa total.
+- **Modificadores que no están en los manuales, fuera:** Ataque total (solo se
+  lo nombra en una técnica de Ki del Dominus, nunca se define), A la defensiva,
+  A la ofensiva y una Escasa visibilidad general, que es un modificador de
+  disparo y ya existía como tal.
+- **Defensa total restaba −200 al ataque** (también con Shephon). Estar en
+  Defensa total significa no atacar ese asalto, no un penalizador.
+- **La Tabla 29 se aplica también a la parada.** Arma similar, mixta y distinta
+  solo penalizaban el ataque, y el grupo se llamaba «Arma del adversario»
+  cuando es el arma que el propio personaje no domina.
+- **El cansancio restaba el negativo entero a la iniciativa.** Es un negativo a
+  toda acción (Tabla 27), y en la iniciativa se aplica la mitad.
+- **Sin opciones que no cambian nada.** Las variantes que dejan un penalizador
+  en 0 (técnica de Ki, patada de Tae Kwon Do supremo, maniobras sin
+  penalizador) equivalen a no elegir nada, así que no se ofrecen; tampoco un
+  modificador en la tirada a la que no afecta.
 - Erratas en los textos que se muestran en pantalla: «Absorición»,
   «coontraataque», «Critico» sin tilde.
 
@@ -67,8 +82,8 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
     planilla; si falta, se deduce del nombre con las tablas de armas del Core, y
     en los dos casos se puede corregir desde la tarjeta;
   - **ataques extra** fuera del tope: segunda arma (−40, o −10 con
-    Ambidestría), patada de Tae Kwon Do (−30, −20 o sin penalizador según el
-    grado) y técnica de Ki sin penalizador. Son un grupo de modificadores
+    Ambidestría) y patada de Tae Kwon Do (−30 en Base, −20 en Avanzado; en
+    Supremo no penaliza). Son un grupo de modificadores
     situacionales de selección única, como las zonas apuntadas. Los que
     corresponden al personaje por su ficha aparecen primero y marcados con ★,
     sin ocultar el resto, y el que está activo se ve en la tarjeta de ataque

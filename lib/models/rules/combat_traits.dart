@@ -127,36 +127,19 @@ abstract class CombatTraits {
   /// Modificadores que corresponden a quien domina ciertas tablas o artes.
   static const _suggestions = <String, List<TraitRequirement>>{
     'Derribo a mitad (Grappling, Sambo)': [TraitRequirement.art('grappling', maxGrade: 1), TraitRequirement.art('sambo')],
-    'Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)': [
-      TraitRequirement.art('grappling', minGrade: 2),
-      TraitRequirement.art('aikido', minGrade: 2),
-    ],
     'Presa a mitad (Pankration, Grappling, Sambo avanzado)': [
       TraitRequirement.art('pankration'),
       TraitRequirement.art('grappling', maxGrade: 1),
       TraitRequirement.art('sambo', minGrade: 2),
     ],
-    'Presa sin penalizador (Grappling avanzado, Aikido en contraataque)': [
-      TraitRequirement.art('grappling', minGrade: 2),
-      TraitRequirement.art('aikido', minGrade: 2),
-    ],
     'Presa con arma sin regla de Presa (Tabla de Presa Inusual)': [TraitRequirement.table('presa inusual')],
     'Desarmar a mitad (Tabla de Desarme, Sambo)': [TraitRequirement.table('tabla de desarme'), TraitRequirement.art('sambo')],
-    'Desarmar sin penalizador (Emp, Malla-yuddha supremo en contraataque)': [
-      TraitRequirement.art('emp'),
-      TraitRequirement.art('malla-yuddha', minGrade: 3),
-    ],
     'Ataque en área a mitad (Tabla de Área, Sambo avanzado)': [TraitRequirement.table('tabla de area'), TraitRequirement.art('sambo', minGrade: 2)],
     'Ataque en área con Capoeira supremo': [TraitRequirement.art('capoeira', minGrade: 3)],
     'Engatillar a mitad (Tabla de Precisión)': [TraitRequirement.table('tabla de precision')],
-    'Crítico secundario sin penalizador (Tabla de Ataque Inusual)': [TraitRequirement.table('ataque inusual')],
-    'Desenfundar con Batto jutsu (arma a una mano)': [TraitRequirement.table('batto jutsu'), TraitRequirement.table('iai jutsu')],
     'Flanco con Soo Bahk': [TraitRequirement.art('soo bahk', maxGrade: 1)],
-    'Flanco con Soo Bahk avanzado': [TraitRequirement.art('soo bahk', minGrade: 2)],
-    'De espalda con Hanja': [TraitRequirement.art('hanja')],
     'Proyectil Lanzado con Kuan': [TraitRequirement.art('kuan', maxGrade: 1)],
     'Proyectil Disparado con Kuan avanzado': [TraitRequirement.art('kuan', minGrade: 2, maxGrade: 2)],
-    'Proyectil sin penalizador (Kuan supremo)': [TraitRequirement.art('kuan', minGrade: 3)],
     'Proyectil Disparado (escudo)': [TraitRequirement.table('defensa contra proyectiles')],
     'Apartar a otro (Tabla de Guardaespaldas)': [TraitRequirement.table('guardaespaldas')],
     'Contraataque con Boxeo avanzado': [TraitRequirement.art('boxeo', minGrade: 2)],

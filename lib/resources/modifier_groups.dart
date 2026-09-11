@@ -38,33 +38,21 @@ class ModifierGroup {
     ModifierGroup(label: 'Ataque extra', prefix: Modifiers.extraAttackPrefix),
     // Maniobras (Core, "Ataques específicos" y "Defensas especiales"). Cada
     // grupo reúne la maniobra y sus variantes por tabla o arte marcial; las
-    // maniobras distintas sí se pueden combinar entre sí.
+    // maniobras distintas sí se pueden combinar entre sí. Una variante que deja
+    // el penalizador en 0 no está: equivale a no elegir nada.
     ModifierGroup(
       label: 'Derribo',
-      names: [
-        'Derribo',
-        'Derribo con arma corta',
-        'Derribo a mitad (Grappling, Sambo)',
-        'Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)',
-      ],
+      names: ['Derribo', 'Derribo con arma corta', 'Derribo a mitad (Grappling, Sambo)'],
     ),
     ModifierGroup(
       label: 'Presa',
       names: [
         'Presa',
         'Presa a mitad (Pankration, Grappling, Sambo avanzado)',
-        'Presa sin penalizador (Grappling avanzado, Aikido en contraataque)',
         'Presa con arma sin regla de Presa (Tabla de Presa Inusual)',
       ],
     ),
-    ModifierGroup(
-      label: 'Desarmar',
-      names: [
-        'Desarmar',
-        'Desarmar a mitad (Tabla de Desarme, Sambo)',
-        'Desarmar sin penalizador (Emp, Malla-yuddha supremo en contraataque)',
-      ],
-    ),
+    ModifierGroup(label: 'Desarmar', names: ['Desarmar', 'Desarmar a mitad (Tabla de Desarme, Sambo)']),
     ModifierGroup(
       label: 'Ataque en área',
       names: [
@@ -74,25 +62,14 @@ class ModifierGroup {
       ],
     ),
     ModifierGroup(label: 'Engatillar', names: ['Engatillar', 'Engatillar a mitad (Tabla de Precisión)']),
-    ModifierGroup(
-      label: 'Crítico secundario',
-      names: ['Crítico secundario', 'Crítico secundario sin penalizador (Tabla de Ataque Inusual)'],
-    ),
-    ModifierGroup(label: 'Desenfundar', names: ['Desenfundar', 'Desenfundar con Batto jutsu (arma a una mano)']),
     ModifierGroup(label: 'Apartar a otro', names: ['Apartar a otro', 'Apartar a otro (Tabla de Guardaespaldas)']),
     ModifierGroup(label: 'Xing Quan', prefix: 'Xing Quan: '),
     ModifierGroup(label: 'Kung Fu: bono variable', prefix: 'Kung Fu: '),
-    ModifierGroup(label: 'Actitud de combate', names: ['A la defensiva', 'A la ofensiva']),
-    ModifierGroup(
-      label: 'Acción total',
-      names: ['Defensa total', 'Ataque total', 'Defensa total con Shephon', 'Defensa total con Shephon arcano'],
-    ),
-    ModifierGroup(
-      label: 'Posición relativa',
-      names: ['Flanco', 'De espalda', 'Flanco con Soo Bahk', 'Flanco con Soo Bahk avanzado', 'De espalda con Hanja'],
-    ),
+    ModifierGroup(label: 'Defensa total', names: ['Defensa total', 'Defensa total con Shephon', 'Defensa total con Shephon arcano']),
+    ModifierGroup(label: 'Posición relativa', names: ['Flanco', 'De espalda', 'Flanco con Soo Bahk']),
     ModifierGroup(label: 'Tamaño del adversario', names: ['Adversario pequeño', 'Adversario diminuto']),
-    ModifierGroup(label: 'Arma del adversario', names: ['Arma similar', 'Arma mixta', 'Arma distinta / Desarmado']),
+    // Tabla 29: penalizador por usar un arma distinta de la que se domina.
+    ModifierGroup(label: 'Arma que no domina', names: ['Arma similar', 'Arma mixta', 'Arma distinta / Desarmado']),
     ModifierGroup(
       label: 'Cansancio',
       names: [
@@ -132,7 +109,6 @@ class ModifierGroup {
         'Proyectil Disparado (escudo)',
         'Proyectil Lanzado con Kuan',
         'Proyectil Disparado con Kuan avanzado',
-        'Proyectil sin penalizador (Kuan supremo)',
       ],
     ),
     ModifierGroup(

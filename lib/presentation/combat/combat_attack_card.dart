@@ -427,7 +427,7 @@ class _AdditionalAttacks extends StatelessWidget {
               ? TextButton.icon(
                   onPressed: onOpenModifiers,
                   icon: const Icon(Icons.add),
-                  label: const Text('Ataque extra (segunda arma, patada, técnica…)'),
+                  label: const Text('Ataque extra (segunda arma, patada…)'),
                 )
               : InputChip(
                   selected: true,

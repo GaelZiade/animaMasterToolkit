@@ -89,13 +89,15 @@ void main() {
   });
 
   group('Ataques extra como modificadores', () {
-    test('Están entre los situacionales de ataque, incluidos los que no penalizan', () {
+    test('Están entre los situacionales de ataque', () {
       expect(_extra(AdditionalAttackRules.secondWeapon), -40);
       expect(_extra(AdditionalAttackRules.secondWeaponAmbidextrous), -10);
       expect(_extra(AdditionalAttackRules.kicks[0]), -30);
       expect(_extra(AdditionalAttackRules.kicks[1]), -20);
-      expect(_extra(AdditionalAttackRules.kicks[2]), 0);
-      expect(_extra('${Modifiers.extraAttackPrefix}Técnica de Ki sin penalizador'), 0);
+    });
+
+    test('Tae Kwon Do supremo no sugiere nada: la patada no penaliza', () {
+      expect(AdditionalAttackRules.suggestedExtraAttacks(weapon: _weapon('Mandoble', 210), combat: _combat(taeKwonDo: 3)), isEmpty);
     });
 
     test('Sugiere los que corresponden por la ficha', () {

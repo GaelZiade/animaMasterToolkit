@@ -99,9 +99,27 @@ void main() {
       expect(_value('Defensa total', ModifiersType.dodge), 30);
     });
 
-    test('Los estados sin penalizador a una tirada siguen apareciendo en ella', () {
-      expect(namesFor(ModifiersType.attack), contains('Derribado con Soo Bahk supremo'));
-      expect(namesFor(ModifiersType.parry), contains('Amenazado con Hanja arcano'));
+    test('No se ofrece nada que no cambie la tirada', () {
+      for (final type in ModifiersType.values) {
+        for (final modifier in Modifiers.getSituationalModifiers(type)) {
+          final value = switch (type) {
+            ModifiersType.attack => modifier.attack,
+            ModifiersType.parry => modifier.parry,
+            ModifiersType.dodge => modifier.dodge,
+            ModifiersType.turn => modifier.turn,
+            ModifiersType.action => modifier.physicalAction,
+          };
+
+          expect(value, isNot(0), reason: '${type.name}: ${modifier.name}');
+        }
+      }
+    });
+
+    test('Fuera lo que no está en los manuales', () {
+      expect(names, isNot(contains('Ataque total')));
+      expect(names, isNot(contains('A la defensiva')));
+      expect(names, isNot(contains('A la ofensiva')));
+      expect(names, isNot(contains('Escasa visibilidad')));
     });
 
     test('El panel del personaje incluye las maniobras y no repite nombres', () {
@@ -125,10 +143,15 @@ void main() {
       expect(_value('Resistir el golpe', ModifiersType.dodge), -80);
     });
 
-    test('Las variantes sin penalizador siguen apareciendo', () {
-      expect(_value('Presa sin penalizador (Grappling avanzado, Aikido en contraataque)', ModifiersType.attack), 0);
-      expect(_value('Proyectil sin penalizador (Kuan supremo)', ModifiersType.parry), 0);
-      expect(_value('Flanco con Soo Bahk avanzado', ModifiersType.dodge), 0);
+    test('Tabla 29: el arma que no se domina penaliza ataque y parada', () {
+      expect(_value('Arma similar', ModifiersType.parry), -20);
+      expect(_value('Arma mixta', ModifiersType.parry), -40);
+      expect(_value('Arma distinta / Desarmado', ModifiersType.parry), -60);
+    });
+
+    test('Defensa total no penaliza el ataque: directamente no se ataca', () {
+      expect(_value('Defensa total', ModifiersType.dodge), 30);
+      expect(Modifiers.getSituationalModifiers(ModifiersType.attack).map((modifier) => modifier.name), isNot(contains('Defensa total')));
     });
 
     test('Estados de Estados y Accidentes: toda acción, iniciativa a la mitad', () {
@@ -137,6 +160,9 @@ void main() {
       expect(_value('Dolor extremo', ModifiersType.parry), -80);
       expect(_value('Dolor leve', ModifiersType.action), -20);
       expect(_value('Miedo', ModifiersType.turn), -30);
+      expect(_value('2 puntos restantes de cansancio', ModifiersType.attack), -40);
+      expect(_value('2 puntos restantes de cansancio', ModifiersType.turn), -20);
+      expect(_value('0 puntos restantes de cansancio', ModifiersType.turn), -60);
     });
 
     test('Artes avanzadas del Dominus', () {
@@ -148,12 +174,9 @@ void main() {
   });
 
   group('Sugerencias por ficha', () {
-    test('Grappling avanzado sugiere Presa y Derribo sin penalizador, no a mitad', () {
-      final suggested = CombatTraits.suggestedModifiers(_combat(arts: ['Grappling (Avanzado)']));
-
-      expect(suggested, contains('Presa sin penalizador (Grappling avanzado, Aikido en contraataque)'));
-      expect(suggested, contains('Derribo sin penalizador (Grappling avanzado, Aikido en contraataque)'));
-      expect(suggested, isNot(contains('Presa a mitad (Pankration, Grappling, Sambo avanzado)')));
+    test('Grappling base sugiere Presa a mitad; en avanzado ya no penaliza y no sugiere nada', () {
+      expect(CombatTraits.suggestedModifiers(_combat(arts: ['Grappling (Base)'])), contains('Presa a mitad (Pankration, Grappling, Sambo avanzado)'));
+      expect(CombatTraits.suggestedModifiers(_combat(arts: ['Grappling (Avanzado)'])), isEmpty);
     });
 
     test('Lama no se confunde con Lama Tsu', () {
