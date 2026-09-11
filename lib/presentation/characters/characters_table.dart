@@ -106,6 +106,44 @@ class CharactersTable extends StatelessWidget {
                 ),
               ),
             ),
+            IconButton(
+              tooltip: 'Limpiar mesa',
+              icon: const Icon(Icons.delete_sweep_outlined),
+              onPressed: appState.characters.isEmpty
+                  ? null
+                  : () async {
+                      final count = appState.characters.length;
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (dialogContext) => AlertDialog(
+                          title: const Text('Limpiar mesa'),
+                          content: Text(
+                            'Se quitan los $count personajes cargados y el combate en curso. '
+                            'Con la sesión iniciada, la partida guardada en la nube también queda vacía.',
+                          ),
+                          actions: [
+                            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('Cancelar')),
+                            FilledButton(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('Limpiar')),
+                          ],
+                        ),
+                      );
+
+                      if (confirmed != true || !context.mounted) return;
+
+                      final removed = appState.clearTable();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Mesa limpia: se quitaron $count personajes'),
+                          duration: const Duration(seconds: 8),
+                          action: SnackBarAction(
+                            label: 'Deshacer',
+                            onPressed: () => appState.restoreCharacters(removed),
+                          ),
+                        ),
+                      );
+                    },
+            ),
           ],
         ),
         spacer,

@@ -189,6 +189,44 @@ class CharactersPageState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Deja la mesa vacía: quita todos los personajes y el combate en curso.
+  ///
+  /// Devuelve los personajes quitados para poder deshacerlo.
+  List<Character> clearTable() {
+    final removed = [...characters];
+
+    for (final character in removed) {
+      try {
+        character.delete();
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    characters.clear();
+    combatState = ScreenCombatState();
+    notifyListeners();
+
+    return removed;
+  }
+
+  /// Vuelve a poner en la mesa los personajes quitados al limpiarla, con su
+  /// estado. Se reconstruyen desde su JSON, igual que al importar una partida,
+  /// porque un objeto ya borrado del almacenamiento no se puede volver a
+  /// guardar tal cual.
+  void restoreCharacters(List<Character> removed) {
+    for (final character in removed) {
+      final restored = Character.fromJson(character.toJson());
+
+      if (restored == null) continue;
+
+      characters.add(restored);
+      _box.add(restored);
+    }
+
+    notifyListeners();
+  }
+
   void updatePageSelected(int index) {
     pageSelected = index;
     notifyListeners();

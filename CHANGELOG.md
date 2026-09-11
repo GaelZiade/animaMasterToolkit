@@ -227,6 +227,10 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   paréntesis anidados. Un sumando por fila, los términos en cero ocultos, signo
   y color según sume o reste, y cifras tabulares.
 - **Estado vacío** en la tabla de personajes.
+- **Limpiar mesa.** Un botón junto a «Restaurar consumibles» quita todos los
+  personajes cargados y el combate en curso. Pide confirmación, avisa que con
+  la sesión iniciada también vacía la partida en la nube, y ofrece deshacerlo
+  durante unos segundos.
 - **El recurso que sigue la tabla se elige solo y se puede cambiar a mano.**
   Antes era siempre el Ki. Ahora es CV si el personaje tiene psiquismo, Zeon si
   tiene proyección mágica, y Ki en el resto de los casos; el indicador es un
