@@ -9,13 +9,19 @@ class ModifiersCard extends StatelessWidget {
     required this.modifiers,
     super.key,
     this.onSelected,
+    this.fixed = const [],
   });
   final List<StatusModifier> modifiers;
   final void Function(StatusModifier)? onSelected;
 
+  /// Modificadores calculados solos, como el cansancio: se muestran sin botón
+  /// para quitarlos.
+  final List<StatusModifier> fixed;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final all = [...modifiers, ...fixed];
 
     final style = theme.textTheme.bodySmall!.copyWith(
       color: theme.colorScheme.onHeader,
@@ -32,29 +38,33 @@ class ModifiersCard extends StatelessWidget {
             runSpacing: 4,
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
-            itemCount: modifiers.length,
+            itemCount: all.length,
             itemBuilder: (int index) {
+              final removable = index < modifiers.length;
+
               return Tooltip(
-                message: '${modifiers[index].name}:\n${modifiers[index].description(separator: "\n")}',
+                message: '${all[index].name}:\n${all[index].description(separator: "\n")}',
                 child: ItemTags(
                   textStyle: style,
                   pressEnabled: false,
                   index: index,
-                  removeButton: ItemTagsRemoveButton(
-                    icon: Icons.delete,
-                    backgroundColor: theme.colorScheme.surface,
-                    color: theme.colorScheme.header,
-                    onRemoved: () {
-                      onSelected?.call(modifiers[index]);
-                      return true;
-                    },
-                  ),
+                  removeButton: removable
+                      ? ItemTagsRemoveButton(
+                          icon: Icons.delete,
+                          backgroundColor: theme.colorScheme.surface,
+                          color: theme.colorScheme.header,
+                          onRemoved: () {
+                            onSelected?.call(all[index]);
+                            return true;
+                          },
+                        )
+                      : null,
                   activeColor: theme.colorScheme.header,
                   alignment: MainAxisAlignment.spaceBetween,
                   padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                   borderRadius: BorderRadius.circular(8),
                   elevation: 1,
-                  title: modifiers[index].name.abbreviated,
+                  title: removable ? all[index].name.abbreviated : all[index].name,
                 ),
               );
             },

@@ -160,7 +160,7 @@ class CharacterInfoCard extends StatelessWidget {
                           spacer,
                           OutlinedButton(
                             child: Tooltip(
-                              message: character.state.modifiers.totalModifierDescription(),
+                              message: character.state.activeModifiers.totalModifierDescription(),
                               child: Row(
                                 children: [
                                   const Text('Modificadores'),
@@ -171,7 +171,7 @@ class CharacterInfoCard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
                                       child: AMTGrid(
-                                        elements: character.state.modifiers.getAllModifiersString(),
+                                        elements: character.state.activeModifiers.getAllModifiersString(),
                                         columns: 3,
                                         builder: (element, index) {
                                           return Text(
@@ -204,6 +204,8 @@ class CharacterInfoCard extends StatelessWidget {
                           spacer,
                           ModifiersCard(
                             modifiers: character.state.modifiers.getAll(),
+                            // Sale del Cansancio actual: se quita recuperándolo.
+                            fixed: [if (character.state.fatigueModifier case final fatigue?) fatigue],
                             onSelected: (modifier) {
                               character.state.modifiers.removeModifier(modifier);
                               appState.updateCharacter(character);

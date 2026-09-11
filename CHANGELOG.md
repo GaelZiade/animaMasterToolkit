@@ -127,6 +127,12 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   más, o todas en Arcano) y Tabla de 2ª Arma: Estilo Defensivo (1 con dos
   armas). Para cualquier otro, como un PNJ sin ficha, se activa a mano, y un
   botón la quita y la vuelve a 0, incluso a quien la tiene por ficha.
+- **El cansancio penaliza solo.** Con 4 puntos o menos de Cansancio actual se
+  aplica el negativo de la Tabla 27 a toda acción (la mitad a la iniciativa),
+  sin elegirlo a mano; quien tiene naturalmente menos de 5 empieza a sufrirlo al
+  perder el primer punto. Aparece en la tarjeta del personaje como un estado
+  que no se puede quitar, y si también se eligió un grado a mano no se cuenta
+  dos veces.
 - **Un solo catálogo de modificadores.** El panel del personaje y el de
   Situacionales tenían listas distintas: la Defensa total, Shephon o el vuelo
   solo existían como estados y no aparecían al defenderse. Ahora comparten el

@@ -285,7 +285,7 @@ class Character extends HiveObject {
   String calculateAttack() {
     final weapon = selectedWeapon();
 
-    final modifiers = state.modifiers.getAllModifiersForTypeString(ModifiersType.attack);
+    final modifiers = state.activeModifiers.getAllModifiersForTypeString(ModifiersType.attack);
 
     return '${weapon.attack}$modifiers';
   }
@@ -294,7 +294,7 @@ class Character extends HiveObject {
     final weapon = selectedWeapon();
     final weaponDefense = weapon.defenseType;
 
-    final modifiers = state.modifiers.getAllModifiersForTypeString(type == DefenseType.dodge ? ModifiersType.dodge : ModifiersType.parry);
+    final modifiers = state.activeModifiers.getAllModifiersForTypeString(type == DefenseType.dodge ? ModifiersType.dodge : ModifiersType.parry);
 
     if (weaponDefense == type) {
       return '${weapon.defense}$modifiers';
@@ -312,7 +312,7 @@ class Character extends HiveObject {
       Logger().d('cannot interpret modifier!');
     }
 
-    return totalTurn + state.modifiers.getAllModifiersForType(ModifiersType.turn);
+    return totalTurn + state.activeModifiers.getAllModifiersForType(ModifiersType.turn);
   }
 
   List<KeyValue> getCombatItems() {

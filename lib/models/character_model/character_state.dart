@@ -1,5 +1,7 @@
 import 'package:amt/models/character_model/consumable_state.dart';
+import 'package:amt/models/character_model/status_modifier.dart';
 import 'package:amt/models/enums.dart';
+import 'package:amt/models/rules/fatigue_rules.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/roll.dart';
 import 'package:amt/utils/json_utils.dart';
@@ -96,6 +98,21 @@ class CharacterState {
       );
 
     return result;
+  }
+
+  /// Penalizador por agotamiento según el Cansancio actual (ver [FatigueRules]).
+  StatusModifier? get fatigueModifier {
+    final fatigue = consumables.where((consumable) => consumable.type == ConsumableType.fatigue).firstOrNull;
+
+    if (fatigue == null) return null;
+
+    return FatigueRules.modifierFor(maximum: fatigue.maxValue, actual: fatigue.actualValue);
+  }
+
+  /// Estados que afectan al personaje: los elegidos y el cansancio, sin contar
+  /// este dos veces.
+  ModifiersState get activeModifiers {
+    return ModifiersState()..setAll(FatigueRules.activeModifiers(modifiers.getAll(), fatigueModifier));
   }
 
   ConsumableState? getConsumable(ConsumableType type) {
