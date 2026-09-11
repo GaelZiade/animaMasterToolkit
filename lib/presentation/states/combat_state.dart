@@ -108,7 +108,7 @@ class ScreenCombatState {
       modifier: attack.attack,
       surpriseType: surpriseType,
       modifiers: attack.modifiers,
-      characterStateModifiers: attack.character?.state.activeModifiers.getAllModifiersForType(ModifiersType.attack) ?? 0,
+      characterStateModifiers: attack.character?.activeModifiers.getAllModifiersForType(ModifiersType.attack) ?? 0,
       massBonus: (attack.character?.profile.isMass ?? false) ? MassRules.attackBonus(MassRules.membersAlive(attack.character!)) : 0,
       additionalAttacksPenalty: plan?.sharedPenalty ?? 0,
       additionalAttacksLabel: plan?.sharedLabel ?? '',
@@ -136,7 +136,7 @@ class ScreenCombatState {
       defenseType: defense.defenseType.toModifierType(),
       defensesNumber: effectiveDefenseNumber,
       defender: defense.character,
-      characterStateModifiers: defense.character?.state.activeModifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
+      characterStateModifiers: defense.character?.activeModifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
       supernaturalShield: defense.supernaturalShield,
       shieldProjection: shieldProjectionOf(defense.character),
     );

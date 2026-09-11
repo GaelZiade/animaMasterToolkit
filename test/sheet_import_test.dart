@@ -34,6 +34,12 @@ void main() {
     expect(combat.additionalAttackTable, isTrue);
     expect(combat.taeKwonDoGrade, 1);
     expect(combat.kempoGrade, 0);
+    expect(combat.disadvantages, ['Arma exclusiva', 'Desafortunado', 'Endeble']);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Eliminación de penalizadores'), isTrue);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Uso de la energía necesaria'), isTrue);
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Control del Ki'), isFalse);
+    expect(combat.penaltyTraits.penaltyElimination, isTrue);
+    expect(combat.penaltyTraits.voidEssence, isFalse);
 
     final pair = _weapon(combat, 'Espada Kaitos y Espada Kaitos');
 
@@ -59,6 +65,11 @@ void main() {
     expect(combat.chainAttackTable, isFalse);
     expect(combat.additionalAttackTable, isFalse);
     expect(combat.taeKwonDoGrade, 0);
+    expect(combat.advantages, contains('Difícil de matar (2)'.replaceAll('í', 'i')));
+    expect(combat.disadvantages, ['Fobia grave']);
+    expect(combat.arsMagnus, containsAll(['Guardian', 'Ataque Final']));
+    expect(CombatData.hasTrait(combat.kiAbilities, 'Inhumanidad'), isTrue);
+    expect(combat.penaltyTraits.penaltyElimination, isFalse);
     expect(_weapon(combat, 'Leviatan').attackSize, 'M');
     expect(_weapon(combat, 'Ojiplato').attackSize, 'G');
     expect(_weapon(combat, 'Hacha de mano').attackSize, 'M');

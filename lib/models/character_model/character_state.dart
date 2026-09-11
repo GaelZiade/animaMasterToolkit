@@ -21,6 +21,7 @@ class CharacterState {
     this.defenseNumber = 1,
     this.turnModifier = '',
     this.isSurprised = 0,
+    this.painResistance = 0,
   });
   @HiveField(0)
   int selectedWeaponIndex = 0;
@@ -41,6 +42,10 @@ class CharacterState {
   @HiveField(8)
   int isSurprised;
 
+  /// Resultado de la última tirada de Resistir el dolor (0: ninguna).
+  @HiveField(9)
+  int painResistance;
+
   Map<String, dynamic> toJson() {
     return {
       'currentTurn': currentTurn.toJson(),
@@ -52,6 +57,7 @@ class CharacterState {
       'defenseNumber': defenseNumber,
       'turnModifier': turnModifier,
       'isSurprised': isSurprised,
+      'resistirDolor': painResistance,
     };
   }
 
@@ -70,6 +76,7 @@ class CharacterState {
       defenseNumber: JsonUtils.integer(json['defenseNumber'], 1),
       turnModifier: JsonUtils.string(json['turnModifier'], ''),
       isSurprised: JsonUtils.integer(json['isSurprised'], 0),
+      painResistance: JsonUtils.integer(json['resistirDolor'], 0),
     );
   }
 
@@ -109,11 +116,6 @@ class CharacterState {
     return FatigueRules.modifierFor(maximum: fatigue.maxValue, actual: fatigue.actualValue);
   }
 
-  /// Estados que afectan al personaje: los elegidos y el cansancio, sin contar
-  /// este dos veces.
-  ModifiersState get activeModifiers {
-    return ModifiersState()..setAll(FatigueRules.activeModifiers(modifiers.getAll(), fatigueModifier));
-  }
 
   ConsumableState? getConsumable(ConsumableType type) {
     try {

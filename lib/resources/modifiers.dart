@@ -653,7 +653,8 @@ class Modifiers {
     {"name": "Kung Fu: +40 a la parada (Asakusen arcano)", "parry": 40},
     {"name": "Kung Fu: +40 a la esquiva (Asakusen arcano)", "dodge": 40},
     {"name": "Kung Fu: +40 al turno (Asakusen arcano)", "turn": 40},
-    {"name": "Asakusen", "attack": 10, "parry": 10, "dodge": 10, "turn": 10}
+    {"name": "Asakusen", "attack": 10, "parry": 10, "dodge": 10, "turn": 10},
+    {"name": "Berserker (Ars Magnus)", "attack": 10, "parry": -20, "dodge": -20}
 ]
 ''';
 }

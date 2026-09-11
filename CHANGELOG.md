@@ -133,6 +133,29 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   perder el primer punto. Aparece en la tarjeta del personaje como un estado
   que no se puede quitar, y si también se eligió un grado a mano no se cuenta
   dos veces.
+- **Lo que reduce el dolor, el cansancio y los críticos se aplica solo.** Cada
+  ajuste aparece como un estado con el nombre de su origen:
+  - ventaja **Inmunidad al dolor y al cansancio**: ambos a la mitad (Core);
+  - desventaja **Exhausto**: dobla el cansancio (Core);
+  - habilidad del Ki **Eliminación de penalizadores**: cansancio y críticos a
+    la mitad (Core);
+  - habilidad del Némesis **Esencia de vacío**: sin dolor, cansancio ni
+    críticos (Dominus);
+  - Ars Magnus **Berserker**: +10 al ataque y −20 a la defensa, e ignora dolor
+    y cansancio en las acciones físicas (Dominus). Es un estado que se activa y
+    se sugiere a quien lo domina;
+  - **Resistir el dolor**: un campo con el resultado de la tirada, o un dado que
+    la tira con la habilidad de la ficha, anula el negativo que marca la Tabla
+    15. Solo aparece cuando hay dolor, cansancio o críticos que reducir.
+
+  De un crítico solo se reduce la parte de dolor: pasado 50, la mitad es
+  deterioro físico y persiste. Los manuales no dicen cómo se combinan varias
+  reducciones; se aplica Esencia de vacío, Exhausto, una sola mitad aunque
+  haya dos fuentes, Berserker y por último Resistir el dolor.
+- **Ventajas, desventajas y habilidades de Ki en la ficha.** Se importan de la
+  planilla (hoja Principal y hoja Ki, incluido el Némesis) junto con los Ars
+  Magnus, y se editan en la misma lista que las tablas y artes marciales,
+  eligiendo el tipo.
 - **Un solo catálogo de modificadores.** El panel del personaje y el de
   Situacionales tenían listas distintas: la Defensa total, Shephon o el vuelo
   solo existían como estados y no aparecían al defenderse. Ahora comparten el

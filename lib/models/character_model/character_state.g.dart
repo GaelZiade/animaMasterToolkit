@@ -26,13 +26,14 @@ class CharacterStateAdapter extends TypeAdapter<CharacterState> {
       defenseNumber: fields[6] as int,
       turnModifier: fields[5] as String,
       isSurprised: fields[8] as int,
+      painResistance: fields[9] as int? ?? 0,
     );
   }
 
   @override
   void write(BinaryWriter writer, CharacterState obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.selectedWeaponIndex)
       ..writeByte(1)
@@ -50,7 +51,9 @@ class CharacterStateAdapter extends TypeAdapter<CharacterState> {
       ..writeByte(7)
       ..write(obj.modifiers)
       ..writeByte(8)
-      ..write(obj.isSurprised);
+      ..write(obj.isSurprised)
+      ..writeByte(9)
+      ..write(obj.painResistance);
   }
 
   @override

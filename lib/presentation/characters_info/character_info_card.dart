@@ -160,7 +160,7 @@ class CharacterInfoCard extends StatelessWidget {
                           spacer,
                           OutlinedButton(
                             child: Tooltip(
-                              message: character.state.activeModifiers.totalModifierDescription(),
+                              message: character.activeModifiers.totalModifierDescription(),
                               child: Row(
                                 children: [
                                   const Text('Modificadores'),
@@ -171,7 +171,7 @@ class CharacterInfoCard extends StatelessWidget {
                                     child: Padding(
                                       padding: const EdgeInsets.all(4),
                                       child: AMTGrid(
-                                        elements: character.state.activeModifiers.getAllModifiersString(),
+                                        elements: character.activeModifiers.getAllModifiersString(),
                                         columns: 3,
                                         builder: (element, index) {
                                           return Text(
@@ -204,13 +204,41 @@ class CharacterInfoCard extends StatelessWidget {
                           spacer,
                           ModifiersCard(
                             modifiers: character.state.modifiers.getAll(),
-                            // Sale del Cansancio actual: se quita recuperándolo.
-                            fixed: [if (character.state.fatigueModifier case final fatigue?) fatigue],
+                            // Calculados: el cansancio sale del Cansancio actual y
+                            // los ajustes, de la ficha y de Resistir el dolor.
+                            fixed: [
+                              if (character.state.fatigueModifier case final fatigue?) fatigue,
+                              ...character.penaltyAdjustments,
+                            ],
                             onSelected: (modifier) {
                               character.state.modifiers.removeModifier(modifier);
                               appState.updateCharacter(character);
                             },
                           ),
+                          // Solo cuando hay dolor, cansancio o críticos que reducir.
+                          if (character.hasReduciblePenalties || character.state.painResistance > 0) ...[
+                            spacer,
+                            SizedBox(
+                              height: 40,
+                              child: AMTTextFormField(
+                                label: 'Resistir el dolor (resultado)',
+                                inputType: TextInputType.number,
+                                text: character.state.painResistance > 0 ? '${character.state.painResistance}' : '',
+                                onChanged: (value) {
+                                  character.state.painResistance = int.tryParse(value.trim()) ?? 0;
+                                  appState.updateCharacter(character);
+                                },
+                                suffixIcon: IconButton(
+                                  tooltip: 'Tirar Resistir el dolor',
+                                  icon: const Icon(Icons.casino_outlined),
+                                  onPressed: () {
+                                    character.state.painResistance = character.rollPainResistance();
+                                    appState.updateCharacter(character);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                           spacer,
                           SizedBox(
                             height: 40,

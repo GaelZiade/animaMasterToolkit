@@ -219,7 +219,7 @@ class _CharacterSheetState extends State<_CharacterSheet> {
           ),
           const SizedBox(height: 12),
           Text(
-            'Ventajas, tablas y artes marciales',
+            'Ventajas, habilidades, tablas y artes marciales',
             style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 4),
@@ -234,22 +234,21 @@ class _CharacterSheetState extends State<_CharacterSheet> {
                 selected: _character.combat.ambidextrous,
                 onSelected: (value) => _commit(() => _character.combat.ambidextrous = value),
               ),
-              for (final table in _character.combat.styleTables)
-                InputChip(
-                  label: Text(table),
-                  deleteButtonTooltipMessage: 'Quitar $table',
-                  onDeleted: () => _commit(() => _character.combat.styleTables.remove(table)),
-                ),
-              for (final art in _character.combat.martialArts)
-                InputChip(
-                  avatar: const Icon(Icons.sports_martial_arts, size: 18),
-                  label: Text(art),
-                  deleteButtonTooltipMessage: 'Quitar $art',
-                  onDeleted: () => _commit(() => _character.combat.martialArts.remove(art)),
-                ),
+              for (final category in TraitCategory.values)
+                for (final entry in CombatTraits.entriesOf(_character.combat, category))
+                  // La Ambidestría ya tiene su interruptor.
+                  if (category != TraitCategory.advantage || !CombatData.normalizeTrait(entry).contains('ambidestr'))
+                    InputChip(
+                      avatar: Icon(_traitIcon(category), size: 18),
+                      label: Text(entry),
+                      tooltip: category.label,
+                      deleteButtonTooltipMessage: 'Quitar $entry',
+                      onDeleted: () => _commit(() => CombatTraits.entriesOf(_character.combat, category).remove(entry)),
+                    ),
               ActionChip(
                 avatar: const Icon(Icons.add, size: 18),
-                label: const Text('Añadir tabla o arte marcial'),
+                label: const Text('Añadir'),
+                tooltip: 'Tabla, arte marcial, ventaja, desventaja, habilidad de Ki o Ars Magnus',
                 onPressed: _addTrait,
               ),
             ],
@@ -259,18 +258,34 @@ class _CharacterSheetState extends State<_CharacterSheet> {
     );
   }
 
-  /// Añade una tabla o un arte marcial del catálogo, o una inventada.
+  /// Añade una tabla, arte marcial, ventaja, desventaja, habilidad de Ki o Ars
+  /// Magnus, del catálogo o inventada.
   Future<void> _addTrait() async {
-    final value = await showDialog<String>(context: context, builder: (context) => const _TraitDialog());
-    final trait = value?.trim() ?? '';
+    final result = await showDialog<(TraitCategory, String)>(context: context, builder: (context) => const _TraitDialog());
+
+    if (result == null) return;
+
+    final (category, value) = result;
+    final trait = value.trim();
 
     if (trait.isEmpty) return;
 
     _commit(() {
-      final list = CombatTraits.isMartialArt(trait) ? _character.combat.martialArts : _character.combat.styleTables;
+      final list = CombatTraits.entriesOf(_character.combat, category);
 
       if (!list.contains(trait)) list.add(trait);
     });
+  }
+
+  static IconData _traitIcon(TraitCategory category) {
+    return switch (category) {
+      TraitCategory.table => Icons.table_rows_outlined,
+      TraitCategory.martialArt => Icons.sports_martial_arts,
+      TraitCategory.advantage => Icons.thumb_up_alt_outlined,
+      TraitCategory.disadvantage => Icons.thumb_down_alt_outlined,
+      TraitCategory.ki => Icons.bolt,
+      TraitCategory.arsMagnus => Icons.auto_awesome,
+    };
   }
 
   /// Las fórmulas de ataque y defensa llegan como expresión ("120-30").
@@ -597,40 +612,55 @@ class _TraitDialog extends StatefulWidget {
 }
 
 class _TraitDialogState extends State<_TraitDialog> {
+  TraitCategory _category = TraitCategory.table;
   String _value = '';
 
   @override
   Widget build(BuildContext context) {
-    final options = CombatTraits.catalog;
+    final options = CombatTraits.catalogFor(_category);
 
     return AlertDialog(
-      title: const Text('Añadir tabla o arte marcial'),
+      title: const Text('Añadir a la ficha'),
       content: SizedBox(
         width: 420,
-        child: Autocomplete<String>(
-          optionsBuilder: (text) {
-            final query = CombatData.normalizeTrait(text.text);
-
-            return query.isEmpty ? options : options.where((option) => CombatData.normalizeTrait(option).contains(query));
-          },
-          onSelected: (selection) => setState(() => _value = selection),
-          fieldViewBuilder: (context, controller, focusNode, onSubmitted) => TextField(
-            controller: controller,
-            focusNode: focusNode,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Nombre',
-              hintText: 'Tabla de Área, Sambo (Avanzado)…',
-              helperText: 'Las artes marciales llevan el grado entre paréntesis',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<TraitCategory>(
+              initialValue: _category,
+              decoration: const InputDecoration(labelText: 'Tipo'),
+              items: [for (final category in TraitCategory.values) DropdownMenuItem(value: category, child: Text(category.label))],
+              onChanged: (category) => setState(() => _category = category ?? _category),
             ),
-            onChanged: (text) => _value = text,
-            onSubmitted: (text) => Navigator.pop(context, text),
-          ),
+            const SizedBox(height: 16),
+            Autocomplete<String>(
+              key: ValueKey(_category),
+              optionsBuilder: (text) {
+                final query = CombatData.normalizeTrait(text.text);
+
+                return query.isEmpty ? options : options.where((option) => CombatData.normalizeTrait(option).contains(query));
+              },
+              onSelected: (selection) => setState(() => _value = selection),
+              fieldViewBuilder: (context, controller, focusNode, onSubmitted) => TextField(
+                controller: controller,
+                focusNode: focusNode,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Nombre',
+                  helperText: _category == TraitCategory.martialArt
+                      ? 'Con el grado entre paréntesis: Sambo (Avanzado)'
+                      : 'Del catálogo de los manuales o un nombre propio',
+                ),
+                onChanged: (text) => _value = text,
+                onSubmitted: (text) => Navigator.pop(context, (_category, text)),
+              ),
+            ),
+          ],
         ),
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-        FilledButton(onPressed: () => Navigator.pop(context, _value), child: const Text('Añadir')),
+        FilledButton(onPressed: () => Navigator.pop(context, (_category, _value)), child: const Text('Añadir')),
       ],
     );
   }

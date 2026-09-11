@@ -123,6 +123,9 @@ abstract class SheetToJson {
       // La macro no exporta las ventajas; la ambidestría cambia el ataque con
       // un arma adicional.
       'ambidestria': _hasAdvantage(book, 'ambidestr'),
+      'ventajas': _advantages(book),
+      'desventajas': _disadvantages(book),
+      'habilidadesKi': _kiAbilities(book),
     };
   }
 
@@ -197,6 +200,82 @@ abstract class SheetToJson {
     }
 
     return _text(book, _principal, 'D55').toLowerCase().contains(needle);
+  }
+
+  /// Ventajas de la hoja Principal: la lista bajo "Puntos de Creación", hasta
+  /// "Desventajas".
+  static List<String> _advantages(XlsxWorkbook book) {
+    final advantages = <String>[];
+
+    for (var row = 33; row <= 55; row++) {
+      final value = _text(book, _principal, 'C$row');
+      final lower = value.toLowerCase();
+
+      if (lower.startsWith('desventajas')) break;
+      if (value.isEmpty || lower.startsWith('puntos de creacion')) continue;
+
+      advantages.add(value);
+    }
+
+    return advantages;
+  }
+
+  /// Desventajas de la hoja Principal: la lista bajo "Desventajas", hasta la
+  /// primera fila vacía (debajo va un resumen con todas juntas).
+  static List<String> _disadvantages(XlsxWorkbook book) {
+    final header = book.findRow(_principal, 'C', 'Desventajas', from: 33, to: 60);
+
+    if (header == null) return const [];
+
+    final disadvantages = <String>[];
+
+    for (var row = header + 1; row <= header + 8; row++) {
+      final value = _text(book, _principal, 'C$row');
+
+      if (value.isEmpty || value.toLowerCase().startsWith('resistencias')) break;
+
+      disadvantages.add(value);
+    }
+
+    return disadvantages;
+  }
+
+  /// Habilidades del Ki y del Némesis compradas, de la hoja Ki.
+  ///
+  /// Los Dominios del Ki forman un árbol en las columnas K a N; la columna R
+  /// marca con 1 las compradas, y las que no tienen esa marca (Inhumanidad)
+  /// muestran "-" en lugar del coste en P. Las del Némesis se marcan con 1 en
+  /// la columna B, con el nombre en C a E.
+  static List<String> _kiAbilities(XlsxWorkbook book) {
+    if (!book.hasSheet(_ki)) return const [];
+
+    String nameIn(int row, List<String> columns) {
+      for (final column in columns.reversed) {
+        final name = _text(book, _ki, '$column$row').replaceAll(RegExp('[├│└─]'), '').trim();
+
+        if (name.isNotEmpty) return name;
+      }
+
+      return '';
+    }
+
+    final abilities = <String>[];
+
+    for (var row = 10; row <= 64; row++) {
+      final mark = _text(book, _ki, 'R$row');
+      final bought = mark == '1' || (mark.isEmpty && _text(book, _ki, 'P$row') == '-');
+      final name = nameIn(row, const ['K', 'L', 'M', 'N']);
+
+      if (bought && name.isNotEmpty) abilities.add(name);
+    }
+
+    for (var row = 45; row <= 64; row++) {
+      final name = nameIn(row, const ['C', 'D', 'E']);
+
+      if (_text(book, _ki, 'B$row') == '1' && name.isNotEmpty) abilities.add(name);
+    }
+
+    return abilities;
   }
 
   /// Tamaño del arma de un bloque para los ataques adicionales: 'P', 'M' o 'G'.

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:amt/models/models.dart';
+import 'package:amt/models/rules/fatigue_rules.dart';
+import 'package:amt/models/rules/penalty_rules.dart';
 import 'package:amt/resources/modifiers.dart';
 import 'package:amt/utils/json_utils.dart';
 import 'package:amt/utils/key_value.dart';
@@ -282,10 +284,33 @@ class Character extends HiveObject {
     state.consumables.where((element) => element.type == type).first.actualValue -= value;
   }
 
+  /// Estados elegidos más el cansancio automático, sin contar este dos veces.
+  List<StatusModifier> get _chosenModifiers => FatigueRules.activeModifiers(state.modifiers.getAll(), state.fatigueModifier);
+
+  /// Ajustes por ventajas, desventajas, habilidades del Ki y la tirada de
+  /// Resistir el dolor sobre los negativos por dolor, cansancio y críticos.
+  List<StatusModifier> get penaltyAdjustments {
+    return PenaltyRules.adjustments(active: _chosenModifiers, traits: combat.penaltyTraits, painResistanceRoll: state.painResistance);
+  }
+
+  /// Estados que afectan al personaje, con todos sus ajustes.
+  ModifiersState get activeModifiers => ModifiersState()..setAll([..._chosenModifiers, ...penaltyAdjustments]);
+
+  /// Hay dolor, cansancio o críticos que Resistir el dolor podría reducir.
+  bool get hasReduciblePenalties => PenaltyRules.hasReduciblePenalties(_chosenModifiers);
+
+  /// Tira Resistir el dolor con la habilidad de la ficha.
+  int rollPainResistance() {
+    final skill = skills.entries.where((entry) => CombatData.normalizeTrait(entry.key).contains('resistir el dolor')).firstOrNull;
+    final base = int.tryParse('${skill?.value}'.trim()) ?? 0;
+
+    return roll().roll + base;
+  }
+
   String calculateAttack() {
     final weapon = selectedWeapon();
 
-    final modifiers = state.activeModifiers.getAllModifiersForTypeString(ModifiersType.attack);
+    final modifiers = activeModifiers.getAllModifiersForTypeString(ModifiersType.attack);
 
     return '${weapon.attack}$modifiers';
   }
@@ -294,7 +319,7 @@ class Character extends HiveObject {
     final weapon = selectedWeapon();
     final weaponDefense = weapon.defenseType;
 
-    final modifiers = state.activeModifiers.getAllModifiersForTypeString(type == DefenseType.dodge ? ModifiersType.dodge : ModifiersType.parry);
+    final modifiers = activeModifiers.getAllModifiersForTypeString(type == DefenseType.dodge ? ModifiersType.dodge : ModifiersType.parry);
 
     if (weaponDefense == type) {
       return '${weapon.defense}$modifiers';
@@ -312,7 +337,7 @@ class Character extends HiveObject {
       Logger().d('cannot interpret modifier!');
     }
 
-    return totalTurn + state.activeModifiers.getAllModifiersForType(ModifiersType.turn);
+    return totalTurn + activeModifiers.getAllModifiersForType(ModifiersType.turn);
   }
 
   List<KeyValue> getCombatItems() {

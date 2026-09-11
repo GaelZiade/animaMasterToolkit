@@ -8,25 +8,45 @@ import 'package:amt/models/weapon.dart';
 class TraitRequirement {
   /// Tabla cuyo nombre contiene [name], en minúsculas y sin acentos.
   const TraitRequirement.table(this.name)
-      : isMartialArt = false,
+      : category = TraitCategory.table,
         minGrade = 0,
         maxGrade = 3;
 
   /// Arte marcial llamada exactamente [name], en minúsculas y sin acentos.
-  const TraitRequirement.art(this.name, {this.minGrade = 1, this.maxGrade = 3}) : isMartialArt = true;
+  const TraitRequirement.art(this.name, {this.minGrade = 1, this.maxGrade = 3}) : category = TraitCategory.martialArt;
 
-  final bool isMartialArt;
+  /// Ars Magnus cuyo nombre contiene [name].
+  const TraitRequirement.arsMagnus(this.name)
+      : category = TraitCategory.arsMagnus,
+        minGrade = 0,
+        maxGrade = 3;
+
+  final TraitCategory category;
   final String name;
   final int minGrade;
   final int maxGrade;
 
   bool matches(CombatData combat) {
-    if (!isMartialArt) return combat.hasStyleTable(name);
+    if (category != TraitCategory.martialArt) return CombatData.hasTrait(CombatTraits.entriesOf(combat, category), name);
 
     final grade = combat.martialArtGrade(name);
 
     return grade > 0 && grade >= minGrade && grade <= maxGrade;
   }
+}
+
+/// Lo que se puede anotar en la ficha de un personaje.
+enum TraitCategory {
+  table('Tabla'),
+  martialArt('Arte marcial'),
+  advantage('Ventaja'),
+  disadvantage('Desventaja'),
+  ki('Habilidad de Ki'),
+  arsMagnus('Ars Magnus');
+
+  const TraitCategory(this.label);
+
+  final String label;
 }
 
 /// Tablas y artes marciales: el catálogo de los manuales y los modificadores
@@ -116,6 +136,111 @@ abstract class CombatTraits {
 
   static List<String> get catalog => [...styleTableCatalog, ...martialArtCatalog];
 
+  /// Ventajas y desventajas de creación que cambian algún cálculo.
+  static const advantageCatalog = ['Ambidestría', 'Inmunidad al dolor y al cansancio'];
+  static const disadvantageCatalog = ['Exhausto'];
+
+  /// Dominios del Ki (Core) y habilidades del Némesis (Dominus).
+  static const kiAbilityCatalog = [
+    'Uso del Ki',
+    'Control del Ki',
+    'Detección del Ki',
+    'Erudición',
+    'Aura de combate',
+    'Dominio físico',
+    'Cambio físico',
+    'Cambio superior',
+    'Multiplicación de cuerpos',
+    'Multiplicación mayor',
+    'Multiplicación arcana',
+    'Magnitud',
+    'Magnitud arcana',
+    'Control de la edad',
+    'Imitación de técnicas',
+    'Forzar técnicas',
+    'Eliminación de peso',
+    'Levitación',
+    'Movimiento de objetos',
+    'Movimiento de masas',
+    'Vuelo',
+    'Extrusión de presencia',
+    'Armadura de energía',
+    'Armadura mayor',
+    'Armadura arcana',
+    'Extensión del aura al arma',
+    'Ataque elemental',
+    'Daño incrementado',
+    'Alcance incrementado',
+    'Velocidad incrementada',
+    'Destrucción por Ki',
+    'Absorción de energía',
+    'Escudo físico',
+    'Transmisión del Ki',
+    'Curación por Ki',
+    'Curación superior',
+    'Estabilizar',
+    'Sacrificio vital',
+    'Uso de la energía necesaria',
+    'Ocultación del Ki',
+    'Aura de ocultación',
+    'Falsa muerte',
+    'Eliminación de necesidades',
+    'Inmunidad elemental al fuego',
+    'Inmunidad elemental al frío',
+    'Inmunidad elemental a la electricidad',
+    'Eliminación de penalizadores',
+    'Recuperación',
+    'Restituir a otros',
+    'Aumento de características',
+    'Incremento superior',
+    'Técnicas de combate improvisadas',
+    'Inhumanidad',
+    'Zen',
+    'Armadura de vacío',
+    'Noht',
+    'Anulación de Ki',
+    'Anulación de Ki mayor',
+    'Anulación de Magia',
+    'Anulación de Magia mayor',
+    'Anulación de Matrices',
+    'Anulación de Matrices mayor',
+    'Anulación de Lazos',
+    'Extrusión de Vacío',
+    'Forma de Vacío',
+    'Cuerpo de Vacío',
+    'Sin necesidades',
+    'Movimiento de Vacío',
+    'Esencia de Vacío',
+    'Uno con la nada',
+    'Aura de Vacío',
+    'Indetección',
+  ];
+
+  static const arsMagnusCatalog = ['Berserker'];
+
+  static List<String> catalogFor(TraitCategory category) {
+    return switch (category) {
+      TraitCategory.table => styleTableCatalog,
+      TraitCategory.martialArt => martialArtCatalog,
+      TraitCategory.advantage => advantageCatalog,
+      TraitCategory.disadvantage => disadvantageCatalog,
+      TraitCategory.ki => kiAbilityCatalog,
+      TraitCategory.arsMagnus => arsMagnusCatalog,
+    };
+  }
+
+  /// Lista de la ficha donde se guarda cada categoría.
+  static List<String> entriesOf(CombatData combat, TraitCategory category) {
+    return switch (category) {
+      TraitCategory.table => combat.styleTables,
+      TraitCategory.martialArt => combat.martialArts,
+      TraitCategory.advantage => combat.advantages,
+      TraitCategory.disadvantage => combat.disadvantages,
+      TraitCategory.ki => combat.kiAbilities,
+      TraitCategory.arsMagnus => combat.arsMagnus,
+    };
+  }
+
   /// Distingue un arte marcial de una tabla al añadirla a mano.
   static bool isMartialArt(String value) {
     final name = CombatData.traitName(value);
@@ -157,6 +282,7 @@ abstract class CombatTraits {
     'Parálisis parcial con Hanja arcano': [TraitRequirement.art('hanja', minGrade: 3)],
     'Amenazado con Hanja arcano': [TraitRequirement.art('hanja', minGrade: 3)],
     'Asakusen': [TraitRequirement.art('asakusen')],
+    'Berserker (Ars Magnus)': [TraitRequirement.arsMagnus('berserker')],
     'Kung Fu: +10 al ataque': [TraitRequirement.art('kung fu', minGrade: 2, maxGrade: 2)],
     'Kung Fu: +10 a la parada': [TraitRequirement.art('kung fu', minGrade: 2, maxGrade: 2)],
     'Kung Fu: +10 a la esquiva': [TraitRequirement.art('kung fu', minGrade: 2, maxGrade: 2)],
