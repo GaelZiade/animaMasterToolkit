@@ -245,6 +245,40 @@ class WeaponsRack extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Tooltip(
+                      message: 'Cada +5 resta un tipo a la TA del defensor',
+                      child: AMTTextFormField(
+                        label: 'Calidad',
+                        text: (weapon.quality ?? 0).toString(),
+                        onChanged: (value) {
+                          weapon.quality = _parseInput(value);
+                          onEdit(weapon);
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Tooltip(
+                      message: 'Técnicas, poderes de criatura o munición. La calidad y las tablas del personaje se suman solas.',
+                      child: AMTTextFormField(
+                        label: 'Reducción de TA extra',
+                        text: (weapon.armourReduction ?? 0).toString(),
+                        onChanged: (value) {
+                          weapon.armourReduction = _parseInput(value);
+                          onEdit(weapon);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
               if (!(weapon.variableDamage ?? false))
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

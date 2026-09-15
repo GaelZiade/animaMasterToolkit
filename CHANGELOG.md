@@ -75,6 +75,18 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   de [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47). Una
   criatura con acumulación que tenga Proyección puede defenderse con un escudo
   mágico o psíquico aplicando −80, y si se lo superan pierde la acción (p. 99).
+- **Reducción de la TA del defensor.** Hasta ahora la calidad del arma no
+  restaba armadura. Ahora el ataque resta, acumulando todo (Dominus, Destruir
+  armadura):
+  - un tipo por cada +5 de calidad (Core, armas especiales);
+  - 1 por cada vez que se compró la Tabla de Reducción de Armadura;
+  - Dumah peleando sin armas: 2, o 6 en grado Arcano;
+  - lo que se cargue en el arma como «Reducción de TA extra», para técnicas de
+    Ki, poderes de criatura como Modificador de armadura o munición especial.
+    El editor del arma también permite cambiar la calidad.
+
+  La TA resultante no baja de 0. El desglose de la absorción muestra cada
+  fuente.
 - **Ataques adicionales** (p. 91). La tarjeta de ataque calcula el tope, un
   ataque más por cada 100 de HA de la ficha, y el penalizador que aplican todos
   los ataques declarados:

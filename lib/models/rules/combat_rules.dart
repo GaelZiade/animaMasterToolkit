@@ -5,6 +5,7 @@ import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/roll.dart';
+import 'package:amt/models/rules/armour_reduction_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/models/weapon.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -336,6 +337,9 @@ class CombatRules {
     required String? armourTypeModifier,
     required Character? defender,
     required SurpriseType? surpriseType,
+    // TA que resta el ataque: calidad, tablas, artes marciales, el arma.
+    int armourReduction = 0,
+    String armourReductionDetail = '',
   }) {
     final info = ExplainedText(title: 'Absorción');
 
@@ -343,11 +347,25 @@ class CombatRules {
 
     final armourTypeModifierNumber = armourTypeModifier?.safeInterpret ?? 0;
 
-    final armourAbsorption = (armourTypeModifierNumber + armourTypeBase) * 10;
+    final armourType = ArmourReductionRules.effectiveArmourType(
+      base: armourTypeBase,
+      modifier: armourTypeModifierNumber,
+      reduction: armourReduction,
+    );
+
+    final armourAbsorption = armourType * 10;
 
     info.add(
       explanation: 'Absorción de armadura = (($armourTypeBase + ${armourTypeModifier?.isEmpty ?? true ? 0 : armourTypeModifier}) * 10)',
     );
+
+    if (armourReduction != 0) {
+      info.add(
+        text: 'TA del defensor −$armourReduction: queda en $armourType',
+        explanation: '$armourReductionDetail. La TA no baja de 0.',
+        reference: BookReference(page: 76, book: Books.coreExxet),
+      );
+    }
 
     const baseAbsorption = 20;
 

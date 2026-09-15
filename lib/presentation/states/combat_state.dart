@@ -4,6 +4,7 @@ import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/rules/additional_attack_rules.dart';
+import 'package:amt/models/rules/armour_reduction_rules.dart';
 import 'package:amt/models/rules/mass_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -143,12 +144,19 @@ class ScreenCombatState {
   }
 
   ExplainedText get calculateFinalAbsorption {
+    final attacker = attack.character;
+    final reductions = attacker == null
+        ? const <ArmourReductionSource>[]
+        : ArmourReductionRules.sources(weapon: attacker.selectedWeapon(), combat: attacker.combat);
+
     return CombatRules.calculateFinalAbsorption(
       armour: defense.character?.combat.armour.calculatedArmour,
       damageType: attack.damageType,
       armourTypeModifier: defense.armour,
       defender: defense.character,
       surpriseType: surpriseType,
+      armourReduction: reductions.fold(0, (sum, source) => sum + source.value),
+      armourReductionDetail: reductions.map((source) => '${source.label} −${source.value}').join(', '),
     );
   }
 

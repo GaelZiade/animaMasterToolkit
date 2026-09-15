@@ -28,6 +28,7 @@ class Weapon {
     this.special,
     this.variableDamage = false,
     this.attackSize,
+    this.armourReduction,
   });
 
   Weapon.blank() {
@@ -65,6 +66,7 @@ class Weapon {
       special: JsonUtils.string(json['especial'], ''),
       variableDamage: JsonUtils.boolean(json['variable'], placeholder: false),
       attackSize: json['tamanoAtaque'] == null ? null : JsonUtils.string(json['tamanoAtaque'], ''),
+      armourReduction: JsonUtils.integer(json['reduccionTA'], 0),
     );
   }
 
@@ -91,6 +93,7 @@ class Weapon {
       'especial': special,
       'variable': variableDamage,
       'tamanoAtaque': attackSize,
+      'reduccionTA': armourReduction,
     };
   }
 
@@ -140,6 +143,11 @@ class Weapon {
   @HiveField(20)
   String? attackSize;
 
+  /// Reducción de TA extra que se carga a mano: técnicas, poderes de criatura,
+  /// munición especial. La calidad y las tablas se suman aparte.
+  @HiveField(21)
+  int? armourReduction;
+
   String description({bool lineBreak = false}) {
     return "$name ${lineBreak ? '\n' : ''}HA: $attack ${lineBreak ? '\n' : ''}${defenseType == DefenseType.dodge ? "HE" : "HP"}: $defense ${lineBreak ? '\n' : ''}T: $turn ${lineBreak ? '\n' : ''}DMG: $damage ${principalDamage?.name()}/${secondaryDamage?.name()} ";
   }
@@ -156,6 +164,8 @@ class Weapon {
       principalDamage: principalDamage,
       secondaryDamage: secondaryDamage,
       attackSize: attackSize,
+      quality: quality,
+      armourReduction: armourReduction,
     );
   }
 }
