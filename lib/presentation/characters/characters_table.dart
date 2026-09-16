@@ -137,7 +137,9 @@ class CharactersTable extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('Mesa limpia: se quitaron $count personajes'),
-                          duration: const Duration(seconds: 8),
+                          duration: const Duration(seconds: 5),
+                          // Con acción, Flutter lo deja fijo salvo que se diga lo contrario.
+                          persist: false,
                           action: SnackBarAction(
                             label: 'Deshacer',
                             onPressed: () => appState.restoreCharacters(removed),

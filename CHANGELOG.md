@@ -50,7 +50,9 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   +150, Core p.87) y pone al antiguo atacante a defenderse con su tipo de
   defensa. Limpia tiradas y modificadores, apaga el ataque en área (un contra
   no puede serlo) y recalcula la sorpresa. Sigue disponible "Aplicar daño /
-  Añadir defensa" para quien renuncia a la contra.
+  Añadir defensa" para quien renuncia a la contra. Si el defensor domina
+  **Selene** y contraataca sin armas, el bono se dobla; si usó **Sacra Aegis**
+  (nuevo modificador: +50 a parada), suma +75 al contraataque.
 - **Reglas de acumulación de daño que faltaban** (avanza
   [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47)). La aplicación
   ya resolvía la defensa, la absorción con sorpresa, la mitad del nivel de

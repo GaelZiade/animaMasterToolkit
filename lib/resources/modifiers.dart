@@ -635,6 +635,7 @@ class Modifiers {
     {"name": "Recién estabilizado tras estar entre la vida y la muerte", "attack": -60, "parry": -60, "dodge": -60, "turn": -30, "physicalAction": -60},
     {"name": "Defensa total con Shephon", "parry": 60, "dodge": 60},
     {"name": "Defensa total con Shephon arcano", "parry": 100, "dodge": 100},
+    {"name": "Sacra Aegis", "parry": 50},
     {"name": "Derribado con Soo Bahk supremo", "turn": -10, "physicalAction": -30},
     {"name": "Espacio reducido (Tabla de Movimiento en Espacios Reducidos)", "attack": -20, "parry": -20, "dodge": -20, "physicalAction": -10},
     {"name": "Espacio reducido con Hanja", "attack": -40, "physicalAction": -20},

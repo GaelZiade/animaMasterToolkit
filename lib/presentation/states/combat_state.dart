@@ -152,8 +152,21 @@ class ScreenCombatState {
       attack: finalAttackValue.result ?? 0,
       defense: finalDefenseValue.result ?? 0,
       damageAccumulation: defense.character?.profile.damageAccumulation ?? false,
+      selene: counterWithSelene,
+      sacraAegis: counterWithSacraAegis,
     );
   }
+
+  /// El defensor domina Selene y contraataca sin armas, es decir, con el arte.
+  bool get counterWithSelene {
+    final defender = defense.character;
+
+    if (defender == null) return false;
+
+    return defender.combat.martialArtGrade('Selene') > 0 && AdditionalAttackRules.isUnarmed(defender.selectedWeapon());
+  }
+
+  bool get counterWithSacraAegis => defense.modifiers.getAll().any((modifier) => modifier.name == CounterAttackRules.sacraAegis);
 
   ExplainedText get calculateFinalAbsorption {
     final attacker = attack.character;
@@ -266,7 +279,25 @@ class ScreenCombatState {
       defender: defense.character,
     );
 
-    if (counter != null) result.add(counter);
+    if (counter != null) {
+      if (counterWithSelene) {
+        counter.add(
+          text: 'Selene: el bono se dobla',
+          explanation: 'Una maestra de Selene dobla el bono del contraataque si la Acción Respuesta usa este arte marcial (Core, Artes marciales avanzadas)',
+        );
+      }
+
+      if (counterWithSacraAegis) {
+        counter.add(
+          text: 'Sacra Aegis: +${CounterAttackRules.sacraAegisBonus} al contraataque',
+          explanation: 'La técnica del Alius incrementa en +75 la habilidad del Contraataque',
+        );
+      }
+
+      if (counterWithSelene || counterWithSacraAegis) counter.add(text: 'Bono total del contraataque: +${counterAttackBonus ?? 0}');
+
+      result.add(counter);
+    }
 
     // Logger().d('counter ${counter?.text}');
 

@@ -21,4 +21,10 @@ void main() {
   test('Ganar por menos de 10 da contraataque con +0', () {
     expect(CounterAttackRules.bonus(attack: 100, defense: 108), 0);
   });
+
+  test('Selene dobla el bono y Sacra Aegis suma 75', () {
+    expect(CounterAttackRules.bonus(attack: 100, defense: 130, selene: true), 30);
+    expect(CounterAttackRules.bonus(attack: 100, defense: 130, sacraAegis: true), 90);
+    expect(CounterAttackRules.bonus(attack: 100, defense: 100, sacraAegis: true), isNull);
+  });
 }
