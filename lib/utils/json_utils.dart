@@ -41,14 +41,19 @@ extension GetSubDictionary on Map<String, dynamic> {
 
 class JsonUtils {
   static ArmourLocation armourLocation(dynamic base) {
-    switch (base?.toString().toUpperCase()) {
+    // Acepta el texto de la planilla y el nombre del enum que escribe toJson.
+    switch (base?.toString().toLowerCase()) {
       case 'completa':
+      case 'complete':
         return ArmourLocation.complete;
       case 'peto':
+      case 'breastplate':
         return ArmourLocation.breastplate;
       case 'camisola':
+      case 'camisole':
         return ArmourLocation.camisole;
       case 'cabeza':
+      case 'head':
         return ArmourLocation.head;
     }
     return ArmourLocation.complete;
@@ -80,8 +85,10 @@ class JsonUtils {
       case 'normal':
         return WeaponSize.normal;
       case 'enorme':
+      case 'big':
         return WeaponSize.big;
       case 'gigante':
+      case 'giant':
         return WeaponSize.giant;
     }
 
@@ -91,8 +98,10 @@ class JsonUtils {
   static DefenseType defenseType(dynamic base) {
     switch (base?.toString().toLowerCase()) {
       case 'par':
+      case 'parry':
         return DefenseType.parry;
       case 'esq':
+      case 'dodge':
         return DefenseType.dodge;
     }
 
@@ -102,10 +111,12 @@ class JsonUtils {
   static KnownType knownType(dynamic base) {
     switch (base?.toString().toLowerCase()) {
       case 'conocida':
+      case 'known':
         return KnownType.known;
       case 'similar':
         return KnownType.similar;
       case 'distinta':
+      case 'unknown':
         return KnownType.unknown;
     }
 

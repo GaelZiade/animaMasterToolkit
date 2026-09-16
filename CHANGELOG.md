@@ -10,6 +10,11 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ### Corregido
 
+- **Las armas de parada se volvían de esquiva** (y aplicaban el −60 de
+  Parada y Esquiva, Core cap. 6) cada vez que un personaje se copiaba por JSON,
+  por ejemplo al deshacer «Limpiar mesa». Se guardaba `parry` pero solo se
+  leía `Par`. Lo mismo pasaba con el tamaño del arma, su conocimiento y la
+  ubicación de la armadura, que siempre volvía como completa.
 - **La defensa final ya no puede quedar negativa.** Los modificadores pueden
   sumar un total negativo, pero el resultado se limita a 0. El desglose muestra
   el valor sin limitar para que se vea por qué. (Cierra
