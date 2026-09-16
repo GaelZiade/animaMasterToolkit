@@ -175,6 +175,22 @@ void main() {
     });
   });
 
+  test('Chthon: «Armas Diamantinas» es un arma, TA en dos renglones y un daño sin habilidad propia', () {
+    final chthon = _sample('chthon').single;
+    final combat = _combat(chthon);
+    final armour = combat.armour.calculatedArmour;
+    final (blade, release, projection) = (combat.weapons[0], combat.weapons[1], combat.weapons[2]);
+
+    expect(chthon.name, 'Chthon');
+    expect(_profile(chthon)['puntosDeVida'], '7000');
+    expect([blade.name, blade.attack, blade.damage, blade.armourReduction], ['Armas Diamantinas', 230, 150, 5]);
+    expect([blade.principalDamage, blade.secondaryDamage], [DamageTypes.fil, DamageTypes.con]);
+    expect([release.name, release.attack, release.damage, release.principalDamage], ['Liberación de Energía', 230, 100, DamageTypes.ene]);
+    expect([projection.name, projection.attack, projection.defense], ['Proyección Mágica', 20, 0]);
+    expect([armour.fil, armour.ele, armour.ene], [12, 12, 8]);
+    expect(chthon.warnings.single, contains('no da su habilidad de ataque'));
+  });
+
   test('Descarta técnicas y conjuros que también empiezan con «Nivel:»', () {
     expect(NpcTextParser.parseAll(_technique), isEmpty);
   });

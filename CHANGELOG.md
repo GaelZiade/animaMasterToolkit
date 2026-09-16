@@ -222,9 +222,14 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
     («Espada bastarda»: FIL/CON; desarmado: CON);
   - Cansancio, movimiento y regeneración, si faltan, de la CON y la AGI.
 
-  Probado contra los 189 perfiles de los manuales digitalizados: 137 salen sin
-  avisos y otros 37 solo avisan de datos que el propio perfil no trae, como el
-  crítico de unas garras o las armas de «o como arma».
+  - la calidad del arma («200 Lanza +10»), que resta TA sola;
+  - los daños de ataques que no figuran en la habilidad de ataque, como la
+    «Liberación de Energía» de Chthon, con la primera habilidad y un aviso.
+
+  Probado contra los 189 perfiles de los manuales digitalizados: 131 salen sin
+  avisos y otros 43 solo avisan de datos que el propio perfil no trae, como el
+  crítico de unas garras, las armas de «o como arma» o la habilidad de un
+  ataque especial.
 
 ### Corregido
 

@@ -226,8 +226,9 @@ abstract class NpcTextParser {
         : RegExp('(?<![A-Za-z])($alternation)\\s*:', caseSensitive: false);
   }
 
-  /// Etiquetas no previstas del formato largo: «Algo:» tras un punto.
-  static final _genericLabel = RegExp(r'(?<=[.;]\s)([A-Z][a-z]+(?: [a-z]+){0,3})\s*:');
+  /// Etiquetas no previstas del formato largo: «Algo:» tras un punto o un
+  /// paréntesis, como «Llevar armadura:».
+  static final _genericLabel = RegExp(r'(?<=[.;)]\s)([A-Z][a-z]+(?: [a-z]+){0,3})\s*:');
 
   static Map<String, String> _fields(String text, {required bool compact}) {
     final folded = _fold(text);
@@ -492,10 +493,20 @@ abstract class NpcTextParser {
         }
 
         // «120 Espada larga, Garras o Armas de cazador»: la misma habilidad con
-        // cada una. «Arma» o «Armas de…» son las que lleve, que no vienen en
-        // el perfil.
+        // cada una. «Arma» y las «Armas de cazador» de su Tabla de armas son
+        // las que lleve, que no vienen en el perfil; «Armas Diamantinas» sí es
+        // un arma concreta.
         final parts = _splitTopLevel(names, RegExp(r',|\so\s'));
-        final concrete = parts.where((part) => !_key(part).startsWith('arma')).toList();
+        final special = _key(field('Especial') ?? '');
+
+        bool isGeneric(String part) {
+          final key = _key(part).replaceFirst(RegExp(r'^como\s+'), '');
+          final table = RegExp(r'^armas? de (.+)$').firstMatch(key)?.group(1);
+
+          return RegExp(r'^armas?$').hasMatch(key) || (table != null && special.contains('tabla de armas de $table'));
+        }
+
+        final concrete = parts.where((part) => !isGeneric(part)).toList();
 
         if (concrete.length < parts.length) {
           warnings.add('${concrete.isEmpty ? names : parts.where((part) => !concrete.contains(part)).join(', ')}: '
@@ -570,10 +581,27 @@ abstract class NpcTextParser {
 
     if (damages.isEmpty && attacks.isNotEmpty) warnings.add('No se encontró el daño');
 
+    // Daños de ataques que no figuran en la habilidad de ataque, como la
+    // «Liberación de Energía» de Chthon: se agregan con la primera habilidad.
+    if (!compact && attacks.isNotEmpty && damages.length > 1) {
+      for (final damage in damages) {
+        if (damage.name.isEmpty || attacks.any((attack) => _sharesWord(damage.name, attack.$1))) continue;
+
+        final name = _capitalize(damage.name.replaceAll(RegExp(r'\s+'), ' '));
+        attacks.add((name, attacks.first.$2));
+        warnings.add('$name: el perfil no da su habilidad de ataque, se usó ${attacks.first.$2}');
+      }
+    }
+
     final weapons = <Map<String, dynamic>>[];
 
     for (var i = 0; i < attacks.length; i++) {
-      final (name, attack) = attacks[i];
+      final (fullName, attack) = attacks[i];
+
+      // «Lanza +10»: la calidad del arma.
+      final qualityMatch = RegExp(r'^(.*?)\s*\+(\d+)$').firstMatch(fullName);
+      final name = qualityMatch?.group(1) ?? fullName;
+      final quality = qualityMatch?.group(2) ?? '0';
 
       final damage = damages.where((damage) => damage.name.isNotEmpty && _sharesWord(damage.name, name)).firstOrNull ??
           (damages.length == 1 ? damages.first : (i < damages.length ? damages[i] : damages.firstOrNull));
@@ -617,7 +645,7 @@ abstract class NpcTextParser {
         'defensa': '$defense',
         'defensaTipo': defenseType,
         'danio': '${damage?.value ?? 0}',
-        'calidad': '0',
+        'calidad': quality,
         'reduccionTA': '${_armourReductionFor(name, field('Poderes') ?? '')}',
       });
     }

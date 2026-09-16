@@ -1,0 +1,35 @@
+CHtHon
+elemental SuPerior de tierra
+Nivel: 10 
+Clase: Entre mundos, Elemental 30
+Puntos de Vida: 7.000 Acumulación
+Categoría: Warlock
+Fue: 16 Des: 9 Agi: 8 Con: 16 Pod: 12 Int: 8 Vol: 12 Per: 9
+RF 150 RM 95 RP 95 RV 150 RE 150
+Turno: 80 Natural
+Habilidad de ataque: 230 Armas Diamantinas
+Habilidad de defensa: Acumulación
+Daño: 150 Armas Diamantinas (Fil / Con), 100 Liberación de Energía 
+(Ene) 
+TA: Cuerpo de Diamante Fil 12 Con 12 Pen 12 Cal 12 Fri 12 Ele 12 
+Ene 8
+ACT: 80 Conjuros de Tierra.
+Zeon: 750
+Proyección mágica: 20 Ofensiva
+Nivel de Vía: 90 Tierra.
+Habilidades esenciales: Don, Características Físicas Sobrenaturales, 
+Características Anímicas Sobrehumanas, Exención Física, Refracción 
+(Inmunidad Natural a un Elemento: Mitad de Daño Luz, Oscuridad), 
+Conocimiento Natural de una Vía: Tierra 80, Inutilidad Somática, 
+Inutilidad Oral.
+Poderes: Armas Diamantinas (Ataque Elemental, -5 a la TA Defensora, 
++20 al Crítico), Daña Energía, Movimiento Subterráneo Superior, 
+Cuerpo de Diamante (Resistencia Física +40, Armadura Física 8, Barrera 
+de Daño 160 Especial), Dominio Elemental, Liberación de Energía, Carga 
+Vertebral Subterránea.
+Tamaño: 32 Gigantesco 
+Tipo de movimiento: 10 
+Habilidades Secundarias: Advertir 120, Buscar 25, Ciencia 200 
+(Geología), Valoración Mágica 130, Proezas de Fuerza 200, Forja 150.
+Regeneración: 8
+Cansancio: Incansable
