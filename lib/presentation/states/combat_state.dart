@@ -201,7 +201,7 @@ class ScreenCombatState {
       ),
       defender: defense.character,
       damageBarrier: DamageBarrierRules.strongest(damageBarrierSources),
-      ignoresBarrier: DamageBarrierRules.ignores(weapon: attack.character?.selectedWeapon(), damageType: attack.damageType),
+      energyDamageSource: DamageBarrierRules.energyDamageSource(weapon: attack.character?.selectedWeapon(), combat: attack.character?.combat),
     );
   }
 

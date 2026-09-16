@@ -1,5 +1,5 @@
 import 'package:amt/models/combat_data.dart';
-import 'package:amt/models/enums.dart';
+import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/weapon.dart';
 
 /// Una fuente de barrera de daño y su valor.
@@ -38,10 +38,28 @@ abstract class DamageBarrierRules {
     return sources.isEmpty ? null : sources.reduce((best, source) => source.value > best.value ? source : best);
   }
 
-  /// Un ataque que daña energía ignora la barrera: el arma lo tiene marcado o
-  /// el ataque va sobre la TA de Energía.
-  static bool ignores({required Weapon? weapon, required DamageTypes damageType}) {
-    return (weapon?.damagesEnergy ?? false) || damageType == DamageTypes.ene;
+  /// Por qué el ataque daña energía e ignora la barrera, o null si no lo hace.
+  ///
+  /// Atacar sobre la TA de Energía no alcanza: el Core distingue los ataques
+  /// basados en energía de los capaces de dañarla. Sí la dañan un arma mística
+  /// o un poder marcado en el arma, la Extrusión de presencia peleando con el
+  /// cuerpo y la Extensión del aura al arma con lo que se empuñe (Core, Los
+  /// dominios del Ki).
+  static String? energyDamageSource({required Weapon? weapon, required CombatData? combat}) {
+    if (weapon == null) return null;
+    if (weapon.damagesEnergy ?? false) return 'el arma daña energía';
+
+    // Planillas: la característica o lo especial del arma lo dicen.
+    final description = CombatData.normalizeTrait('${weapon.characteristic ?? ''} ${weapon.special ?? ''}');
+    if (description.contains('dana energia') || description.contains('mistic')) return 'arma mística';
+    if (combat == null) return null;
+    if (CombatData.hasTrait(combat.kiAbilities, 'extension del aura')) return 'Extensión del aura al arma';
+
+    if (AdditionalAttackRules.isUnarmed(weapon) && CombatData.hasTrait(combat.kiAbilities, 'extrusion de presencia')) {
+      return 'Extrusión de presencia';
+    }
+
+    return null;
   }
 
   static bool blocks({required int barrier, required int baseDamage, required bool ignored}) {

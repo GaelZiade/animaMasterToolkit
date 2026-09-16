@@ -296,7 +296,8 @@ class WeaponsRack extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   const Tooltip(
-                    message: 'Los ataques que dañan energía ignoran la barrera de daño. Atacar sobre ENE ya la ignora.',
+                    message: 'Armas místicas o poderes que dañan energía: ignoran la barrera de daño. '
+                        'La Extrusión de presencia y la Extensión del aura al arma del Ki se aplican solas.',
                     child: Text('Daña energía:'),
                   ),
                   Switch(

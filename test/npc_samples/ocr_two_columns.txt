@@ -1,0 +1,45 @@
+2
+DRAGON
+La Simiente del Mundo
+Menor
+Nivel: 7 Clase: Natural 20
+Puntos de Vida: 3.005 Acumulación
+Categoría: Guerrero
+Fue: 14 Des: 9 Agi: 6 Con: 14 Pod: 12
+Int: 8 Vol: 10 Per 10
+RF 95 RM 110 RP 75 RV 95 RE 95
+Turno: 70 Natural
+Habilidad de ataque: 190 Garras + 170
+Mordisco; o 190 Aliento; o 140 Coletazo
+Habilidad de defensa: Acumulación
+Daño: 130 Garras FIL, 150 Mordisco PEN,
+100 Coletazo CON, 120 Aliento (Variable)
+TA: Natural + escamas: Fil 7 Con 7 Pen 7
+Cal 7 Ele 7 Fri 7 Ene 6
+Regeneración: 8 Cansancio: 14
+
+
+Mayor
+
+Nivel: 9 Clase: Natural 25
+
+Puntos de Vida: 5.000 Acumulación
+Categoría: Guerrero
+
+Fue: 15 Des: 9 Agi: 6 Con: 15 Pod: 12
+
+Int: 8 Vol: 10 Per 10
+
+RF 110 RM 110 RP 75 RV 95 RE 95
+Turno: 70 Natural
+
+Habilidad de ataque: 220 Garras + 170
+Mordisco; o 190 Aliento; o 140 Coletazo
+Habilidad de defensa: Acumulación
+
+Daño: 150 Garras FIL, 150 Mordisco PEN,
+100 Coletazo CON, 120 Aliento (Variable)
+TA: Natural + escamas: Fil 9 Con 9 Pen 9
+Cal 9 Ele 9 Fri 9 Ene 6
+
+Regeneración: 8 Cansancio: 14

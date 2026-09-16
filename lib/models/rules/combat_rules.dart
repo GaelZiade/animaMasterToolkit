@@ -227,7 +227,7 @@ class CombatRules {
     int massAreaMultiplier = 1,
     // Barrera de daño del defensor y si el ataque la ignora por dañar energía.
     DamageBarrierSource? damageBarrier,
-    bool ignoresBarrier = false,
+    String? energyDamageSource,
   }) {
     final info = ExplainedText(title: 'Daño');
 
@@ -248,7 +248,7 @@ class CombatRules {
     final doublesDamage = !isMass && areaAttack && (defender?.profile.damageAccumulation ?? false);
     final multiplier = isMass && areaAttack ? max(1, massAreaMultiplier) : (doublesDamage ? 2 : 1);
     final barrier = damageBarrier?.value ?? 0;
-    final blocked = DamageBarrierRules.blocks(barrier: barrier, baseDamage: baseDamage, ignored: ignoresBarrier);
+    final blocked = DamageBarrierRules.blocks(barrier: barrier, baseDamage: baseDamage, ignored: energyDamageSource != null);
     final damageDone = blocked ? 0 : baseDamageDone * multiplier;
 
     info
@@ -283,8 +283,8 @@ class CombatRules {
       info.add(
         explanation: blocked
             ? '${damageBarrier!.label} $barrier: el daño base ($baseDamage) no la alcanza, así que el ataque no quita PV'
-            : ignoresBarrier
-                ? '${damageBarrier!.label} $barrier: el ataque daña energía y la ignora'
+            : energyDamageSource != null
+                ? '${damageBarrier!.label} $barrier: el ataque daña energía ($energyDamageSource) y la ignora'
                 : '${damageBarrier!.label} $barrier: el daño base ($baseDamage) la supera',
         reference: BookReference(page: 238, book: Books.coreExxet),
       );

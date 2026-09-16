@@ -42,11 +42,34 @@ abstract class NpcTextParser {
   static List<NpcParseResult> parseAll(String raw) {
     final lines = _cleanLines(raw);
 
-    return [
-      for (final block in _splitBlocks(lines))
-        if (_parseBlock(block) case final result when result.looksLikeProfile) result,
-    ];
+    final results = <NpcParseResult>[];
+    String? previous;
+
+    for (final block in _splitBlocks(lines)) {
+      final result = _parseBlock(block, previousName: previous);
+
+      if (!result.looksLikeProfile) continue;
+
+      results.add(result);
+      previous = result.name.split(' (').first;
+    }
+
+    return results;
   }
+
+  /// Subtítulos de variante: «Menor» y «Mayor» en dos columnas del mismo ser.
+  static const _variants = {
+    'menor',
+    'mayor',
+    'superior',
+    'inferior',
+    'arcano',
+    'anciano',
+    'joven',
+    'adulto',
+    'elite',
+    'comun',
+  };
 
   // ---------------------------------------------------------------------------
   // Texto
@@ -344,7 +367,7 @@ abstract class NpcTextParser {
   // ---------------------------------------------------------------------------
   // Perfil
 
-  static NpcParseResult _parseBlock(List<String> block) {
+  static NpcParseResult _parseBlock(List<String> block, {String? previousName}) {
     final anchor = block.indexWhere(_isAnchor);
     final header = anchor <= 0 ? <String>[] : block.sublist(0, anchor);
     final body = _joinLines(anchor < 0 ? block : block.sublist(anchor));
@@ -355,7 +378,12 @@ abstract class NpcTextParser {
     String? field(String label) => fields[label.toLowerCase()];
 
     var name = header.isEmpty ? 'PNJ' : _formatName(header.first);
-    if (header.length >= 3) name = '$name (${_formatName(header.last)})';
+    if (header.length >= 3) {
+      name = '$name (${_formatName(header.last)})';
+    } else if (header.length == 1 && previousName != null && _variants.contains(_key(header.first))) {
+      // La segunda columna solo dice «Mayor»: es el mismo ser que la anterior.
+      name = '$previousName (${_formatName(header.first)})';
+    }
 
     // Vida y acumulación.
     final hitPointsText = compact ? field('Pv') : field('Puntos de Vida');
@@ -379,6 +407,15 @@ abstract class NpcTextParser {
         else if (_firstInt(field(entry.key)) case final value?)
           entry.value: '$value',
     };
+    // La lectura de capturas a veces pierde los dos puntos: «Per 10».
+    final attributesText = _fold(attributeKeys.keys.map(field).nonNulls.join(' '));
+    for (final entry in attributeKeys.entries) {
+      if (attributes.containsKey(entry.value)) continue;
+
+      final match = RegExp('\\b${entry.key}\\s*(\\d+)', caseSensitive: false).firstMatch(attributesText);
+      if (match != null) attributes[entry.value] = match.group(1)!;
+    }
+
     if (attributes.length < 8) warnings.add('Faltan características: se leyeron ${attributes.length} de 8');
 
     final resistances = <String, String>{};

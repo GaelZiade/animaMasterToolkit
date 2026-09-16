@@ -1,6 +1,8 @@
 import 'package:amt/models/character_model/character.dart';
 import 'package:amt/models/combat_data.dart';
 import 'package:amt/utils/npc_parser/npc_text_parser.dart';
+import 'package:amt/utils/npc_parser/ocr_reader.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 /// Crea PNJ a partir de perfiles copiados de los manuales.
@@ -18,7 +20,68 @@ class NpcImportDialog extends StatefulWidget {
 }
 
 class _NpcImportDialogState extends State<NpcImportDialog> {
+  final _text = TextEditingController();
   List<NpcParseResult> _results = [];
+
+  /// Lectura de una captura en curso: qué hace y cuánto lleva.
+  String? _ocrStatus;
+  double _ocrProgress = 0;
+  String? _ocrError;
+
+  @override
+  void initState() {
+    super.initState();
+    OcrReader.listenPaste(_read);
+  }
+
+  @override
+  void dispose() {
+    OcrReader.stopPaste();
+    _text.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await FilePicker.platform.pickFiles(type: FileType.image, withData: true);
+    final bytes = picked?.files.singleOrNull?.bytes;
+
+    if (bytes != null) await _read(bytes);
+  }
+
+  Future<void> _read(Object image) async {
+    setState(() {
+      _ocrStatus = 'Preparando el lector';
+      _ocrProgress = 0;
+      _ocrError = null;
+    });
+
+    try {
+      final text = await OcrReader.read(
+        image,
+        onProgress: (status, progress) {
+          if (mounted) {
+            setState(() {
+              _ocrStatus = status;
+              _ocrProgress = progress;
+            });
+          }
+        },
+      );
+
+      if (!mounted) return;
+
+      _text.text = text;
+      _parse(text);
+
+      if (_results.isEmpty) {
+        setState(() => _ocrError = 'La imagen se leyó, pero no se reconoce un perfil. Revisá el texto o probá con una captura más grande.');
+      }
+    } catch (error) {
+      if (mounted) setState(() => _ocrError = 'No se pudo leer la imagen: $error');
+    } finally {
+      if (mounted) setState(() => _ocrStatus = null);
+    }
+  }
 
   /// Copias a agregar de cada perfil; 0 lo deja afuera.
   List<int> _copies = [];
@@ -59,12 +122,43 @@ class _NpcImportDialogState extends State<NpcImportDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              'Copiá el perfil de una criatura o PNJ del Core, el Bestiario o Gaïa y pegalo acá. Podés pegar varios seguidos.',
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Pegá el perfil de una criatura o PNJ del Core, el Bestiario o Gaïa: el texto copiado o una captura (Ctrl+V). '
+                    'Podés pegar varios seguidos.',
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: _ocrStatus == null && OcrReader.available ? _pickImage : null,
+                  icon: const Icon(Icons.image_search),
+                  label: const Text('Elegir imagen'),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
+            if (_ocrStatus != null) ...[
+              Text('$_ocrStatus… ${(_ocrProgress * 100).round()} %', style: theme.textTheme.bodySmall),
+              const SizedBox(height: 4),
+              LinearProgressIndicator(value: _ocrProgress > 0 ? _ocrProgress : null),
+              const SizedBox(height: 12),
+            ],
+            if (_ocrError != null) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline, size: 16, color: theme.colorScheme.error),
+                  const SizedBox(width: 6),
+                  Expanded(child: Text(_ocrError!, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error))),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
             TextField(
+              controller: _text,
               autofocus: true,
               // Con perfiles reconocidos, el espacio es para la vista previa.
               minLines: _results.isEmpty ? 5 : 2,
@@ -73,7 +167,8 @@ class _NpcImportDialogState extends State<NpcImportDialog> {
               style: theme.textTheme.bodySmall,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Pegá acá el perfil (Ctrl+V)',
+                hintText: 'Pegá acá el texto o una captura (Ctrl+V)',
+                helperText: 'Si la captura se lee con errores, corregí el texto acá.',
               ),
             ),
             const SizedBox(height: 12),
@@ -104,7 +199,7 @@ class _NpcImportDialogState extends State<NpcImportDialog> {
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
         FilledButton.icon(
-          onPressed: _total == 0 ? null : _add,
+          onPressed: _total == 0 || _ocrStatus != null ? null : _add,
           icon: const Icon(Icons.person_add_alt_1),
           label: Text(_total == 0 ? 'Agregar' : 'Agregar $_total'),
         ),

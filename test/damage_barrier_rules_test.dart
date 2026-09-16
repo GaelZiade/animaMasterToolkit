@@ -10,7 +10,7 @@ CombatData _combat({List<String> arts = const [], List<String> ki = const []}) {
   return CombatData(armour: ArmourData(calculatedArmour: Armour(), armours: []), weapons: [], martialArts: arts, kiAbilities: ki);
 }
 
-Weapon _weapon({bool? damagesEnergy, int? criticalBonus}) {
+Weapon _weapon({bool? damagesEnergy, int? criticalBonus, String? type}) {
   return Weapon(
     name: 'Arma',
     turn: 0,
@@ -18,6 +18,7 @@ Weapon _weapon({bool? damagesEnergy, int? criticalBonus}) {
     defense: 100,
     defenseType: DefenseType.parry,
     damage: 50,
+    type: type,
     damagesEnergy: damagesEnergy,
     criticalBonus: criticalBonus,
   );
@@ -30,10 +31,14 @@ void main() {
     expect(DamageBarrierRules.blocks(barrier: 0, baseDamage: 10, ignored: false), isFalse);
   });
 
-  test('Dañar energía ignora la barrera: el arma marcada o atacar sobre ENE', () {
-    expect(DamageBarrierRules.ignores(weapon: _weapon(damagesEnergy: true), damageType: DamageTypes.fil), isTrue);
-    expect(DamageBarrierRules.ignores(weapon: _weapon(), damageType: DamageTypes.ene), isTrue);
-    expect(DamageBarrierRules.ignores(weapon: _weapon(), damageType: DamageTypes.fil), isFalse);
+  test('Dañar energía ignora la barrera; atacar sobre ENE no alcanza', () {
+    String? source(Weapon weapon, {List<String> ki = const []}) => DamageBarrierRules.energyDamageSource(weapon: weapon, combat: _combat(ki: ki));
+
+    expect(source(_weapon(damagesEnergy: true)), 'el arma daña energía');
+    expect(source(_weapon()), isNull);
+    expect(source(_weapon(), ki: ['Extrusión de presencia']), isNull, reason: 'la Extrusión solo alcanza al cuerpo');
+    expect(source(_weapon(type: 'desarmado'), ki: ['Extrusión de presencia']), 'Extrusión de presencia');
+    expect(source(_weapon(), ki: ['Extrusión de presencia', 'Extensión del aura al arma']), 'Extensión del aura al arma');
     expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 40, ignored: true), isFalse);
   });
 

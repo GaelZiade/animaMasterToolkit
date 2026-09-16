@@ -198,6 +198,17 @@ void main() {
     expect(_profile(chthon)['barreraDanio'], '160');
   });
 
+  test('Captura de dos columnas leída con OCR: «Mayor» hereda el nombre y «Per 10» sin dos puntos', () {
+    final results = _sample('ocr_two_columns');
+
+    expect(results.map((result) => result.name), ['Dragon (Menor)', 'Dragon (Mayor)']);
+    expect(results.map((result) => result.json['Atributos']['PER']), ['10', '10']);
+    expect(results.map((result) => _profile(result)['puntosDeVida']), ['3005', '5000']);
+    expect(_combat(results.last).weapons.first.attack, 220);
+    expect(_combat(results.last).armour.calculatedArmour.fil, 9);
+    expect(results.every((result) => !result.warnings.any((warning) => warning.contains('características'))), isTrue);
+  });
+
   test('Descarta técnicas y conjuros que también empiezan con «Nivel:»', () {
     expect(NpcTextParser.parseAll(_technique), isEmpty);
   });
