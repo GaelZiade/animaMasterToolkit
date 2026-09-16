@@ -226,7 +226,10 @@ class CombatRules {
     // Multiplicador de la Tabla 2 al atacar en área a una masa de enemigos.
     int massAreaMultiplier = 1,
     // Barrera de daño del defensor y si el ataque la ignora por dañar energía.
+    // Barrera física más alta del defensor, su barrera contra energía y, si el
+    // ataque daña energía, por qué.
     DamageBarrierSource? damageBarrier,
+    DamageBarrierSource? energyBarrier,
     String? energyDamageSource,
   }) {
     final info = ExplainedText(title: 'Daño');
@@ -247,8 +250,13 @@ class CombatRules {
     // Contra una masa manda la Tabla 2: el doble por área es para una sola criatura.
     final doublesDamage = !isMass && areaAttack && (defender?.profile.damageAccumulation ?? false);
     final multiplier = isMass && areaAttack ? max(1, massAreaMultiplier) : (doublesDamage ? 2 : 1);
-    final barrier = damageBarrier?.value ?? 0;
-    final blocked = DamageBarrierRules.blocks(barrier: barrier, baseDamage: baseDamage, ignored: energyDamageSource != null);
+    final applied = DamageBarrierRules.applicable(
+      physical: [if (damageBarrier != null) damageBarrier],
+      energy: [if (energyBarrier != null) energyBarrier],
+      energyDamageSource: energyDamageSource,
+    );
+    final barrier = applied?.value ?? 0;
+    final blocked = DamageBarrierRules.blocks(barrier: barrier, baseDamage: baseDamage);
     final damageDone = blocked ? 0 : baseDamageDone * multiplier;
 
     info
@@ -279,13 +287,18 @@ class CombatRules {
       );
     }
 
+    if (difference > 0 && energyDamageSource != null && damageBarrier != null) {
+      info.add(
+        explanation: '${damageBarrier.label} ${damageBarrier.value}: el ataque daña energía ($energyDamageSource) y la ignora',
+        reference: BookReference(page: 238, book: Books.coreExxet),
+      );
+    }
+
     if (barrier > 0 && difference > 0) {
       info.add(
         explanation: blocked
-            ? '${damageBarrier!.label} $barrier: el daño base ($baseDamage) no la alcanza, así que el ataque no quita PV'
-            : energyDamageSource != null
-                ? '${damageBarrier!.label} $barrier: el ataque daña energía ($energyDamageSource) y la ignora'
-                : '${damageBarrier!.label} $barrier: el daño base ($baseDamage) la supera',
+            ? '${applied!.label} $barrier: el daño base ($baseDamage) no la alcanza, así que el ataque no quita PV'
+            : '${applied!.label} $barrier: el daño base ($baseDamage) la supera',
         reference: BookReference(page: 238, book: Books.coreExxet),
       );
     }
@@ -297,7 +310,7 @@ class CombatRules {
         text: 'No realiza daños',
       );
     } else if (blocked) {
-      info.text = 'No realiza daños: ${damageBarrier!.label.toLowerCase()} $barrier';
+      info.text = 'No realiza daños: ${applied!.label.toLowerCase()} $barrier';
     } else if (damageDone < 10) {
       info.add(
         text: 'No realiza daños ${(defender?.profile.damageAccumulation ?? false) ? "" : ", pero queda a la defensiva"}',

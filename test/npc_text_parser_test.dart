@@ -257,6 +257,25 @@ void main() {
     });
   });
 
+  test('Una barrera «contra ataques sobrenaturales o de energía» va aparte', () {
+    final result = NpcTextParser.parseAll('''
+Guardián de Tierra
+Nivel: 5
+Puntos de Vida: 300
+Fue: 10 Des: 8 Agi: 8 Con: 10 Pod: 8 Int: 6 Vol: 8 Per: 8
+RF 60 RM 50 RP 50 RV 60 RE 60
+Turno: 60 Natural
+Habilidad de ataque: 150 Puños
+Habilidad de defensa: 140 Parada
+Daño: 80 Puños CON
+TA: Natural 4
+Poderes: Barrera de daño 200 contra ataques físicos y barrera de daño 80 contra ataques sobrenaturales o de energía.
+''').single;
+
+    expect(_profile(result)['barreraDanio'], '200');
+    expect(_profile(result)['barreraEnergia'], '80');
+  });
+
   test('Descarta técnicas y conjuros que también empiezan con «Nivel:»', () {
     expect(NpcTextParser.parseAll(_technique), isEmpty);
   });

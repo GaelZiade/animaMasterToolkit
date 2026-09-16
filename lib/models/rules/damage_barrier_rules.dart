@@ -33,6 +33,25 @@ abstract class DamageBarrierRules {
     ];
   }
 
+  /// Barreras que, contra la regla general, también frenan a los ataques que
+  /// dañan energía: la Comunión con la Tierra del Behemoth (80) o el Escudo
+  /// telequinético por encima de Imposible. Se cargan a mano.
+  static List<DamageBarrierSource> energySources({required int? manual}) {
+    return [
+      if ((manual ?? 0) > 0) DamageBarrierSource('Barrera contra energía', manual!),
+    ];
+  }
+
+  /// La barrera que frena este ataque: la física si no daña energía, y si la
+  /// daña solo una barrera contra energía.
+  static DamageBarrierSource? applicable({
+    required List<DamageBarrierSource> physical,
+    required List<DamageBarrierSource> energy,
+    required String? energyDamageSource,
+  }) {
+    return strongest(energyDamageSource == null ? physical : energy);
+  }
+
   /// Los manuales no dicen que se sumen: vale la más alta.
   static DamageBarrierSource? strongest(List<DamageBarrierSource> sources) {
     return sources.isEmpty ? null : sources.reduce((best, source) => source.value > best.value ? source : best);
@@ -44,10 +63,14 @@ abstract class DamageBarrierRules {
   /// basados en energía de los capaces de dañarla. Sí la dañan un arma mística
   /// o un poder marcado en el arma, la Extrusión de presencia peleando con el
   /// cuerpo y la Extensión del aura al arma con lo que se empuñe (Core, Los
-  /// dominios del Ki).
+  /// dominios del Ki). Los conjuros y poderes psíquicos que se lanzan con la
+  /// Proyección son ataques sobrenaturales.
   static String? energyDamageSource({required Weapon? weapon, required CombatData? combat}) {
     if (weapon == null) return null;
     if (weapon.damagesEnergy ?? false) return 'el arma daña energía';
+
+    final name = CombatData.normalizeTrait('${weapon.name} ${weapon.type ?? ''}');
+    if (name.contains('proyeccion')) return 'ataque sobrenatural';
 
     // Planillas: la característica o lo especial del arma lo dicen.
     final description = CombatData.normalizeTrait('${weapon.characteristic ?? ''} ${weapon.special ?? ''}');
@@ -62,7 +85,7 @@ abstract class DamageBarrierRules {
     return null;
   }
 
-  static bool blocks({required int barrier, required int baseDamage, required bool ignored}) {
-    return !ignored && barrier > 0 && baseDamage < barrier;
+  static bool blocks({required int barrier, required int baseDamage}) {
+    return barrier > 0 && baseDamage < barrier;
   }
 }

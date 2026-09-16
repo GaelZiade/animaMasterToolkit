@@ -26,9 +26,9 @@ Weapon _weapon({bool? damagesEnergy, int? criticalBonus, String? type}) {
 
 void main() {
   test('Un daño base menor que la barrera no quita PV (Core, Estados y Accidentes)', () {
-    expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 40, ignored: false), isTrue);
-    expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 100, ignored: false), isFalse);
-    expect(DamageBarrierRules.blocks(barrier: 0, baseDamage: 10, ignored: false), isFalse);
+    expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 40), isTrue);
+    expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 100), isFalse, reason: 'igual o mayor la atraviesa');
+    expect(DamageBarrierRules.blocks(barrier: 0, baseDamage: 10), isFalse);
   });
 
   test('Dañar energía ignora la barrera; atacar sobre ENE no alcanza', () {
@@ -39,7 +39,21 @@ void main() {
     expect(source(_weapon(), ki: ['Extrusión de presencia']), isNull, reason: 'la Extrusión solo alcanza al cuerpo');
     expect(source(_weapon(type: 'desarmado'), ki: ['Extrusión de presencia']), 'Extrusión de presencia');
     expect(source(_weapon(), ki: ['Extrusión de presencia', 'Extensión del aura al arma']), 'Extensión del aura al arma');
-    expect(DamageBarrierRules.blocks(barrier: 100, baseDamage: 40, ignored: true), isFalse);
+  });
+
+  test('Las proyecciones mágica y psíquica son ataques sobrenaturales', () {
+    final projection = Weapon(name: 'Proyección Mágica', turn: 0, attack: 100, defense: 0, defenseType: DefenseType.parry, damage: 0);
+
+    expect(DamageBarrierRules.energyDamageSource(weapon: projection, combat: _combat()), 'ataque sobrenatural');
+  });
+
+  test('Quien daña energía solo choca con una barrera contra energía (Comunión con la Tierra)', () {
+    const physical = [DamageBarrierSource('Barrera de daño', 200)];
+    final energy = DamageBarrierRules.energySources(manual: 80);
+
+    expect(DamageBarrierRules.applicable(physical: physical, energy: energy, energyDamageSource: null)!.value, 200);
+    expect(DamageBarrierRules.applicable(physical: physical, energy: energy, energyDamageSource: 'Extrusión de presencia')!.value, 80);
+    expect(DamageBarrierRules.applicable(physical: physical, energy: const [], energyDamageSource: 'arma mística'), isNull);
   });
 
   test('Fuentes: a mano, Hanja (60 o 200) y Escudo físico (Presencia base); vale la más alta', () {

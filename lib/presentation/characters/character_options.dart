@@ -128,18 +128,40 @@ class ShowCharacterOptions {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Tooltip(
-                        message: 'Daño base mínimo que necesita un ataque para quitarle PV. No frena a los ataques que dañan energía. '
-                            'El Hanja y el Escudo físico del Ki se aplican solos; vale la barrera más alta.',
-                        child: AMTTextFormField(
-                          label: 'Barrera de daño',
-                          text: '${character.profile.damageBarrier ?? 0}',
-                          onChanged: (value) {
-                            final barrier = int.tryParse(value.trim()) ?? 0;
-                            character.profile.damageBarrier = barrier > 0 ? barrier : null;
-                            onEdit(character);
-                          },
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Tooltip(
+                              message: 'Daño base mínimo que necesita un ataque para quitarle PV. No frena a los ataques que dañan energía. '
+                                  'El Hanja y el Escudo físico del Ki se aplican solos; vale la barrera más alta.',
+                              child: AMTTextFormField(
+                                label: 'Barrera de daño',
+                                text: '${character.profile.damageBarrier ?? 0}',
+                                onChanged: (value) {
+                                  final barrier = int.tryParse(value.trim()) ?? 0;
+                                  character.profile.damageBarrier = barrier > 0 ? barrier : null;
+                                  onEdit(character);
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Tooltip(
+                              message: 'Excepción a la regla: frena también a los ataques que dañan energía y a los sobrenaturales. '
+                                  'Por ejemplo, Comunión con la Tierra (80) o un Escudo telequinético por encima de Imposible.',
+                              child: AMTTextFormField(
+                                label: 'Barrera contra energía',
+                                text: '${character.profile.energyBarrier ?? 0}',
+                                onChanged: (value) {
+                                  final barrier = int.tryParse(value.trim()) ?? 0;
+                                  character.profile.energyBarrier = barrier > 0 ? barrier : null;
+                                  onEdit(character);
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 24,

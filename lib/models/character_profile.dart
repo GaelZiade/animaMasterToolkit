@@ -23,6 +23,7 @@ class CharacterProfile {
     this.critLevel = 90,
     this.massSize,
     this.damageBarrier,
+    this.energyBarrier,
   });
 
   static CharacterProfile? fromJson(Map<String, dynamic>? json) {
@@ -48,6 +49,7 @@ class CharacterProfile {
       critLevel: JsonUtils.integer(json['nivelDeCritico'], 90),
       massSize: json['tamanoMasa'] == null ? null : JsonUtils.integer(json['tamanoMasa'], 0),
       damageBarrier: json['barreraDanio'] == null ? null : JsonUtils.integer(json['barreraDanio'], 0),
+      energyBarrier: json['barreraEnergia'] == null ? null : JsonUtils.integer(json['barreraEnergia'], 0),
     );
   }
 
@@ -69,6 +71,7 @@ class CharacterProfile {
       'nivelDeCritico': critLevel,
       'tamanoMasa': massSize,
       'barreraDanio': damageBarrier,
+      'barreraEnergia': energyBarrier,
     };
   }
 
@@ -114,6 +117,11 @@ class CharacterProfile {
   @HiveField(16)
   int? damageBarrier;
 
+  /// Barrera que también frena a los ataques que dañan energía, contra la regla
+  /// general: Comunión con la Tierra, Escudo telequinético muy alto.
+  @HiveField(17)
+  int? energyBarrier;
+
   CharacterProfile copy({bool? isNpc, int? number}) {
     return CharacterProfile(
       fatigue: fatigue,
@@ -132,6 +140,7 @@ class CharacterProfile {
       critLevel: critLevel,
       massSize: massSize,
       damageBarrier: damageBarrier,
+      energyBarrier: energyBarrier,
     );
   }
 }

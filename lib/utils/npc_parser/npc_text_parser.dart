@@ -491,10 +491,22 @@ abstract class NpcTextParser {
 
     // «Barrera de daño 80» en los poderes o en lo especial; si hay varias,
     // la más alta.
-    final barrier = RegExp(r'barrera\s+de\s+da[ñn]o\s*(\d+)', caseSensitive: false)
-        .allMatches('${field('Poderes') ?? ''} ${field('Especial') ?? ''} ${field('Habilidades esenciales') ?? ''}')
-        .map((match) => int.parse(match.group(1)!))
-        .fold(0, max);
+    // «… contra ataques sobrenaturales o de energía» es la excepción que
+    // también frena a quien daña energía (Comunión con la Tierra).
+    var barrier = 0;
+    var energyBarrier = 0;
+    final barrierText = '${field('Poderes') ?? ''} ${field('Especial') ?? ''} ${field('Habilidades esenciales') ?? ''}';
+
+    for (final match in RegExp(r'barrera\s+de\s+da[ñn]o\s*(\d+)(\s+contra\s+(?:ataques\s+)?(?:sobrenaturales|de\s+energ))?', caseSensitive: false)
+        .allMatches(barrierText)) {
+      final value = int.parse(match.group(1)!);
+
+      if (match.group(2) != null) {
+        energyBarrier = max(energyBarrier, value);
+      } else {
+        barrier = max(barrier, value);
+      }
+    }
 
     return NpcParseResult(
       name: name,
@@ -513,6 +525,7 @@ abstract class NpcTextParser {
           'movimiento': '${_firstInt(field('Tipo de movimiento')) ?? int.tryParse(attributes['AGI'] ?? '') ?? 6}',
           'acumDanio': accumulation ? 'Si' : 'No',
           if (barrier > 0) 'barreraDanio': '$barrier',
+          if (energyBarrier > 0) 'barreraEnergia': '$energyBarrier',
         },
         'Atributos': attributes,
         'Resistencias': resistances,

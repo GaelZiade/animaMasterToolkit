@@ -53,11 +53,17 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 ### Añadido
 
 - **Barrera de daño** (Core, Estados y Accidentes). Si el daño base del ataque
-  no la alcanza, no quita PV. Solo la ignoran los ataques capaces de dañar
-  energía, que no son lo mismo que los ataques sobre la TA de Energía: un arma
-  mística o marcada como tal (también si su descripción de la planilla lo
-  dice), la Extrusión de presencia peleando con el cuerpo y la Extensión del
-  aura al arma con lo que se empuñe (Core, Los dominios del Ki). Se
+  no la alcanza, no quita PV; si lo iguala o supera, pasa. La ignoran los
+  ataques capaces de dañar energía, que no son lo mismo que los ataques sobre
+  la TA de Energía: un arma mística o un don marcado en el arma (también si su
+  descripción de la planilla lo dice), la Extrusión de presencia peleando con
+  el cuerpo, la Extensión del aura al arma con lo que se empuñe (Core, Los
+  dominios del Ki) y los conjuros y poderes lanzados con la Proyección. Contra
+  ellos solo vale una **barrera contra energía**, la excepción que se carga
+  aparte: Comunión con la Tierra del Behemoth (Arcana, 80) o un Escudo
+  telequinético por encima de Imposible. «Ojos del Fin de Toda Existencia»
+  (Dominus) no se aplica: ignora la barrera de los objetos, no la de los seres.
+  Se
   carga a mano en las opciones de cualquier personaje, y además se aplican
   solas la del Hanja (60, o 200 en Arcano, Dominus Exxet) y la del Escudo
   físico del Ki (su Presencia base). Los manuales no dicen que se sumen, así
