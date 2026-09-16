@@ -1,0 +1,160 @@
+DRAGÓN
+
+LA SIMIENTE DEL MUNDO
+
+MENOR
+
+Nivel: 7 Clase: Natural 20
+
+Puntos de Vida: 3.005 Acumulación
+
+Categoría: Guerrero
+
+Fue: 14 Des: 9 Agi: 6 Con: 14 Pod: 12 Int: 8 Vol: 10 Per: 10
+
+RE 95 RM 110 RP 75 RV 95 RE 95
+
+Turno: 70 Natural
+
+Habilidad de ataque: 190 Garras + 170 Mordisco; o 190 Aliento; o 140
+Coletazo
+
+Habilidad de defensa: Acumulación
+
+Daño: 130 Garras FIL, 150 Mordisco PEN, 100 Coletazo CON, 120 Aliento
+(Variable)
+
+TA: Natural + escamas: Fil 7 Con 7 Pen 7 Cal 7 Ele 7 Fri 7 Ene 6
+Habilidades esenciales: Características físicas sobrenaturales, Características
+anímicas sobrehumanas, Sentido agudizado, Zen, Inmunidad, Vulnerabilidad.
+Poderes: Arma natural: Garras, Mordisco (Ataque adicional, Daño
+incrementado +20, Armadura -1) y Cola, Aliento, Daña energía, Armadura
+natural, Vuelo natural 12, Batir de alas, Resistencias incrementadas +10, RM
+incrementada +30, Barrera de daño 80, Ver lo sobrenatural.
+
+Tamaño: 28 Enorme Regeneración: 8
+Tipo de movimiento: 7 / 12 Cansancio: 14
+Habilidades Secundarias: Intimidar 70, Advertir 100 (Escuchar 130), Buscar
+100, Historia 70, Tasación 65, Proezas de fuerza 110, Resistir el dolor 85.
+
+
+— — --  *———
+MAYoR
+Nivel: 9 Clase: Natural 25
+Puntos de Vida: 5.000 Acumulación L
+Categoría: Guerrero ”
+Fue: 15 Des: 9 Agi: 6 Con: 15 Pod: 12 Int: 10 Yol: 11 Per: 11
+RF 110 RM 120 RP 90 RY 110 RE 110
+Turno: 70 Natural
+Habilidad de ataque: 220 Garras + 200 Mordisco: o 220 Aliento; o 170
+Coletazo
+Habilidad de defensa: Acumulación
+Daño: 150 Garras FIL, 170 Mordisco PEN, 120 Coletazo CON, 150 Aliento
+(Variable)
+TA: Natural + escamas: Fil 9 Con 9 Pen 9 Cal 9 Ele 9 Fri 9 Ene 8
+Habilidades esenciales: Características físicas sobrenaturales, Características
+animicas sobrehumanas, Sentido agudizado, Zen, Inmunidad, Vulnerabilidad.
+Poderes: Arma natural: Garras, Mordisco (Ataque adicional, Daño
+incrementado +20, Armadura -2) y Cola, Aliento, Daña energía, Armadura
+natural, Vuelo natural 12, Batir de alas, Resistencias incrementadas +10, RM
+incrementada +30, Barrera de daño 120, Ver lo sobrenatural.
+Tamaño: 30 Gigantesco Regeneración: 9
+Tipo de movimiento: 8 / 12 Cansancio: 15
+Habilidades Secundarias: Intimidar 115, Advertir 130 (160 Escuchar), Buscar
+120, Historia 80, Tasación 100, Memorizar 75, Ocultismo 115, Proezas de fuerza
+155, Resistir el dolor 160.
+
+GRENDEL
+
+CazAaDon Oscuno
+
+Nivel: 3 Clase: Natural 10
+
+Puntos de Vida: 150
+
+Categoría: Explorador
+
+Fue: 9 Des: 8 Agi: 8 Con: 9 Pod: 6 Int: 6 Vol: 6 Per: 8
+
+RE 50 RM 45 RP 45 RV 80 RE 50
+
+Turno: 75 Natural, 55 Espada larga; 0 como arma
+
+Habilidad de ataque: 120 Espada larga, Garras o Armas de cazador
+Habilidad de defensa: 100 Espada larga, Garras o Armas de cazador
+Daño: 50 Garras FIL, 60 Espada larga FIL, o como arma
+
+TA: Armadura quitinosa Fil 4 Con 4 Pen 4 Cal 4 Ele 4 Fri 4 Ene O
+Habilidades esenciales: Resistencia al cansancio, Inmune a los fenómenos
+dimáticos.
+
+Poderes: Arma natural: Garras, Armadura fisica 4 Abierta, RV incrementada
++30, Camuflaje camaleónico Limitado, Visión nocturna.
+
+Especial: Tabla de armas de Cazador
+
+Tamaño: 18 Medio Regeneración: 3
+Tipo de movimiento: 8 Cansancio: 12
+
+ARIAS VAYU Pr A
+
+ELEMENTAL SUPERIOR DE AIRE " "
+
+Nivel: 10 Clase: Entre mundos, Elemental 30
+
+Puntos de Vida: 210 l
+
+Categoría: Warlock
+
+Fue: 5 Des: 14 Agi: 15 Con: 8 Pod: 13 Int: 13 Vol: 7 Per: 10
+
+RF 865 RM 100 RP 85 RV 85 RE 85
+
+Turno: 175 Natural
+
+Habilidad de ataque: 240 Cuchilla de Viento
+
+Habilidad de defensa: 250 Esquiva
+
+Daño: 80 Cuchilla de Viento (Fil), 100 Tetraformación (Ele)
+
+TA: Ninguna -
+o
+=
+
+ACT: 80 Aire e:
+
+Zeon: 900 ES
+
+Proyección mágica: 200 Ofensiva E
+
+Nivel de Vía: 90 Aire 3
+S
+
+Habilidades naturales: Proyección Mágica como Ataque. 3
+
+Habilidades esenciales: Don, Características Físicas Sobrenaturales, L
+
+Características Anímicas Sobrehumanas, Zen, Exención Fisica, Inmunidad
+
+Natural a un Elemento (Completa, Aire), Inutilidad Somática, Inutilidad
+
+Oral.
+
+Poderes: +30 al Turno Natural, Forma Elemental, Cuchilla de Viento
+
+(Ataque Elemental, -2 a la TA Defensora, Distancia 250 Metros, Daño
+
+Base 80), Daña Energía, Transporte Innato (Distancia 30 Metros, A
+
+través de un Elemento, Sin Límite), Dominio Elemental, Los Cuatro
+
+Cristales Elementales.
+
+Tamaño: 13 Medio Regeneración: |
+
+Tipo de movimiento: 15 Cansancio: Incansable
+
+Habilidades Secundarias: Acrobacios 125, Baile 180, Persuasión 55,
+
+Advertir 40, Buscar 20, Historia 50, Valoración Mágica 150.

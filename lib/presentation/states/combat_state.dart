@@ -6,6 +6,7 @@ import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/rules/armour_reduction_rules.dart';
 import 'package:amt/models/rules/counter_attack_rules.dart';
+import 'package:amt/models/rules/damage_barrier_rules.dart';
 import 'package:amt/models/rules/mass_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -199,6 +200,22 @@ class ScreenCombatState {
         damageModifier: attack.damage,
       ),
       defender: defense.character,
+      damageBarrier: DamageBarrierRules.strongest(damageBarrierSources),
+      energyDamageSource: DamageBarrierRules.energyDamageSource(weapon: attack.character?.selectedWeapon(), combat: attack.character?.combat),
+    );
+  }
+
+  /// Barreras de daño del defensor: la cargada a mano, el Hanja y el Escudo
+  /// físico.
+  List<DamageBarrierSource> get damageBarrierSources {
+    final defender = defense.character;
+
+    if (defender == null) return const [];
+
+    return DamageBarrierRules.sources(
+      manual: defender.profile.damageBarrier,
+      combat: defender.combat,
+      presence: defender.resistances?.presence ?? 0,
     );
   }
 
@@ -328,6 +345,7 @@ class ScreenCombatState {
       physicalResistanceBase: critical.physicalResistanceBase,
       physicalResistanceRoll: critical.physicalResistanceRoll,
       defender: defense.character,
+      criticalBonus: attack.character?.selectedWeapon().criticalBonus ?? 0,
     );
   }
 

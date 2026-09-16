@@ -39,13 +39,15 @@ class WeaponAdapter extends TypeAdapter<Weapon> {
       variableDamage: fields[19] as bool?,
       attackSize: fields[20] as String?,
       armourReduction: fields[21] as int?,
+      criticalBonus: fields[22] as int?,
+      damagesEnergy: fields[23] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Weapon obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(24)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -89,7 +91,11 @@ class WeaponAdapter extends TypeAdapter<Weapon> {
       ..writeByte(20)
       ..write(obj.attackSize)
       ..writeByte(21)
-      ..write(obj.armourReduction);
+      ..write(obj.armourReduction)
+      ..writeByte(22)
+      ..write(obj.criticalBonus)
+      ..writeByte(23)
+      ..write(obj.damagesEnergy);
   }
 
   @override

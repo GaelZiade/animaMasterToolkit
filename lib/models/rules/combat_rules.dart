@@ -7,6 +7,7 @@ import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/roll.dart';
 import 'package:amt/models/rules/armour_reduction_rules.dart';
 import 'package:amt/models/rules/counter_attack_rules.dart';
+import 'package:amt/models/rules/damage_barrier_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/models/weapon.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -224,6 +225,9 @@ class CombatRules {
     bool areaAttack = false,
     // Multiplicador de la Tabla 2 al atacar en área a una masa de enemigos.
     int massAreaMultiplier = 1,
+    // Barrera de daño del defensor y si el ataque la ignora por dañar energía.
+    DamageBarrierSource? damageBarrier,
+    String? energyDamageSource,
   }) {
     final info = ExplainedText(title: 'Daño');
 
@@ -243,7 +247,9 @@ class CombatRules {
     // Contra una masa manda la Tabla 2: el doble por área es para una sola criatura.
     final doublesDamage = !isMass && areaAttack && (defender?.profile.damageAccumulation ?? false);
     final multiplier = isMass && areaAttack ? max(1, massAreaMultiplier) : (doublesDamage ? 2 : 1);
-    final damageDone = baseDamageDone * multiplier;
+    final barrier = damageBarrier?.value ?? 0;
+    final blocked = DamageBarrierRules.blocks(barrier: barrier, baseDamage: baseDamage, ignored: energyDamageSource != null);
+    final damageDone = blocked ? 0 : baseDamageDone * multiplier;
 
     info
       ..add(
@@ -273,12 +279,25 @@ class CombatRules {
       );
     }
 
+    if (barrier > 0 && difference > 0) {
+      info.add(
+        explanation: blocked
+            ? '${damageBarrier!.label} $barrier: el daño base ($baseDamage) no la alcanza, así que el ataque no quita PV'
+            : energyDamageSource != null
+                ? '${damageBarrier!.label} $barrier: el ataque daña energía ($energyDamageSource) y la ignora'
+                : '${damageBarrier!.label} $barrier: el daño base ($baseDamage) la supera',
+        reference: BookReference(page: 238, book: Books.coreExxet),
+      );
+    }
+
     if (difference <= 0) {
       info.add(
         explanation: 'No realiza daños',
         reference: BookReference(page: 87, book: Books.coreExxet),
         text: 'No realiza daños',
       );
+    } else if (blocked) {
+      info.text = 'No realiza daños: ${damageBarrier!.label.toLowerCase()} $barrier';
     } else if (damageDone < 10) {
       info.add(
         text: 'No realiza daños ${(defender?.profile.damageAccumulation ?? false) ? "" : ", pero queda a la defensiva"}',
@@ -581,6 +600,8 @@ class CombatRules {
     required String? physicalResistanceBase,
     required String? physicalResistanceRoll,
     required Character? defender,
+    // Crítico incrementado del arma con la que se atacó.
+    int criticalBonus = 0,
   }) {
     final damageDoneInt = damageDone?.safeInterpret ?? 0;
     final criticalRollInt = criticalRoll?.safeInterpret ?? 0;
@@ -599,7 +620,7 @@ class CombatRules {
     final physicalResistanceBaseInt = physicalResistanceBase?.safeInterpret ?? 0;
     final physicalResistanceRollInt = physicalResistanceRoll?.safeInterpret ?? 0;
 
-    var result = damageDoneInt + criticalRollInt - physicalResistanceBaseInt - physicalResistanceRollInt;
+    var result = damageDoneInt + criticalRollInt + criticalBonus - physicalResistanceBaseInt - physicalResistanceRollInt;
 
     if (damageAccumulation) {
       result = result ~/ 2;
@@ -615,6 +636,7 @@ class CombatRules {
         [
           ExplainedTerm('Daño realizado', damageDoneInt),
           ExplainedTerm('Tirada de crítico', criticalRollInt),
+          if (criticalBonus != 0) ExplainedTerm('Crítico incrementado del arma', criticalBonus),
           ExplainedTerm('Resistencia física', -physicalResistanceBaseInt),
           ExplainedTerm('Tirada de RF', -physicalResistanceRollInt),
         ],

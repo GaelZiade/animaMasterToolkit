@@ -22,6 +22,7 @@ class CharacterProfile {
     this.damageAccumulation = false,
     this.critLevel = 90,
     this.massSize,
+    this.damageBarrier,
   });
 
   static CharacterProfile? fromJson(Map<String, dynamic>? json) {
@@ -46,6 +47,7 @@ class CharacterProfile {
       damageAccumulation: JsonUtils.boolean(json['acumulacionDeDanio'] ?? json['acumDanio'], placeholder: false),
       critLevel: JsonUtils.integer(json['nivelDeCritico'], 90),
       massSize: json['tamanoMasa'] == null ? null : JsonUtils.integer(json['tamanoMasa'], 0),
+      damageBarrier: json['barreraDanio'] == null ? null : JsonUtils.integer(json['barreraDanio'], 0),
     );
   }
 
@@ -66,6 +68,7 @@ class CharacterProfile {
       'acumulacionDeDanio': damageAccumulation,
       'nivelDeCritico': critLevel,
       'tamanoMasa': massSize,
+      'barreraDanio': damageBarrier,
     };
   }
 
@@ -106,6 +109,11 @@ class CharacterProfile {
 
   bool get isMass => (massSize ?? 0) > 1;
 
+  /// Barrera de daño cargada a mano: el daño base mínimo que necesita un
+  /// ataque para quitarle PV (Core, Estados y Accidentes).
+  @HiveField(16)
+  int? damageBarrier;
+
   CharacterProfile copy({bool? isNpc, int? number}) {
     return CharacterProfile(
       fatigue: fatigue,
@@ -123,6 +131,7 @@ class CharacterProfile {
       damageAccumulation: damageAccumulation,
       critLevel: critLevel,
       massSize: massSize,
+      damageBarrier: damageBarrier,
     );
   }
 }

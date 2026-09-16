@@ -36,63 +36,11 @@ class CharactersTable extends StatelessWidget {
               ),
             ),
             Flexible(
-              child: TextButton.icon(
-                onPressed: appState.sheetsLoadingPercentage == -1
-                    ? () async {
-                        appState.showLoading(
-                          message: 'Selecciona las planillas que deseas cargar#Si quieres convertir planillas excel, haz click en el ícono de arriba',
-                        );
-                        final files = await appState.getCharacters();
-                        appState.hideLoading();
-
-                        // El progreso lo reporta parseCharacters al terminar
-                        // cada archivo. Antes lo simulaba un temporizador de
-                        // 250 ms por archivo, que ni reflejaba el avance real
-                        // ni dejaba terminar antes.
-                        await appState.parseCharacters(files, appState.updateSheetLoading);
-
-                        // Hasta ahora un fallo de importacion no se veia: el
-                        // mensaje se guardaba en el estado y nadie lo mostraba.
-                        final error = appState.errorMessage;
-
-                        if (error != null && error.trim().isNotEmpty && context.mounted) {
-                          appState.errorMessage = null;
-
-                          await showDialog<void>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('No se pudieron cargar todas las fichas'),
-                              content: SingleChildScrollView(child: Text(error)),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cerrar'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      }
-                    : null,
-                icon: const Icon(Icons.upload_file),
-                label: const Text(
-                  'Cargar Personaje',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
-              ),
-            ),
-            Flexible(
-              child: TextButton.icon(
-                onPressed: () {
-                  CreateCharacter.show(context, appState.addCharacter);
-                },
-                icon: const Icon(Icons.edit_document),
-                label: const Text(
-                  'Crear Personaje',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+              child: _AddParticipantMenu(
+                enabled: appState.sheetsLoadingPercentage == -1,
+                onLoadSheets: () => _loadSheets(context, appState),
+                onPasteNpc: () => NpcImportDialog.show(context, (character) => appState.addCharacter(character, isNpc: true)),
+                onCreate: () => CreateCharacter.show(context, appState.addCharacter),
               ),
             ),
             Flexible(
@@ -385,8 +333,8 @@ class CharactersTable extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Usa "Cargar Personaje" para importar una planilla de Excel '
-              'o un .json, o "Crear Personaje" para armar uno a mano.',
+              'Usá "Agregar" para cargar una planilla de Excel o un .json, '
+              'pegar el perfil de un PNJ o crear uno a mano.',
               style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -638,6 +586,42 @@ class CharactersTable extends StatelessWidget {
     return Expanded(flex: size, child: child);
   }
 
+  Future<void> _loadSheets(BuildContext context, CharactersPageState appState) async {
+    appState.showLoading(
+      message: 'Selecciona las planillas que deseas cargar#Si quieres convertir planillas excel, haz click en el ícono de arriba',
+    );
+    final files = await appState.getCharacters();
+    appState.hideLoading();
+
+    // El progreso lo reporta parseCharacters al terminar
+    // cada archivo. Antes lo simulaba un temporizador de
+    // 250 ms por archivo, que ni reflejaba el avance real
+    // ni dejaba terminar antes.
+    await appState.parseCharacters(files, appState.updateSheetLoading);
+
+    // Hasta ahora un fallo de importacion no se veia: el
+    // mensaje se guardaba en el estado y nadie lo mostraba.
+    final error = appState.errorMessage;
+
+    if (error != null && error.trim().isNotEmpty && context.mounted) {
+      appState.errorMessage = null;
+
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('No se pudieron cargar todas las fichas'),
+          content: SingleChildScrollView(child: Text(error)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cerrar'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   void _updateDefense(
     CharactersPageState appState,
     Character character,
@@ -658,6 +642,64 @@ class CharactersTable extends StatelessWidget {
       physicalResistanceBase: physicalResistance.toString(),
       baseDefenseModifiers: '',
       surprise: surprise,
+    );
+  }
+}
+
+/// Las tres formas de sumar participantes, en un solo menú para no llenar la
+/// barra de acciones.
+class _AddParticipantMenu extends StatelessWidget {
+  const _AddParticipantMenu({
+    required this.enabled,
+    required this.onLoadSheets,
+    required this.onPasteNpc,
+    required this.onCreate,
+  });
+
+  final bool enabled;
+  final VoidCallback onLoadSheets;
+  final VoidCallback onPasteNpc;
+  final VoidCallback onCreate;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    Widget item(IconData icon, String title, String subtitle, VoidCallback onPressed) {
+      return MenuItemButton(
+        leadingIcon: Icon(icon),
+        onPressed: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(title),
+              Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return MenuAnchor(
+      menuChildren: [
+        item(Icons.upload_file, 'Cargar planilla', 'Fichas de Excel o .json', onLoadSheets),
+        item(Icons.content_paste, 'Pegar PNJ', 'Perfil del manual, en texto o captura', onPasteNpc),
+        item(Icons.edit_document, 'Crear a mano', 'Con los valores básicos', onCreate),
+      ],
+      builder: (context, controller, _) => FilledButton.tonalIcon(
+        onPressed: enabled ? () => controller.isOpen ? controller.close() : controller.open() : null,
+        icon: const Icon(Icons.person_add_alt_1),
+        label: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: Text('Agregar', overflow: TextOverflow.ellipsis, maxLines: 1)),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
     );
   }
 }

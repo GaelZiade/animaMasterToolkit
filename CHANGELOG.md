@@ -15,6 +15,9 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   por ejemplo al deshacer «Limpiar mesa». Se guardaba `parry` pero solo se
   leía `Par`. Lo mismo pasaba con el tamaño del arma, su conocimiento y la
   ubicación de la armadura, que siempre volvía como completa.
+- **El tamaño de una masa de enemigos se perdía al recargar.** El registro
+  guardado del perfil anunciaba un campo menos de los que escribía, así que el
+  último, el tamaño de la masa, no se leía.
 - **La defensa final ya no puede quedar negativa.** Los modificadores pueden
   sumar un total negativo, pero el resultado se limita a 0. El desglose muestra
   el valor sin limitar para que se vea por qué. (Cierra
@@ -49,6 +52,20 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ### Añadido
 
+- **Barrera de daño** (Core, Estados y Accidentes). Si el daño base del ataque
+  no la alcanza, no quita PV. Solo la ignoran los ataques capaces de dañar
+  energía, que no son lo mismo que los ataques sobre la TA de Energía: un arma
+  mística o marcada como tal (también si su descripción de la planilla lo
+  dice), la Extrusión de presencia peleando con el cuerpo y la Extensión del
+  aura al arma con lo que se empuñe (Core, Los dominios del Ki). Se
+  carga a mano en las opciones de cualquier personaje, y además se aplican
+  solas la del Hanja (60, o 200 en Arcano, Dominus Exxet) y la del Escudo
+  físico del Ki (su Presencia base). Los manuales no dicen que se sumen, así
+  que vale la más alta. El desglose del daño dice cuál frenó el ataque.
+- **Crítico incrementado y «Daña energía» por arma.** El editor del arma tiene
+  un bono al crítico, que se suma al nivel del crítico que provoque ese ataque
+  (Core, Poderes), y un interruptor para los ataques que dañan energía. Atacar
+  sobre ENE no cuenta como dañar energía.
 - **Tomar contraataque.** Cuando la defensa supera al ataque, el resultado
   ofrece un botón que, en un solo paso, suma la defensa al defensor, lo pone a
   atacar con el bono de contra (mitad de la diferencia, redondeada a 5, máximo
@@ -199,6 +216,57 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ## Importación de fichas
 
+### Añadido
+
+- **Pegar PNJ.** Desde «Agregar» se abre un cuadro donde se pega el perfil de
+  una criatura o PNJ copiado del manual, o una captura, y crea el personaje con
+  una vista previa y los avisos de lo que no se pudo leer. Se pueden pegar
+  varios perfiles seguidos y elegir cuántas copias agregar de cada uno; se
+  numeran como PNJ.
+
+  Entiende los dos formatos canon: el largo del Core, el Bestiario y Gaïa
+  (`Nivel:`, `Habilidad de ataque:`…) y el compacto de los personajes comunes
+  (`Turno 55/25; Pv 110; HA 80…`). De cada perfil toma vida, acumulación de
+  daño, características, resistencias, habilidades secundarias, Zeon y
+  proyección mágica o psíquica, y además:
+  - crea un arma por ataque («190 Garras + 170 Mordisco; o 190 Aliento»), con
+    su daño, su crítico y su turno;
+  - la TA por tipo, por nombre de armadura (Tabla 38) o natural, que no protege
+    contra Energía;
+  - «Armadura -1» o «-2 a la TA Defensora» de los poderes, como reducción de TA
+    del arma;
+  - los críticos que el perfil no dice, de la tabla de armas del Core
+    («Espada bastarda»: FIL/CON; desarmado: CON);
+  - Cansancio, movimiento y regeneración, si faltan, de la CON y la AGI.
+
+  - la calidad del arma («200 Lanza +10»), que resta TA sola;
+  - «+20 al Crítico» o «Crítico incrementado» en el arma a la que afecta,
+    «Daña energía» en todos sus ataques y la «Barrera de daño» más alta;
+  - los daños de ataques que no figuran en la habilidad de ataque, como la
+    «Liberación de Energía» de Chthon, con la primera habilidad y un aviso.
+
+  **Capturas.** Se pegan con Ctrl+V o se eligen como archivo, y se leen en el
+  navegador con Tesseract.js, sin servidor: el lector se descarga la primera
+  vez que se usa. Antes de leer, la imagen pasa a gris y se agranda si es chica,
+  y si trae dos columnas, como el Dragón Menor y Mayor, se leen por separado
+  para que no se mezclen los renglones; la segunda toma el nombre de la
+  primera. El texto leído queda en el cuadro para corregirlo.
+
+  Probado con capturas reales del Core, el Bestiario y Gaïa (Dragón Menor y
+  Mayor, Grendel, Arias Vayu, Guardia de Abel, Alto Caballero de Santa Helena y
+  Gran Erudito Ilmorense). Las capturas chicas se agrandan ×3, que confunde
+  menos dígitos que ×2 o que binarizar, y el lector corrige las confusiones que
+  aparecieron: «RE» o «REF» por «RF» (las resistencias se asignan por el orden
+  del formato si las etiquetas no cuadran), «RY» por «RV», «Yol» por «Vol»,
+  «Py» por «Pv», «Ene O» por «Ene 0», «Regeneración: |» por 1, «;» leído como
+  «:» y los restos de la ilustración junto al nombre. Una resistencia mayor que
+  300 se avisa para revisarla.
+
+  Probado contra los 189 perfiles de los manuales digitalizados: 131 salen sin
+  avisos y otros 43 solo avisan de datos que el propio perfil no trae, como el
+  crítico de unas garras, las armas de «o como arma» o la habilidad de un
+  ataque especial.
+
 ### Corregido
 
 - **La importación de planillas de Excel funciona sin servidor.** Dependía de un
@@ -238,6 +306,10 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ### Añadido
 
+- **Un solo botón «Agregar»** con las tres formas de sumar participantes:
+  cargar una planilla, pegar un PNJ o crear uno a mano. La barra de acciones
+  quedó en Iniciativas, Agregar, Restaurar consumibles y Limpiar mesa, que ya
+  no se cortan en pantallas angostas.
 - **Modo oscuro** con preferencia persistente y conmutador en la barra superior.
   Arranca siguiendo el tema del sistema. Ni blanco ni negro puros.
 - **Panel de modificadores buscable y agrupado.** Mostraba unos cuatro
