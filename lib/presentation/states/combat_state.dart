@@ -5,6 +5,7 @@ import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/rules/additional_attack_rules.dart';
 import 'package:amt/models/rules/armour_reduction_rules.dart';
+import 'package:amt/models/rules/counter_attack_rules.dart';
 import 'package:amt/models/rules/mass_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -140,6 +141,17 @@ class ScreenCombatState {
       characterStateModifiers: defense.character?.activeModifiers.getAllModifiersForType(defense.defenseType.toModifierType()) ?? 0,
       supernaturalShield: defense.supernaturalShield,
       shieldProjection: shieldProjectionOf(defense.character),
+    );
+  }
+
+  /// Bono con el que el defensor puede contraatacar, o null si no puede.
+  int? get counterAttackBonus {
+    if (attack.character == null || defense.character == null) return null;
+
+    return CounterAttackRules.bonus(
+      attack: finalAttackValue.result ?? 0,
+      defense: finalDefenseValue.result ?? 0,
+      damageAccumulation: defense.character?.profile.damageAccumulation ?? false,
     );
   }
 

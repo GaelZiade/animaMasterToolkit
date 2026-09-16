@@ -13,6 +13,7 @@ class CombatReturnCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = context.watch<CharactersPageState>();
     final theme = Theme.of(context);
+    final counterBonus = appState.combatState.counterAttackBonus;
 
     return CustomCombatCard(
       padding: 4,
@@ -25,8 +26,10 @@ class CombatReturnCard extends StatelessWidget {
             info: explanation,
           ),
         const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: 8,
           children: [
             SizedBox(
               height: 32,
@@ -59,28 +62,37 @@ class CombatReturnCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (counterBonus != null)
+              Tooltip(
+                message: 'Añade la defensa al defensor, lo pone a atacar con +$counterBonus y al atacante a defenderse',
+                child: FilledButton.tonalIcon(
+                  icon: const Icon(Icons.swap_horiz),
+                  label: Text('Tomar contraataque (+$counterBonus)'),
+                  onPressed: appState.takeCounterAttack,
+                ),
+              ),
             TextButton(
-              style: const ButtonStyle(),
-              onPressed: () {
-                final character = appState.combatState.defense.character;
+                style: const ButtonStyle(),
+                onPressed: () {
+                  final character = appState.combatState.defense.character;
 
-                var damage = appState.combatState.calculateDamage()?.result ?? 0;
+                  var damage = appState.combatState.calculateDamage()?.result ?? 0;
 
-                if (damage < 10) damage = 0;
+                  if (damage < 10) damage = 0;
 
-                character?.removeFrom(
-                  damage,
-                  ConsumableType.hitPoints,
-                );
+                  character?.removeFrom(
+                    damage,
+                    ConsumableType.hitPoints,
+                  );
 
-                appState.updateCombatState(damageDone: damage.toString());
+                  appState.updateCombatState(damageDone: damage.toString());
 
-                character?.state.defenseNumber += 1;
+                  character?.state.defenseNumber += 1;
 
-                appState.updateCharacter(character);
-              },
-              child: const Text('Aplicar daño / Añadir defensa'),
-            ),
+                  appState.updateCharacter(character);
+                },
+                child: const Text('Aplicar daño / Añadir defensa'),
+              ),
           ],
         ),
       ],

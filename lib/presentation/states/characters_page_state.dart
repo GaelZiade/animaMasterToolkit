@@ -344,6 +344,41 @@ class CharactersPageState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Contraataque: el defensor gasta su defensa y pasa a atacar con el bono;
+  /// el atacante pasa a defenderse. Devuelve el bono, o null si no se puede.
+  int? takeCounterAttack() {
+    final attacker = combatState.attack.character;
+    final defender = combatState.defense.character;
+    final bonus = combatState.counterAttackBonus;
+
+    if (attacker == null || defender == null || bonus == null) return null;
+
+    defender.state.defenseNumber += 1;
+
+    updateCombatState(
+      attacking: defender,
+      attackRoll: '',
+      attackingModifiers: ModifiersState(),
+      damageModifier: '',
+      baseAttackModifiers: bonus > 0 ? '$bonus' : '',
+      areaAttack: false,
+      areaTargets: 0,
+      defendant: attacker,
+      defenseRoll: '0',
+      defenderModifiers: ModifiersState(),
+      armourModifier: '',
+      defenseType: attacker.selectedWeapon().defenseType,
+      physicalResistanceBase: attacker.resistances?.physicalResistance.toString(),
+      baseDefenseModifiers: '',
+      damageDone: '',
+      surprise: SurpriseType.calculate(attacker: defender, defendant: attacker),
+    );
+
+    updateCharacter(defender);
+
+    return bonus;
+  }
+
   /// Ajusta el tipo de dano al critico principal del arma seleccionada.
   void syncDamageTypeWithWeapon() {
     final principal = combatState.attack.character?.selectedWeapon().principalDamage;

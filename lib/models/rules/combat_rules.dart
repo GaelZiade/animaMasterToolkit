@@ -6,6 +6,7 @@ import 'package:amt/models/enums.dart';
 import 'package:amt/models/modifiers_state.dart';
 import 'package:amt/models/roll.dart';
 import 'package:amt/models/rules/armour_reduction_rules.dart';
+import 'package:amt/models/rules/counter_attack_rules.dart';
 import 'package:amt/models/rules/rules.dart';
 import 'package:amt/models/weapon.dart';
 import 'package:amt/resources/modifiers.dart';
@@ -316,8 +317,7 @@ class CombatRules {
     }
 
     if (difference < 0) {
-      counterBonus = (-difference ~/ 2).roundToFives;
-      counterBonus = min(counterBonus, 150);
+      counterBonus = CounterAttackRules.bonus(attack: attackValue.result ?? 0, defense: defenseValue.result ?? 0)!;
 
       info.add(
         text: 'El defensor puede contraatacar con un bonificador de: $counterBonus',

@@ -44,6 +44,13 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ### Añadido
 
+- **Tomar contraataque.** Cuando la defensa supera al ataque, el resultado
+  ofrece un botón que, en un solo paso, suma la defensa al defensor, lo pone a
+  atacar con el bono de contra (mitad de la diferencia, redondeada a 5, máximo
+  +150, Core p.87) y pone al antiguo atacante a defenderse con su tipo de
+  defensa. Limpia tiradas y modificadores, apaga el ataque en área (un contra
+  no puede serlo) y recalcula la sorpresa. Sigue disponible "Aplicar daño /
+  Añadir defensa" para quien renuncia a la contra.
 - **Reglas de acumulación de daño que faltaban** (avanza
   [#47](https://github.com/aoalejo/animaMasterToolkit/issues/47)). La aplicación
   ya resolvía la defensa, la absorción con sorpresa, la mitad del nivel de
