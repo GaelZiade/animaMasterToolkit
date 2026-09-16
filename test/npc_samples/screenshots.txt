@@ -1,0 +1,39 @@
+GRENDEL
+CAZADOR OSCURO
+Nivel: 3 Clase: Natural 10
+Puntos de Vida: 150
+Categoría: Explorador
+Fue: 9 Des: 8 Agi: 8 Con: 9 Pod: 6 Int: 6 Vol: 6 Per: 8
+RF 50 RM 45 RP 45 RV 80 RE 50
+Turno: 75 Natural, 55 Espada larga; o como arma
+Habilidad de ataque: 120 Espada larga, Garras o Armas de cazador
+Habilidad de defensa: 100 Espada larga, Garras o Armas de cazador
+Daño: 50 Garras FIL, 60 Espada larga FIL, o como arma
+TA: Armadura quitinosa Fil 4 Con 4 Pen 4 Cal 4 Ele 4 Fri 4 Ene 0
+Habilidades esenciales: Resistencia al cansancio, Inmune a los fenómenos climáticos.
+Poderes: Arma natural: Garras, Armadura física 4 Abierta, RV incrementada +30, Camuflaje camaleónico Limitado, Visión nocturna.
+Especial: Tabla de armas de Cazador
+Tamaño: 18 Medio Regeneración: 3
+Tipo de movimiento: 8 Cansancio: 12
+
+ARIAS VAYU
+ELEMENTAL SUPERIOR DE AIRE
+Nivel: 10 Clase: Entre mundos, Elemental 30
+Puntos de Vida: 210
+Categoría: Warlock
+Fue: 5 Des: 14 Agi: 15 Con: 8 Pod: 13 Int: 13 Vol: 7 Per: 10
+RF 85 RM 100 RP 85 RV 85 RE 85
+Turno: 175 Natural
+Habilidad de ataque: 240 Cuchilla de Viento
+Habilidad de defensa: 250 Esquiva
+Daño: 80 Cuchilla de Viento (Fil), 100 Tetraformación (Ele)
+TA: Ninguna
+ACT: 80 Aire
+Zeon: 900
+Proyección mágica: 200 Ofensiva
+Nivel de Vía: 90 Aire
+Habilidades naturales: Proyección Mágica como Ataque.
+Poderes: +30 al Turno Natural, Forma Elemental, Cuchilla de Viento (Ataque Elemental, -2 a la TA Defensora, Distancia 250 Metros, Daño Base 80), Daña Energía, Transporte Innato (Distancia 30 Metros, A través de un Elemento, Sin Límite), Dominio Elemental, Los Cuatro Cristales Elementales.
+Tamaño: 13 Medio Regeneración: 1
+Tipo de movimiento: 15 Cansancio: Incansable
+Habilidades Secundarias: Acrobacias 125, Baile 180, Persuasión 55, Advertir 40, Buscar 20, Historia 50, Valoración Mágica 150.

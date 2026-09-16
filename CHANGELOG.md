@@ -199,6 +199,33 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ## Importación de fichas
 
+### Añadido
+
+- **Pegar PNJ.** Un botón junto a «Crear Personaje» abre un cuadro donde se pega
+  el perfil de una criatura o PNJ copiado del manual, y crea el personaje con
+  una vista previa y los avisos de lo que no se pudo leer. Se pueden pegar
+  varios perfiles seguidos y elegir cuántas copias agregar de cada uno; se
+  numeran como PNJ.
+
+  Entiende los dos formatos canon: el largo del Core, el Bestiario y Gaïa
+  (`Nivel:`, `Habilidad de ataque:`…) y el compacto de los personajes comunes
+  (`Turno 55/25; Pv 110; HA 80…`). De cada perfil toma vida, acumulación de
+  daño, características, resistencias, habilidades secundarias, Zeon y
+  proyección mágica o psíquica, y además:
+  - crea un arma por ataque («190 Garras + 170 Mordisco; o 190 Aliento»), con
+    su daño, su crítico y su turno;
+  - la TA por tipo, por nombre de armadura (Tabla 38) o natural, que no protege
+    contra Energía;
+  - «Armadura -1» o «-2 a la TA Defensora» de los poderes, como reducción de TA
+    del arma;
+  - los críticos que el perfil no dice, de la tabla de armas del Core
+    («Espada bastarda»: FIL/CON; desarmado: CON);
+  - Cansancio, movimiento y regeneración, si faltan, de la CON y la AGI.
+
+  Probado contra los 189 perfiles de los manuales digitalizados: 137 salen sin
+  avisos y otros 37 solo avisan de datos que el propio perfil no trae, como el
+  crítico de unas garras o las armas de «o como arma».
+
 ### Corregido
 
 - **La importación de planillas de Excel funciona sin servidor.** Dependía de un

@@ -97,6 +97,17 @@ class CharactersTable extends StatelessWidget {
             ),
             Flexible(
               child: TextButton.icon(
+                onPressed: () => NpcImportDialog.show(context, (character) => appState.addCharacter(character, isNpc: true)),
+                icon: const Icon(Icons.content_paste),
+                label: const Text(
+                  'Pegar PNJ',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ),
+            Flexible(
+              child: TextButton.icon(
                 onPressed: appState.resetConsumables,
                 icon: const Icon(Icons.restore),
                 label: const Text(

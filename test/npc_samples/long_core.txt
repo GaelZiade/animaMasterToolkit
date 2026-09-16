@@ -1,0 +1,85 @@
+dragón
+la simiente del mundo
+menor
+Nivel: 7    
+Puntos de Vida: 3.005 Acumulación
+Categoría: Guerrero
+Fue: 14 Des: 9 Agi: 6 Con: 14 Pod: 12 Int: 8 Vol: 10 Per: 10
+RF 95 RM 110 RP 75 RV 95 RE 95
+Clase: Natural 20
+Turno: 70 Natural
+Habilidad de ataque: 190 Garras + 170 Mordisco; o 190 Aliento; o 140 
+Coletazo
+Habilidad de defensa: Acumulación
+Daño: 130 Garras FIL, 150 Mordisco PEN, 100 Coletazo CON, 120 Aliento 
+(Variable)
+TA: Natural + escamas: Fil 7 Con 7 Pen 7 Cal 7 Ele 7 Fri 7 Ene 6
+Habilidades esenciales: Características físicas sobrenaturales, Características 
+anímicas sobrehumanas, Sentido agudizado, Zen, Inmunidad, Vulnerabilidad.
+Poderes: Arma natural: Garras, Mordisco (Ataque adicional, Daño 
+incrementado +20, Armadura -1) y Cola, Aliento, Daña energía, Armadura 
+natural, Vuelo natural 12, Batir de alas, Resistencias incrementadas +10, RM 
+incrementada +30, Barrera de daño 80, Ver lo sobrenatural.
+Tamaño: 28 Enorme 
+Tipo de movimiento: 7 / 12 
+Regeneración: 8
+Cansancio: 14
+Habilidades Secundarias: Intimidar 70, Advertir 100 (Escuchar 130), Buscar 
+100, Historia 70, Tasación 65, Proezas de fuerza 110, Resistir el dolor 85.
+
+z ombI
+cadáver animado
+Nivel: 0 
+Clase: Entre mundos, no muerto 10
+Puntos de Vida: 345 Acumulación
+Categoría: Novel
+Fue: 8 Des: 5 Agi: 5 Con: 7 Pod: 1 Int: 2 Vol: 1 Per: 5
+RF 45 RM 0 RP 0 RV 25 RE 25
+Turno: 40 Natural; o como arma
+Habilidad de ataque: 50 Mordisco, Golpes o Arma 
+Habilidad de defensa: Acumulación
+Daño: 20 Mordiscos y Golpes CON / PEN, o como Arma
+3 2 7
+3 2 7
+TA: Natural 3
+Habilidades esenciales: Exención física, Sentido agudizado: Olfato, Visión 
+nocturna completa, Inmunidad psicológica, Tamaño innatural.
+Poderes: RF Incrementada +20.
+Tamaño: 15 Medio 
+Tipo de movimiento: 5 
+Regeneración: 0
+Cansancio: Incansable
+Habilidades Secundarias: Advertir 30 (Olfato 60), Buscar 20, Sigilo 20.
+
+asagIrI 
+espíritu de la caza
+Nivel: 4 
+Clase: Ánima 20
+Puntos de Vida: 105 Bestia / 130 Espíritu
+Categoría: Asesino
+Fue: 6 Des: 8 Agi: 8 Con: 6 Pod: 8 Int: 6 
+Vol: 8 Per: 9
+RF 55 RM 55 RP 55 RV 55 RE 55
+Turno: 120 Bestia / 100 Espíritu
+Habilidad de ataque: 140 Garras y fauces
+Habilidad de defensa: 110 Esquiva
+Daño: 60 Garras y fauces
+TA: Natural Fil 6 Con 6 Pen 6 Cal 6 Ele 6 Fri 6 Ene 3
+Ilustrado por © Alicia Guillen
+Habilidades esenciales: Inhumanidad, Exención 
+física, Características físicas inhumanas especiales, 
+Sentidos agudizados: olfato y oído, Afinidad.
+Poderes: Posesión Condicionada, Forma de bestia 
+(Metamorfismo básico Condicionado, Arma natural: 
+Garras y fauces, Reacción incrementada +20), La senda 
+de las bestias (Movimiento +2, Movimiento libre por 
+la naturaleza), Inmunidad física 80 Condicionada, 
+Debilidad.
+Tamaño: 12 Medio 
+Regeneración: 1
+Tipo de movimiento: 10 / 8
+Cansancio: 8 / Incansable
+Habilidades Secundarias: Advertir 90 
+(Olfato y oído 120), Buscar 110, Ocultarse 
+140, Rastrear 120 (Olfato 150), Atletismo 
+50, Sigilo 130.
