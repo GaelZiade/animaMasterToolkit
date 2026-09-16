@@ -252,6 +252,16 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   para que no se mezclen los renglones; la segunda toma el nombre de la
   primera. El texto leído queda en el cuadro para corregirlo.
 
+  Probado con capturas reales del Core, el Bestiario y Gaïa (Dragón Menor y
+  Mayor, Grendel, Arias Vayu, Guardia de Abel, Alto Caballero de Santa Helena y
+  Gran Erudito Ilmorense). Las capturas chicas se agrandan ×3, que confunde
+  menos dígitos que ×2 o que binarizar, y el lector corrige las confusiones que
+  aparecieron: «RE» o «REF» por «RF» (las resistencias se asignan por el orden
+  del formato si las etiquetas no cuadran), «RY» por «RV», «Yol» por «Vol»,
+  «Py» por «Pv», «Ene O» por «Ene 0», «Regeneración: |» por 1, «;» leído como
+  «:» y los restos de la ilustración junto al nombre. Una resistencia mayor que
+  300 se avisa para revisarla.
+
   Probado contra los 189 perfiles de los manuales digitalizados: 131 salen sin
   avisos y otros 43 solo avisan de datos que el propio perfil no trae, como el
   crítico de unas garras, las armas de «o como arma» o la habilidad de un

@@ -50,11 +50,12 @@
     return workerPromise;
   }
 
-  // Gris y, si la captura es chica, el doble de tamaño: Tesseract lee mucho
-  // mejor el texto chico de los manuales así.
+  // Gris y, si la captura es chica, más grande: Tesseract lee mucho mejor el
+  // texto chico de los manuales así. Con capturas reales, ×3 confunde menos
+  // dígitos que ×2 o que binarizar.
   function prepare(blob) {
     return createImageBitmap(blob).then((bitmap) => {
-      const scale = bitmap.width < 1600 ? 2 : 1;
+      const scale = bitmap.width < 900 ? 3 : bitmap.width < 1600 ? 2 : 1;
       const canvas = document.createElement('canvas');
       canvas.width = bitmap.width * scale;
       canvas.height = bitmap.height * scale;

@@ -209,6 +209,54 @@ void main() {
     expect(results.every((result) => !result.warnings.any((warning) => warning.contains('características'))), isTrue);
   });
 
+  group('Texto real de la lectura de las capturas del usuario', () {
+    final long = _sample('ocr_real_long');
+    final compact = _sample('ocr_real_compact');
+
+    test('Reconoce los siete perfiles con sus nombres, sin restos de la ilustración', () {
+      expect(long.map((result) => result.name), ['Dragón (Menor)', 'Dragón (Mayor)', 'Grendel', 'Arias Vayu']);
+      expect(compact.map((result) => result.name), ['Guardia de Abel', 'Alto Caballero de Santa Helena', 'Gran Erudito Ilmorense']);
+    });
+
+    test('«RE 95 RM…» es RF por el orden del formato; «RY» es RV; «Yol» es Vol', () {
+      expect(long[0].json['Resistencias'], {'RF': '95', 'RM': '110', 'RP': '75', 'RV': '95', 'RE': '95'});
+      expect(long[1].json['Resistencias'], {'RF': '110', 'RM': '120', 'RP': '90', 'RV': '110', 'RE': '110'});
+      expect(long[1].json['Atributos'], containsPair('VOL', '11'));
+      expect(long[2].json['Resistencias'], {'RF': '50', 'RM': '45', 'RP': '45', 'RV': '80', 'RE': '50'});
+      expect(compact[2].json['Resistencias'], containsPair('RV', '40'));
+    });
+
+    test('Dragón Mayor: «Mordisco:» con dos puntos por punto y coma, Armadura -2 y barrera 120', () {
+      final weapons = _combat(long[1]).weapons;
+
+      expect(weapons.map((weapon) => weapon.name), ['Garras', 'Mordisco', 'Aliento', 'Coletazo']);
+      expect(weapons.map((weapon) => weapon.attack), [220, 200, 220, 170]);
+      expect(weapons.map((weapon) => weapon.damage), [150, 170, 150, 120]);
+      expect(weapons.first.armourReduction, 2);
+      expect(_profile(long[1])['barreraDanio'], '120');
+    });
+
+    test('Arias Vayu: «Regeneración: |» es 1 y una RF imposible se avisa', () {
+      expect(_profile(long[3])['regeneracion'], '1');
+      expect(long[3].warnings, contains('RF 865: parece mal leída, revisala'));
+    });
+
+    test('Grendel y los compactos salen como en el libro', () {
+      expect(long[2].json['Atributos'], containsPair('PER', '8'));
+      expect(_combat(long[2]).armour.calculatedArmour.ene, 0);
+      expect(compact[0].warnings, isEmpty);
+      expect(compact[1].warnings, isEmpty);
+    });
+
+    test('Erudito: «HE 0» es una defensa leída y «Combate desarmado» ataca en CON', () {
+      final weapon = _combat(compact[2]).weapons.single;
+
+      expect(compact[2].warnings, isEmpty);
+      expect([weapon.defense, weapon.defenseType, weapon.principalDamage, weapon.type], [0, DefenseType.dodge, DamageTypes.con, 'desarmado']);
+      expect(_profile(compact[2])['puntosDeVida'], '85');
+    });
+  });
+
   test('Descarta técnicas y conjuros que también empiezan con «Nivel:»', () {
     expect(NpcTextParser.parseAll(_technique), isEmpty);
   });

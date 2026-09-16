@@ -1,0 +1,45 @@
+GUARDIA DE ABEL )
+Categoría Guerrero; Nivel 1
+
+Turno 55/25; Pv 110; TA Cuero tachonado;
+
+HA 80; HP 80; Armas Espada Larga; Daño 55
+
+AGI: 6 DES: 7 CON: 7 FUE: 7 PER: 6 INT: 6 VOL: 5
+
+POD: 5
+
+Habilidades: Atletismo 5(15), Montar 40, Nadar 5(15),
+Saltar 0(10), Trepar 0(10), Estilo 25, Intimidar 15, Liderazgo
+20, Advertir 35, Buscar 25, Rastrear 15, Frialdad 15, Proezas
+de fuerza 20, Resistir el dolor 5.
+
+Resistencias: RF 35, RE 35, RV 35, RM 30, RP 30.
+
+ALTO CABALLERO DE SANTA HELENA
+
+Categoría Guerrero; Nivel 5
+
+Turno 80/25; Pv 170; TA Semicompleta;: HA 115; HP 120; Armas
+Espada bastarda; Daño 80/90
+
+AGI: 7 DES: 8 CON: 7 FUE: 8 PER: 6 INT: 7 VOL: 6 POD: 7
+Habilidades: Montar 95, Nadar 60, Estilo 110, Liderazgo TO,
+Persuasión 60, Advertir 25, Buscar 10, Proezas de fuerza 95.
+Especial: Tabla de armas de Caballero
+
+Resistencias: RF 55, RE 55, RV 55, RM 55, RP 55.
+
+GRAN ERUDITO ILMORENSE
+
+Categoría Novel; Nivel 3
+
+Turno 60; Py 85; TA No: HA 5; HE 0; Armas Combate desarmado;
+Daño 10
+
+AGI: 5 DES: 6 CON: 5 FUE: 5 PER: 7 INT: 8 VOL: 8 POD: 6
+Habilidades: Montar 10, Nadar 15, Estilo 30, Persuasión 90, Advertir
+25, Buscar 35, Animales 30, Ciencia 100, Herbolaria 70, Historia 120,
+Medicina 120, Memorizar 130, Ocultismo 50.
+
+Resistencias: RF 40, RE 40, RY 40, RM 45, RP 50.

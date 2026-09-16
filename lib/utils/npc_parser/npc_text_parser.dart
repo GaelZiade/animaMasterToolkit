@@ -78,6 +78,9 @@ abstract class NpcTextParser {
     return raw
         .replaceAll('\r', '')
         .replaceAll(' ', ' ')
+        // Lectura de capturas: «Regeneración: |» es un 1. Va antes de quitar las
+        // barras de las tablas.
+        .replaceAllMapped(RegExp(r'(:[ \t]*)\|(?=[ \t]*$)', multiLine: true), (match) => '${match.group(1)}1')
         // Marcas de Markdown y tablas de los manuales digitalizados.
         .replaceAll(RegExp('[*#|_]'), ' ')
         // Referencias de página de los manuales digitalizados: «{p.64}».
@@ -88,7 +91,47 @@ abstract class NpcTextParser {
         // Restos de maquetación: números sueltos y créditos de ilustración.
         .where((line) => !RegExp(r'^[\d\s.,/]+$').hasMatch(line))
         .where((line) => !RegExp('ilustrad[oa] por|©', caseSensitive: false).hasMatch(line))
+        .map(_fixOcr)
         .toList();
+  }
+
+  /// Confusiones típicas de la lectura de capturas.
+  static String _fixOcr(String line) {
+    return line
+        .replaceAll(RegExp(r'\bYol\b'), 'Vol')
+        .replaceAll(RegExp(r'\bRY\b'), 'RV')
+        .replaceAll(RegExp(r'\bREF\b'), 'RF')
+        .replaceAll(RegExp(r'\bPy\b'), 'Pv')
+        .replaceAllMapped(RegExp(r'\b(Fil|Con|Pen|Cal|Ele|Fri|Ene)\s+O\b'), (match) => '${match.group(1)} 0')
+        // «Regeneración: l» también es un 1.
+        .replaceAllMapped(RegExp(r'(:\s*)[Il](?=\s|$)'), (match) => '${match.group(1)}1');
+  }
+
+  /// Orden en que los perfiles dan las resistencias.
+  static const _longResistanceOrder = ['RF', 'RM', 'RP', 'RV', 'RE'];
+  static const _compactResistanceOrder = ['RF', 'RE', 'RV', 'RM', 'RP'];
+
+  static Map<String, String> _resistances(String body, {required bool compact}) {
+    // Las cinco juntas: si alguna etiqueta se leyó mal («RE 95» por «RF 95»),
+    // se asignan por el orden del formato.
+    final run = RegExp(r'\bR[A-Z]{1,2}\s*:?\s*\d+(?:[\s,.;]+R[A-Z]{1,2}\s*:?\s*\d+){4}').firstMatch(body);
+
+    if (run != null) {
+      final pairs = RegExp(r'\b(R[A-Z]{1,2})\s*:?\s*(\d+)').allMatches(run.group(0)!).toList();
+      final labels = pairs.map((pair) => pair.group(1)!).toSet();
+      final order = labels.length == 5 && labels.every(_longResistanceOrder.contains)
+          ? pairs.map((pair) => pair.group(1)!).toList()
+          : (compact ? _compactResistanceOrder : _longResistanceOrder);
+
+      return {for (var i = 0; i < 5; i++) order[i]: pairs[i].group(2)!};
+    }
+
+    final resistances = <String, String>{};
+    for (final match in RegExp(r'\bR([FMPVE])\s*:?\s*(\d+)').allMatches(body)) {
+      resistances.putIfAbsent('R${match.group(1)}', () => match.group(2)!);
+    }
+
+    return resistances;
   }
 
   static final _longAnchor = RegExp(r'^Nivel\s*:', caseSensitive: false);
@@ -273,7 +316,7 @@ abstract class NpcTextParser {
       final match = unique[i];
       final end = i + 1 < unique.length ? unique[i + 1].start : text.length;
       final key = match.group(1)!.toLowerCase().replaceFirst('nivel en via', 'nivel de via');
-      final value = text.substring(match.end, end).trim().replaceAll(RegExp(r'^[:\s]+|[;,.\s]+$'), '');
+      final value = text.substring(match.end, end).trim().replaceAll(RegExp(r'^[:\s]+|[;:,.\s]+$'), '');
 
       fields.putIfAbsent(key, () => value);
     }
@@ -334,7 +377,12 @@ abstract class NpcTextParser {
   static String _capitalize(String word) => word.isEmpty ? word : word[0].toUpperCase() + word.substring(1);
 
   static String _formatName(String raw) {
-    final tokens = raw.split(' ').where((token) => token.isNotEmpty).toList();
+    var tokens = raw.split(' ').where((token) => token.isNotEmpty).toList();
+
+    // Captura en versalitas con restos de la ilustración al lado
+    // («ARIAS VAYU Pr A»): valen las palabras en mayúsculas del principio.
+    final upper = tokens.takeWhile((token) => RegExp(r'^[A-ZÁÉÍÓÚÑÜ][A-ZÁÉÍÓÚÑÜ\-]+$').hasMatch(token) || _stopWords.contains(token.toLowerCase())).toList();
+    if (upper.isNotEmpty && upper.any((token) => token.length > 2)) tokens = upper;
 
     // Versalitas pegadas como «z ombI».
     if (tokens.length > 1 && tokens[0].length == 1 && RegExp('^[a-zñ]').hasMatch(tokens[1]) && !_stopWords.contains(tokens[1].toLowerCase())) {
@@ -418,9 +466,9 @@ abstract class NpcTextParser {
 
     if (attributes.length < 8) warnings.add('Faltan características: se leyeron ${attributes.length} de 8');
 
-    final resistances = <String, String>{};
-    for (final match in RegExp(r'\bR([FMPVE])\s*:?\s*(\d+)').allMatches(body)) {
-      resistances.putIfAbsent('R${match.group(1)}', () => match.group(2)!);
+    final resistances = _resistances(body, compact: compact);
+    for (final entry in resistances.entries) {
+      if (int.parse(entry.value) > 300) warnings.add('${entry.key} ${entry.value}: parece mal leída, revisala');
     }
     if (resistances.length < 5) warnings.add('Faltan resistencias: se leyeron ${resistances.length} de 5');
 
@@ -523,7 +571,7 @@ abstract class NpcTextParser {
         }
       }
     } else {
-      for (var segment in _splitTopLevel(field('Habilidad de ataque') ?? '', RegExp(r';|\s\+\s'))) {
+      for (var segment in _splitTopLevel(field('Habilidad de ataque') ?? '', RegExp(r'[;:]|\s\+\s'))) {
         segment = segment.replaceFirst(RegExp(r'^o\s+'), '');
         final match = RegExp(r'^(\d+)\s*(.*)$').firstMatch(segment);
 
@@ -570,10 +618,12 @@ abstract class NpcTextParser {
     // Defensa.
     var defense = 0;
     var defenseType = 'Par';
+    var defenseFound = false;
 
     if (compact) {
       final parry = _firstInt(field('HP'));
       final dodge = _firstInt(field('HE'));
+      defenseFound = parry != null || dodge != null;
 
       if ((dodge ?? -1) > (parry ?? -1)) {
         defense = dodge!;
@@ -591,7 +641,7 @@ abstract class NpcTextParser {
     }
 
     final hasProjection = [field('Proyeccion magica'), field('Proyeccion psiquica')].any((text) => (_firstInt(text) ?? 0) > 0);
-    if (!accumulation && defense == 0 && !hasProjection) warnings.add('No se encontró la habilidad de defensa');
+    if (!accumulation && !defenseFound && defense == 0 && !hasProjection) warnings.add('No se encontró la habilidad de defensa');
 
     // Turno, con valores por arma si los hay («75 Natural, 55 Espada larga»).
     final turnText = field('Turno') ?? '';
@@ -661,7 +711,9 @@ abstract class NpcTextParser {
         if (special != null) criticals = _criticalsIn(special.group(1)!.toUpperCase());
       }
 
-      if (criticals.isEmpty && name == unarmed) criticals = const ['CON'];
+      // Sin armas se ataca en CON (Core, tabla de armas).
+      final isUnarmed = name == unarmed || _key(name).contains('desarmad');
+      if (criticals.isEmpty && isUnarmed) criticals = const ['CON'];
 
       if (criticals.isEmpty) {
         final key = _key(name);
@@ -681,7 +733,7 @@ abstract class NpcTextParser {
 
       weapons.add({
         'nombre': name,
-        'tipo': name == unarmed ? 'desarmado' : '',
+        'tipo': isUnarmed ? 'desarmado' : '',
         'conocimiento': 'Conocida',
         'tamanio': 'Normal',
         'critPrincipal': criticals.firstOrNull ?? 'FIL',
