@@ -279,6 +279,40 @@ class WeaponsRack extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Tooltip(
+                      message: 'Crítico incrementado: se suma al nivel del crítico que provoque este ataque',
+                      child: AMTTextFormField(
+                        label: 'Bono al crítico',
+                        text: (weapon.criticalBonus ?? 0).toString(),
+                        onChanged: (value) {
+                          weapon.criticalBonus = _parseInput(value);
+                          onEdit(weapon);
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Tooltip(
+                    message: 'Los ataques que dañan energía ignoran la barrera de daño. Atacar sobre ENE ya la ignora.',
+                    child: Text('Daña energía:'),
+                  ),
+                  Switch(
+                    value: weapon.damagesEnergy ?? false,
+                    onChanged: (value) {
+                      setState(() {
+                        weapon.damagesEnergy = value;
+                        onEdit(weapon);
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
               if (!(weapon.variableDamage ?? false))
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

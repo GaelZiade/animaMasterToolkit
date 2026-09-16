@@ -67,6 +67,7 @@ void main() {
       expect(weapons[1].principalDamage, DamageTypes.pen);
       expect(weapons[3].principalDamage, DamageTypes.con);
       expect(weapons.map((weapon) => weapon.armourReduction), [1, 1, 0, 0]);
+      expect(_profile(_named(results, 'Dragón (Menor)'))['barreraDanio'], '80');
     });
 
     test('Dragón: TA por tipo', () {
@@ -189,6 +190,12 @@ void main() {
     expect([projection.name, projection.attack, projection.defense], ['Proyección Mágica', 20, 0]);
     expect([armour.fil, armour.ele, armour.ene], [12, 12, 8]);
     expect(chthon.warnings.single, contains('no da su habilidad de ataque'));
+
+    // «+20 al Crítico» solo en las Armas Diamantinas; «Daña Energía» en todos
+    // sus ataques; «Barrera de Daño 160» dentro de Cuerpo de Diamante.
+    expect([blade.criticalBonus, release.criticalBonus], [20, 0]);
+    expect([blade.damagesEnergy, release.damagesEnergy], [true, true]);
+    expect(_profile(chthon)['barreraDanio'], '160');
   });
 
   test('Descarta técnicas y conjuros que también empiezan con «Nivel:»', () {

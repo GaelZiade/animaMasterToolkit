@@ -404,6 +404,13 @@ abstract class NpcTextParser {
 
     final zeon = _firstInt(field('Zeon'));
 
+    // «Barrera de daño 80» en los poderes o en lo especial; si hay varias,
+    // la más alta.
+    final barrier = RegExp(r'barrera\s+de\s+da[ñn]o\s*(\d+)', caseSensitive: false)
+        .allMatches('${field('Poderes') ?? ''} ${field('Especial') ?? ''} ${field('Habilidades esenciales') ?? ''}')
+        .map((match) => int.parse(match.group(1)!))
+        .fold(0, max);
+
     return NpcParseResult(
       name: name,
       warnings: warnings,
@@ -420,6 +427,7 @@ abstract class NpcTextParser {
           'regeneracion': '${_firstInt(field('Regeneracion')) ?? _regenerationFor(int.tryParse(attributes['CON'] ?? ''))}',
           'movimiento': '${_firstInt(field('Tipo de movimiento')) ?? int.tryParse(attributes['AGI'] ?? '') ?? 6}',
           'acumDanio': accumulation ? 'Si' : 'No',
+          if (barrier > 0) 'barreraDanio': '$barrier',
         },
         'Atributos': attributes,
         'Resistencias': resistances,
@@ -594,6 +602,7 @@ abstract class NpcTextParser {
     }
 
     final weapons = <Map<String, dynamic>>[];
+    final damagesEnergy = RegExp('da[ñn]a energ[ií]a', caseSensitive: false).hasMatch('${field('Poderes') ?? ''} ${field('Especial') ?? ''}');
 
     for (var i = 0; i < attacks.length; i++) {
       final (fullName, attack) = attacks[i];
@@ -647,6 +656,9 @@ abstract class NpcTextParser {
         'danio': '${damage?.value ?? 0}',
         'calidad': quality,
         'reduccionTA': '${_armourReductionFor(name, field('Poderes') ?? '')}',
+        'bonoCritico': '${_criticalBonusFor(name, field('Poderes') ?? '')}',
+        // «Daña energía» es un poder del ser: vale para todos sus ataques.
+        'danaEnergia': damagesEnergy,
       });
     }
 
@@ -693,10 +705,23 @@ abstract class NpcTextParser {
 
   /// «Garras, Mordisco (…, Armadura -1)» o «Cuchilla (…, -2 a la TA Defensora)».
   static int _armourReductionFor(String weapon, String powers) {
+    return _weaponPower(weapon, powers, [RegExp(r'Armadura\s*-\s*(\d+)', caseSensitive: false), RegExp(r'-\s*(\d+)\s*a la TA', caseSensitive: false)]);
+  }
+
+  /// «Armas Diamantinas (…, +20 al Crítico)» o «Crítico incrementado +20».
+  static int _criticalBonusFor(String weapon, String powers) {
+    return _weaponPower(weapon, powers, [
+      RegExp(r'\+\s*(\d+)\s*al\s*cr[ií]tico', caseSensitive: false),
+      RegExp(r'cr[ií]tico\s*incrementado\s*\+?\s*(\d+)', caseSensitive: false),
+    ]);
+  }
+
+  /// Valor de un poder que va entre paréntesis detrás de las armas a las que
+  /// afecta.
+  static int _weaponPower(String weapon, String powers, List<RegExp> patterns) {
     for (final match in RegExp(r'([^():;]*)\(([^()]*)\)').allMatches(powers)) {
       final inner = match.group(2)!;
-      final value = RegExp(r'Armadura\s*-\s*(\d+)', caseSensitive: false).firstMatch(inner)?.group(1) ??
-          RegExp(r'-\s*(\d+)\s*a la TA', caseSensitive: false).firstMatch(inner)?.group(1);
+      final value = patterns.map((pattern) => pattern.firstMatch(inner)?.group(1)).nonNulls.firstOrNull;
 
       if (value != null && _sharesWord(match.group(1)!, weapon)) return int.parse(value);
     }

@@ -132,8 +132,10 @@ class _NpcPreview extends StatelessWidget {
     final weapons = combat.weapons.map((weapon) {
       final defense = accumulation ? '' : ' · ${weapon.defenseType.displayable} ${weapon.defense}';
       final reduction = (weapon.armourReduction ?? 0) > 0 ? ' · TA −${weapon.armourReduction}' : '';
+      final critical = (weapon.criticalBonus ?? 0) > 0 ? ' · Crítico +${weapon.criticalBonus}' : '';
+      final energy = (weapon.damagesEnergy ?? false) ? ' · Daña energía' : '';
 
-      return '${weapon.name}: HA ${weapon.attack}$defense · Daño ${weapon.damage} ${weapon.principalDamage?.name.toUpperCase() ?? ''}$reduction';
+      return '${weapon.name}: HA ${weapon.attack}$defense · Daño ${weapon.damage} ${weapon.principalDamage?.name.toUpperCase() ?? ''}$reduction$critical$energy';
     });
 
     return Card(
@@ -155,6 +157,7 @@ class _NpcPreview extends StatelessWidget {
                           if ('${profile['nivel']}'.isNotEmpty) 'Nivel ${profile['nivel']}',
                           'PV ${profile['puntosDeVida']}${accumulation ? ' (acumulación)' : ''}',
                           'Turno ${combat.weapons.first.turn}',
+                          if (profile['barreraDanio'] != null) 'Barrera de daño ${profile['barreraDanio']}',
                         ].join(' · '),
                         style: muted,
                       ),

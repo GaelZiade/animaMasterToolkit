@@ -15,6 +15,9 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   por ejemplo al deshacer «Limpiar mesa». Se guardaba `parry` pero solo se
   leía `Par`. Lo mismo pasaba con el tamaño del arma, su conocimiento y la
   ubicación de la armadura, que siempre volvía como completa.
+- **El tamaño de una masa de enemigos se perdía al recargar.** El registro
+  guardado del perfil anunciaba un campo menos de los que escribía, así que el
+  último, el tamaño de la masa, no se leía.
 - **La defensa final ya no puede quedar negativa.** Los modificadores pueden
   sumar un total negativo, pero el resultado se limita a 0. El desglose muestra
   el valor sin limitar para que se vea por qué. (Cierra
@@ -49,6 +52,16 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 
 ### Añadido
 
+- **Barrera de daño** (Core, Estados y Accidentes). Si el daño base del ataque
+  no la alcanza, no quita PV; los ataques que dañan energía la ignoran. Se
+  carga a mano en las opciones de cualquier personaje, y además se aplican
+  solas la del Hanja (60, o 200 en Arcano, Dominus Exxet) y la del Escudo
+  físico del Ki (su Presencia base). Los manuales no dicen que se sumen, así
+  que vale la más alta. El desglose del daño dice cuál frenó el ataque.
+- **Crítico incrementado y «Daña energía» por arma.** El editor del arma tiene
+  un bono al crítico, que se suma al nivel del crítico que provoque ese ataque
+  (Core, Poderes), y un interruptor para los ataques que dañan energía. Atacar
+  sobre ENE ya cuenta como dañar energía.
 - **Tomar contraataque.** Cuando la defensa supera al ataque, el resultado
   ofrece un botón que, en un solo paso, suma la defensa al defensor, lo pone a
   atacar con el bono de contra (mitad de la diferencia, redondeada a 5, máximo
@@ -223,6 +236,8 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
   - Cansancio, movimiento y regeneración, si faltan, de la CON y la AGI.
 
   - la calidad del arma («200 Lanza +10»), que resta TA sola;
+  - «+20 al Crítico» o «Crítico incrementado» en el arma a la que afecta,
+    «Daña energía» en todos sus ataques y la «Barrera de daño» más alta;
   - los daños de ataques que no figuran en la habilidad de ataque, como la
     «Liberación de Energía» de Chthon, con la primera habilidad y un aviso.
 

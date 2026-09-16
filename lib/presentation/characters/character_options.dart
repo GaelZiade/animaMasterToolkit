@@ -127,6 +127,20 @@ class ShowCharacterOptions {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      Tooltip(
+                        message: 'Daño base mínimo que necesita un ataque para quitarle PV. No frena a los ataques que dañan energía. '
+                            'El Hanja y el Escudo físico del Ki se aplican solos; vale la barrera más alta.',
+                        child: AMTTextFormField(
+                          label: 'Barrera de daño',
+                          text: '${character.profile.damageBarrier ?? 0}',
+                          onChanged: (value) {
+                            final barrier = int.tryParse(value.trim()) ?? 0;
+                            character.profile.damageBarrier = barrier > 0 ? barrier : null;
+                            onEdit(character);
+                          },
+                        ),
+                      ),
                       const SizedBox(
                         height: 24,
                       ),

@@ -29,6 +29,8 @@ class Weapon {
     this.variableDamage = false,
     this.attackSize,
     this.armourReduction,
+    this.criticalBonus,
+    this.damagesEnergy,
   });
 
   Weapon.blank() {
@@ -67,6 +69,8 @@ class Weapon {
       variableDamage: JsonUtils.boolean(json['variable'], placeholder: false),
       attackSize: json['tamanoAtaque'] == null ? null : JsonUtils.string(json['tamanoAtaque'], ''),
       armourReduction: JsonUtils.integer(json['reduccionTA'], 0),
+      criticalBonus: JsonUtils.integer(json['bonoCritico'], 0),
+      damagesEnergy: JsonUtils.boolean(json['danaEnergia'], placeholder: false),
     );
   }
 
@@ -94,6 +98,8 @@ class Weapon {
       'variable': variableDamage,
       'tamanoAtaque': attackSize,
       'reduccionTA': armourReduction,
+      'bonoCritico': criticalBonus,
+      'danaEnergia': damagesEnergy,
     };
   }
 
@@ -148,6 +154,16 @@ class Weapon {
   @HiveField(21)
   int? armourReduction;
 
+  /// Crítico incrementado: se suma al nivel del crítico que provoque este
+  /// ataque (Core, Poderes).
+  @HiveField(22)
+  int? criticalBonus;
+
+  /// Daña energía: el ataque ignora la barrera de daño (Core, Estados y
+  /// Accidentes).
+  @HiveField(23)
+  bool? damagesEnergy;
+
   String description({bool lineBreak = false}) {
     return "$name ${lineBreak ? '\n' : ''}HA: $attack ${lineBreak ? '\n' : ''}${defenseType == DefenseType.dodge ? "HE" : "HP"}: $defense ${lineBreak ? '\n' : ''}T: $turn ${lineBreak ? '\n' : ''}DMG: $damage ${principalDamage?.name()}/${secondaryDamage?.name()} ";
   }
@@ -166,6 +182,9 @@ class Weapon {
       attackSize: attackSize,
       quality: quality,
       armourReduction: armourReduction,
+      criticalBonus: criticalBonus,
+      damagesEnergy: damagesEnergy,
+      variableDamage: variableDamage,
     );
   }
 }
