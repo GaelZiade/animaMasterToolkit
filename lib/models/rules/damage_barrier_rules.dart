@@ -72,9 +72,12 @@ abstract class DamageBarrierRules {
     final name = CombatData.normalizeTrait('${weapon.name} ${weapon.type ?? ''}');
     if (name.contains('proyeccion')) return 'ataque sobrenatural';
 
-    // Planillas: la característica o lo especial del arma lo dicen.
-    final description = CombatData.normalizeTrait('${weapon.characteristic ?? ''} ${weapon.special ?? ''}');
-    if (description.contains('dana energia') || description.contains('mistic')) return 'arma mística';
+    // Planillas: no tienen un casillero para eso, pero la característica, la
+    // advertencia o lo especial del arma pueden decirlo. La calidad sola no
+    // alcanza: el Core distingue un arma +5 de una mágica.
+    final description = CombatData.normalizeTrait('${weapon.characteristic ?? ''} ${weapon.warning ?? ''} ${weapon.special ?? ''}');
+    const keywords = ['dana energia', 'mistic', 'magic', 'sobrenatural', 'encantad'];
+    if (keywords.any(description.contains)) return 'arma mágica';
     if (combat == null) return null;
     if (CombatData.hasTrait(combat.kiAbilities, 'extension del aura')) return 'Extensión del aura al arma';
 

@@ -41,6 +41,29 @@ void main() {
     expect(source(_weapon(), ki: ['Extrusión de presencia', 'Extensión del aura al arma']), 'Extensión del aura al arma');
   });
 
+  test('La planilla marca un arma mágica en su descripción; la calidad sola no', () {
+    Weapon sheetWeapon({String? special, String? characteristic, int quality = 0}) {
+      return Weapon(
+        name: 'Ojiplato',
+        turn: 0,
+        attack: 100,
+        defense: 100,
+        defenseType: DefenseType.parry,
+        damage: 90,
+        quality: quality,
+        special: special,
+        characteristic: characteristic,
+      );
+    }
+
+    String? source(Weapon weapon) => DamageBarrierRules.energyDamageSource(weapon: weapon, combat: _combat());
+
+    expect(source(sheetWeapon(quality: 5, special: 'TA defensor: -1')), isNull);
+    expect(source(sheetWeapon(special: 'TA defensor: -1, Mágica')), 'arma mágica');
+    expect(source(sheetWeapon(characteristic: 'Arma sobrenatural')), 'arma mágica');
+    expect(source(sheetWeapon(special: 'Daña energía')), 'arma mágica');
+  });
+
   test('Las proyecciones mágica y psíquica son ataques sobrenaturales', () {
     final projection = Weapon(name: 'Proyección Mágica', turn: 0, attack: 100, defense: 0, defenseType: DefenseType.parry, damage: 0);
 

@@ -55,8 +55,10 @@ Las referencias de reglas son al **Core Exxet** salvo que se indique otra cosa.
 - **Barrera de daño** (Core, Estados y Accidentes). Si el daño base del ataque
   no la alcanza, no quita PV; si lo iguala o supera, pasa. La ignoran los
   ataques capaces de dañar energía, que no son lo mismo que los ataques sobre
-  la TA de Energía: un arma mística o un don marcado en el arma (también si su
-  descripción de la planilla lo dice), la Extrusión de presencia peleando con
+  la TA de Energía: un arma mística o un don marcado en el arma (también si la
+  característica, la advertencia o lo especial del arma en la planilla dicen
+  «mágica», «mística», «sobrenatural», «encantada» o «daña energía»; la calidad
+  sola no alcanza), la Extrusión de presencia peleando con
   el cuerpo, la Extensión del aura al arma con lo que se empuñe (Core, Los
   dominios del Ki) y los conjuros y poderes lanzados con la Proyección. Contra
   ellos solo vale una **barrera contra energía**, la excepción que se carga
